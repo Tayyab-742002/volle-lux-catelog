@@ -1,9 +1,10 @@
 # Architecture Document: B2B/B2C E-commerce Platform
 
-**Document Version:** 1.0  
+**Document Version:** 1.1  
 **Date:** October 25, 2025  
 **Owner:** Development Team  
-**Status:** Initial Draft
+**Status:** Initial Draft  
+**Aligned with:** PRD.md (v1.1) | Design.md (v2.1)
 
 ---
 
@@ -40,7 +41,7 @@
 ┌────────────────────┴────────────────────────────────────────┐
 │                    Application Layer                         │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │   Storefront │  │  User Account│  │   Admin CMS  │     │
+│  │   Storefront │  │  User Account│  │ Admin System │     │
 │  │   (Public)   │  │  (Protected) │  │  (Protected) │     │
 │  └──────────────┘  └──────────────┘  └──────────────┘     │
 └────────────────────┬────────────────────────────────────────┘
@@ -56,9 +57,14 @@
 ┌────────────────────┴────────────────────────────────────────┐
 │                    Data Layer                                │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │   Supabase   │  │    Stripe    │  │    Resend    │     │
-│  │   Database   │  │   Payments   │  │    Email     │     │
+│  │   Supabase   │  │    Sanity    │  │    Stripe    │     │
+│  │(Auth, Orders)│  │(Products/CMS)│  │   Payments   │     │
 │  └──────────────┘  └──────────────┘  └──────────────┘     │
+│                                                              │
+│  ┌──────────────┐                                          │
+│  │    Resend    │                                          │
+│  │    Email     │                                          │
+│  └──────────────┘                                          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -69,6 +75,26 @@
 - **Scalability**: Designed to handle both B2C and B2B traffic patterns
 - **Maintainability**: Clear separation of concerns and modular design
 - **Security**: Defense-in-depth approach with multiple security layers
+- **Hybrid CMS**: Content managed in Sanity, transactions managed in Supabase
+
+### 1.3. Dual-Platform Architecture
+
+This platform uses **two complementary systems**:
+
+1. **Sanity CMS**:
+
+   - Manages product catalog, categories, variants, pricing tiers
+   - Provides rich content editing interface for non-technical users
+   - Stores product images via Sanity CDN
+   - Enables rapid content updates without code deployment
+
+2. **Supabase**:
+   - Manages user authentication and authorization
+   - Handles all transactional data (orders, carts, quotes)
+   - Provides real-time capabilities for cart updates
+   - Ensures data consistency and ACID compliance for orders
+
+This hybrid approach combines the best of both worlds: Sanity's powerful content management with Supabase's robust transactional database.
 
 ---
 
@@ -88,15 +114,16 @@
 
 ### 2.2. Backend Stack
 
-| Service            | Technology            | Purpose                      |
-| ------------------ | --------------------- | ---------------------------- |
-| Runtime            | Node.js               | JavaScript runtime           |
-| API                | Next.js API Routes    | Serverless API endpoints     |
-| Database           | Supabase (PostgreSQL) | Primary data store           |
-| Authentication     | Supabase Auth         | User authentication          |
-| File Storage       | Supabase Storage      | Product images and documents |
-| Payment Processing | Stripe                | Payment gateway              |
-| Email Service      | Resend                | Transactional emails         |
+| Service            | Technology            | Purpose                             |
+| ------------------ | --------------------- | ----------------------------------- |
+| Runtime            | Node.js               | JavaScript runtime                  |
+| API                | Next.js API Routes    | Serverless API endpoints            |
+| Database           | Supabase (PostgreSQL) | Auth, orders, user data             |
+| Authentication     | Supabase Auth         | User authentication                 |
+| CMS                | Sanity                | Product catalog, content management |
+| File Storage       | Sanity CDN            | Product images and assets           |
+| Payment Processing | Stripe                | Payment gateway                     |
+| Email Service      | Resend                | Transactional emails                |
 
 ### 2.3. Development Tools
 
@@ -130,9 +157,24 @@
 
 ## 4. Database Schema
 
-### 4.1. Core Tables
+### 4.1. Data Architecture Overview
 
-#### 4.1.1. Users Table (Supabase Auth)
+The system uses a **hybrid architecture** combining two platforms:
+
+- **Sanity CMS**: Manages product catalog, categories, variants, pricing tiers, and static content
+- **Supabase**: Manages user authentication, orders, carts, and transactional data
+
+This separation allows Sanity to handle content management with its powerful editor, while Supabase manages transactional data with its robust database and authentication.
+
+### 4.2. Sanity CMS Schema (Products & Content)
+
+Products, categories, variants, and pricing tiers are managed in Sanity CMS. Refer to the Sanity schema configuration for the exact structure.
+
+### 4.3. Supabase Database Schema (Transactions)
+
+#### 4.3.1. Core Tables
+
+#### 4.3.1.1. Users Table (Supabase Auth)
 
 ```sql
 -- Managed by Supabase Auth
@@ -146,7 +188,7 @@ auth.users (
 )
 ```
 
-#### 4.1.2. Profiles Table
+#### 4.3.1.2. Profiles Table
 
 ```sql
 CREATE TABLE profiles (
@@ -158,7 +200,7 @@ CREATE TABLE profiles (
 );
 ```
 
-#### 4.1.3. Addresses Table
+#### 4.3.1.3. Addresses Table
 
 ```sql
 CREATE TABLE addresses (
@@ -182,103 +224,9 @@ CREATE INDEX idx_addresses_user_id ON addresses(user_id);
 CREATE INDEX idx_addresses_is_default ON addresses(is_default) WHERE is_default = TRUE;
 ```
 
-#### 4.1.4. Categories Table
+**Note:** Product catalog (categories, products, variants, pricing tiers) is managed in Sanity CMS, not Supabase.
 
-```sql
-CREATE TABLE categories (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,
-  slug TEXT UNIQUE NOT NULL,
-  description TEXT,
-  parent_id UUID REFERENCES categories(id) ON DELETE CASCADE,
-  display_order INTEGER DEFAULT 0,
-  is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE INDEX idx_categories_parent_id ON categories(parent_id);
-CREATE INDEX idx_categories_slug ON categories(slug);
-```
-
-#### 4.1.5. Products Table
-
-```sql
-CREATE TABLE products (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  product_code TEXT UNIQUE NOT NULL,
-  name TEXT NOT NULL,
-  slug TEXT UNIQUE NOT NULL,
-  description TEXT,
-  category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
-  base_price DECIMAL(10, 2) NOT NULL,
-  is_active BOOLEAN DEFAULT TRUE,
-  meta_title TEXT,
-  meta_description TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE INDEX idx_products_category_id ON products(category_id);
-CREATE INDEX idx_products_slug ON products(slug);
-CREATE INDEX idx_products_product_code ON products(product_code);
-```
-
-#### 4.1.6. Product Images Table
-
-```sql
-CREATE TABLE product_images (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-  image_url TEXT NOT NULL,
-  alt_text TEXT,
-  display_order INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE INDEX idx_product_images_product_id ON product_images(product_id);
-```
-
-#### 4.1.7. Product Variants Table
-
-```sql
-CREATE TABLE product_variants (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-  sku TEXT UNIQUE NOT NULL,
-  variant_name TEXT NOT NULL, -- e.g., "Small", "Blue", "Cotton"
-  variant_type TEXT NOT NULL, -- e.g., "size", "color", "material"
-  price_adjustment DECIMAL(10, 2) DEFAULT 0, -- Price difference from base
-  stock_quantity INTEGER DEFAULT 0,
-  is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE INDEX idx_product_variants_product_id ON product_variants(product_id);
-CREATE INDEX idx_product_variants_sku ON product_variants(sku);
-```
-
-#### 4.1.8. Pricing Tiers Table
-
-```sql
-CREATE TABLE pricing_tiers (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-  tier_name TEXT NOT NULL, -- e.g., "Tier 1", "Tier 2", "Tier 3"
-  min_quantity INTEGER NOT NULL,
-  max_quantity INTEGER, -- NULL means unlimited
-  discount_type TEXT CHECK (discount_type IN ('percentage', 'fixed_price')),
-  discount_value DECIMAL(10, 2) NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  CONSTRAINT unique_product_tier UNIQUE(product_id, min_quantity)
-);
-
-CREATE INDEX idx_pricing_tiers_product_id ON pricing_tiers(product_id);
-```
-
-#### 4.1.9. Carts Table
+#### 4.3.1.4. Carts Table
 
 ```sql
 CREATE TABLE carts (
@@ -297,7 +245,7 @@ CREATE INDEX idx_carts_user_id ON carts(user_id);
 CREATE INDEX idx_carts_session_id ON carts(session_id);
 ```
 
-#### 4.1.10. Cart Items Table
+#### 4.3.1.5. Cart Items Table
 
 ```sql
 CREATE TABLE cart_items (
@@ -316,7 +264,7 @@ CREATE INDEX idx_cart_items_cart_id ON cart_items(cart_id);
 CREATE INDEX idx_cart_items_product_id ON cart_items(product_id);
 ```
 
-#### 4.1.11. Orders Table
+#### 4.3.1.6. Orders Table
 
 ```sql
 CREATE TABLE orders (
@@ -387,7 +335,7 @@ CREATE INDEX idx_orders_created_at ON orders(created_at DESC);
 CREATE INDEX idx_orders_stripe_payment_intent_id ON orders(stripe_payment_intent_id);
 ```
 
-#### 4.1.12. Order Items Table
+#### 4.3.1.7. Order Items Table
 
 ```sql
 CREATE TABLE order_items (
@@ -414,7 +362,7 @@ CREATE INDEX idx_order_items_order_id ON order_items(order_id);
 CREATE INDEX idx_order_items_product_id ON order_items(product_id);
 ```
 
-#### 4.1.13. Quote Requests Table
+#### 4.3.1.8. Quote Requests Table
 
 ```sql
 CREATE TABLE quote_requests (
@@ -451,7 +399,7 @@ CREATE INDEX idx_quote_requests_status ON quote_requests(status);
 CREATE INDEX idx_quote_requests_created_at ON quote_requests(created_at DESC);
 ```
 
-#### 4.1.14. Admin Users Table
+#### 4.3.1.9. Admin Users Table
 
 ```sql
 CREATE TABLE admin_users (
@@ -555,23 +503,17 @@ CREATE POLICY "Admins can view all orders"
 ```
 volle-lux-catalog/
 ├── app/
-│   ├── (admin)/                    # Admin CMS routes (protected)
+│   ├── (admin)/                    # Admin dashboard routes (protected)
 │   │   ├── admin/
 │   │   │   ├── layout.tsx         # Admin layout with sidebar
 │   │   │   ├── page.tsx           # Admin dashboard
-│   │   │   ├── products/
-│   │   │   │   ├── page.tsx       # Products list
-│   │   │   │   ├── new/
-│   │   │   │   │   └── page.tsx   # Create product
-│   │   │   │   └── [id]/
-│   │   │   │       ├── page.tsx   # Edit product
-│   │   │   │       └── variants/
+│   │   │   ├── studio/             # Sanity Studio integration
+│   │   │   │   └── [[...path]]/
+│   │   │   │       └── page.tsx   # Sanity Studio iframe
 │   │   │   ├── orders/
 │   │   │   │   ├── page.tsx       # Orders list
 │   │   │   │   └── [id]/
 │   │   │   │       └── page.tsx   # Order details
-│   │   │   ├── pricing/
-│   │   │   │   └── page.tsx       # Pricing tiers management
 │   │   │   ├── quotes/
 │   │   │   │   ├── page.tsx       # Quote requests list
 │   │   │   │   └── [id]/
@@ -579,6 +521,10 @@ volle-lux-catalog/
 │   │   │   └── settings/
 │   │   │       └── page.tsx       # System settings
 │   │   └── middleware.ts          # Admin auth middleware
+│   │
+│   ├── sanity/
+│   │   └── studio/                 # Sanity Studio standalone (optional)
+│   │       └── sanity.config.ts
 │   │
 │   ├── (auth)/                     # Auth routes
 │   │   ├── login/
@@ -739,6 +685,11 @@ volle-lux-catalog/
 │   │   ├── server.ts             # Supabase server client
 │   │   └── middleware.ts         # Supabase middleware
 │   │
+│   ├── sanity/
+│   │   ├── client.ts             # Sanity client
+│   │   ├── queries.ts            # GROQ queries
+│   │   └── schemas/              # Sanity schema definitions
+│   │
 │   ├── stripe/
 │   │   ├── client.ts             # Stripe client
 │   │   └── webhooks.ts           # Webhook handlers
@@ -809,6 +760,11 @@ volle-lux-catalog/
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Sanity CMS
+NEXT_PUBLIC_SANITY_PROJECT_ID=your_sanity_project_id
+NEXT_PUBLIC_SANITY_DATASET=production
+SANITY_API_TOKEN=your_sanity_api_token
 
 # Stripe
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key

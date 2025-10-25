@@ -1,0 +1,282 @@
+---
+alwaysApply: true
+---
+
+# Design-First Development Rules
+
+## Core Principle
+
+Design the entire website and user experience FIRST before integrating any backend functionality. Build with mock data until the design phase is complete.
+
+## Design Documentation
+
+- Follow the Design.md document (v2.1) strictly for all UI components and layouts
+- Reference Architecture.md (v1.1) for technical structure and implementation patterns
+- Adhere to PRD.md (v1.1) for all functional requirements
+
+## Development Phases
+
+### Phase 1: Design Implementation (Current Phase)
+
+**Goal:** Complete the entire visual design and user experience before backend integration.
+
+**Rules:**
+
+1. **Mock Data First**
+
+   - Create all components using mock data from `lib/mock-data.ts` or JSON files
+   - Focus on visual design, user interactions, and responsiveness
+   - No backend API calls during this phase
+
+2. **Component + Service Pattern**
+
+   - For EVERY core component created, immediately create its corresponding service file
+   - Service files should have placeholder functions with TODO comments
+   - Place TODOs for backend integration with clear descriptions
+
+   Example:
+
+   ```typescript
+   // services/products/product.service.ts
+   export async function getProducts() {
+     // TODO: Integrate with Sanity CMS to fetch products using GROQ queries
+     // Reference: Architecture.md Section 4.2
+     return mockProducts;
+   }
+   ```
+
+3. **Service File Structure**
+
+   - Create service files in `services/` directory matching component structure
+   - Include all CRUD operations as placeholder functions
+   - Document expected data structure and API contracts
+   - Mark all functions with TODO comments for Sanity/Supabase integration
+
+4. **Component Categories Requiring Services**
+   - Products → `services/products/product.service.ts`
+   - Cart → `services/cart/cart.service.ts`
+   - Orders → `services/orders/order.service.ts`
+   - Pricing → `services/pricing/pricing.service.ts`
+   - Users → `services/users/user.service.ts`
+   - Auth → `services/auth/auth.service.ts`
+
+### Phase 2: Backend Integration (After Design Complete)
+
+**Goal:** Replace mock data with real backend integration.
+
+**Rules:**
+
+1. Integrate Sanity CMS for product catalog
+2. Integrate Supabase for authentication and transactions
+3. Replace all TODO placeholders with actual implementations
+4. Test all integrations thoroughly
+
+## Design System Requirements
+
+### Visual Design (From Design.md)
+
+- **Design Philosophy:** "Immersive Minimalism & Performant Luxury"
+- **Color Palette:** Shadcn UI default theme (slate/zinc)
+- **Typography:** Inter font family
+  - Headings: Bold (700)
+  - Body: Regular (400)
+  - Labels: Medium (500), 12px, all-caps, letter-spacing: 0.1em
+- **Icons:** Lucide Icons, stroke-width: 1.5px
+- **Spacing:** 8px base scale (24px, 32px, 48px, 64px for luxury feel)
+- **Grid:** 12-column responsive grid
+
+### Responsive Design Requirements
+
+- **Mobile-First Approach:** Design for mobile first, then scale up
+- **Breakpoints:** Use Tailwind CSS v4 responsive utilities
+- **Test Across Devices:**
+  - Mobile (320px - 767px)
+  - Tablet (768px - 1023px)
+  - Desktop (1024px - 1439px)
+  - Large Desktop (1440px+)
+- **Touch Targets:** Minimum 44x44px for interactive elements
+- **Font Scaling:** Use responsive font sizes (clamp() or Tailwind classes)
+
+### Performance Requirements
+
+- **LCP (Largest Contentful Paint):** < 2.5 seconds
+- **CLS (Cumulative Layout Shift):** < 0.1
+- **FID (First Input Delay):** < 100ms
+- **Optimization Strategies:**
+  - Use Next.js Image component for all images
+  - Implement lazy loading for below-the-fold content
+  - Code split using dynamic imports
+  - Minimize JavaScript bundle size
+  - Use Server Components by default
+  - Implement proper caching strategies
+
+## Component Development Rules
+
+### Component Creation Checklist
+
+When creating ANY component:
+
+1. ✅ Create component file with TypeScript types
+2. ✅ Create corresponding service file with TODO placeholders
+3. ✅ Implement responsive design for all breakpoints
+4. ✅ Add proper accessibility attributes (ARIA, semantic HTML)
+5. ✅ Use Tailwind CSS v4 exclusively (no custom CSS)
+6. ✅ Follow Design.md specifications exactly
+7. ✅ Implement loading states and error boundaries
+8. ✅ Add proper TypeScript interfaces
+9. ✅ Document component props and usage
+
+### Component Examples to Build (From Design.md)
+
+1. **Layout Components**
+
+   - Header with navigation and mega menu
+   - Footer with 4-column layout
+   - Breadcrumbs (all-caps, letter-spaced)
+
+2. **Product Components**
+
+   - Product Card (with hover effects, variant buttons)
+   - Product Gallery (main image + dots/mini images)
+   - Product Grid (3-4 column responsive)
+   - Variant Selector (Shadcn Toggle Group)
+   - Quantity Selector (minimal input)
+   - Pricing Tiers Table (borderless, clean)
+   - Dynamic Price Display (updates on quantity change)
+
+3. **Cart Components**
+
+   - Mini Cart (Shadcn Sheet slide-out)
+   - Cart Item (editable quantities)
+   - Cart Summary (transparent pricing breakdown)
+
+4. **Checkout Components**
+
+   - Address Form (shipping & billing)
+   - Payment Form (Stripe Elements placeholder)
+   - Order Summary
+
+5. **Account Components**
+   - Order History Table
+   - Order Details (with Reorder & Download Invoice buttons)
+   - Saved Addresses
+
+## Service Integration TODOs
+
+### Sanity CMS Integration TODOs
+
+When creating product-related services, add these TODOs:
+
+```typescript
+// TODO: Fetch products from Sanity CMS using GROQ
+// TODO: Implement GROQ queries for filtering and sorting
+// TODO: Use Sanity CDN for product images
+// TODO: Handle Sanity document relationships (variants, pricing tiers)
+```
+
+### Supabase Integration TODOs
+
+When creating transaction-related services, add these TODOs:
+
+```typescript
+// TODO: Integrate with Supabase for cart persistence
+// TODO: Use Supabase Auth for user authentication
+// TODO: Implement real-time cart updates using Supabase subscriptions
+// TODO: Store orders in Supabase database
+// TODO: Use Supabase RLS policies for data security
+```
+
+### Stripe Integration TODOs
+
+```typescript
+// TODO: Integrate Stripe Payment Intents API
+// TODO: Implement Stripe Elements for secure card input
+// TODO: Handle Stripe webhook events
+// TODO: Verify webhook signatures
+```
+
+## Testing Requirements
+
+### Design Phase Testing
+
+- Visual regression testing with screenshots
+- Responsive design testing across all breakpoints
+- Accessibility testing (screen readers, keyboard navigation)
+- Cross-browser testing (Chrome, Firefox, Safari, Edge)
+- Performance testing with Lighthouse
+
+### Integration Phase Testing
+
+- Unit tests for all service functions
+- Integration tests for API endpoints
+- E2E tests for critical user flows
+- Payment flow testing with Stripe test mode
+
+## Code Quality Standards
+
+### TypeScript Requirements
+
+- No `any` types without documented justification
+- Proper interfaces for all data structures
+- Type-safe component props
+- Type-safe API responses
+
+### Error Handling
+
+- Implement error boundaries for all major sections
+- Display user-friendly error messages
+- Log errors appropriately
+- Handle edge cases gracefully
+
+### Accessibility
+
+- Semantic HTML elements
+- Proper ARIA attributes
+- Keyboard navigation support
+- Focus management
+- Screen reader compatibility
+
+## File Organization
+
+### Services Directory Structure
+
+```
+services/
+├── products/
+│   ├── product.service.ts      # ← Create with TODOs
+│   └── variant.service.ts      # ← Create with TODOs
+├── cart/
+│   └── cart.service.ts         # ← Create with TODOs
+├── orders/
+│   ├── order.service.ts        # ← Create with TODOs
+│   └── order-fulfillment.service.ts
+├── pricing/
+│   ├── pricing.service.ts      # ← Create with TODOs
+│   └── discount-calculator.ts
+├── auth/
+│   └── auth.service.ts         # ← Create with TODOs
+└── users/
+    └── user.service.ts         # ← Create with TODOs
+```
+
+## Key Reminders
+
+1. **Never skip creating service files** - Every component needs its service
+2. **Always add TODOs** - Mark all backend integration points clearly
+3. **Mock data first** - Design without backend constraints
+4. **Mobile-first** - Start small, scale up
+5. **Performance is priority** - Optimize images, code splitting, loading states
+6. **Follow Design.md exactly** - Don't deviate from the design system
+7. **Test responsiveness** - Check all breakpoints during development
+8. **Document everything** - Comment TODOs, interfaces, and complex logic
+
+## After Design Phase Complete
+
+When transitioning to Phase 2 (Backend Integration):
+
+1. Review all TODOs in service files
+2. Create Supabase tables as per Architecture.md Section 4.3
+3. Set up Sanity CMS schemas
+4. Replace mock data with real queries one service at a time
+5. Test thoroughly after each integration
+6. Remove all TODO comments once implemented

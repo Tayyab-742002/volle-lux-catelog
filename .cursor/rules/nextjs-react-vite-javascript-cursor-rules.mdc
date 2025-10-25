@@ -1,0 +1,193 @@
+---
+alwaysApply: true
+---
+
+You are an expert in TypeScript, React, Node.js, Next.js App Router, Zustand, Shadcn UI, Radix UI, Tailwind CSS v4, Supabase, Sanity CMS, Stripe, and Resend.
+
+Code Style and Structure
+
+- Write concise, technical TypeScript code following Standard.js conventions.
+- Use functional and declarative programming patterns; avoid classes.
+- Prefer iteration and modularization over code duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+- Structure files: exported component, subcomponents, helpers, static content.
+- Always use TypeScript - never use 'any' type without documented justification.
+
+Standard.js Rules
+
+- Use 2 space indentation.
+- Use single quotes for strings except to avoid escaping.
+- No semicolons (unless required to disambiguate statements).
+- No unused variables.
+- Add a space after keywords.
+- Add a space before a function declaration's parentheses.
+- Always use === instead of ==.
+- Infix operators must be spaced.
+- Commas should have a space after them.
+- Keep else statements on the same line as their curly braces.
+- For multi-line if statements, use curly braces.
+- Always handle the err function parameter.
+- Use camelcase for variables and functions.
+- Use PascalCase for constructors and React components.
+
+Naming Conventions
+
+- Use lowercase with dashes for directories (e.g., components/auth-wizard).
+- Favor named exports for components.
+- Files: kebab-case (product-card.tsx)
+- Functions: camelCase (calculatePrice)
+- Constants: UPPER_SNAKE_CASE (MAX_QUANTITY)
+- Types/Interfaces: PascalCase (ProductType)
+
+React Best Practices
+
+- Use functional components with TypeScript for type checking.
+- Use the "function" keyword for component definitions.
+- Implement hooks correctly (useState, useEffect, useContext, useReducer, useMemo, useCallback).
+- Follow the Rules of Hooks (only call hooks at the top level, only call hooks from React functions).
+- Create custom hooks to extract reusable component logic.
+- Use React.memo() for component memoization when appropriate.
+- Implement useCallback for memoizing functions passed as props.
+- Use useMemo for expensive computations.
+- Avoid inline function definitions in render to prevent unnecessary re-renders.
+- Prefer composition over inheritance.
+- Use children prop and render props pattern for flexible, reusable components.
+- Implement React.lazy() and Suspense for code splitting.
+- Use refs sparingly and mainly for DOM access.
+- Prefer controlled components over uncontrolled components.
+- Implement error boundaries to catch and handle errors gracefully.
+- Use cleanup functions in useEffect to prevent memory leaks.
+- Use short-circuit evaluation and ternary operators for conditional rendering.
+
+State Management
+
+- Use Zustand for global state management (cart, user auth state, UI state).
+- Use Server Components / SWR for server state (products, orders, user profile).
+- Use useState for local component state (form inputs, UI toggles).
+- Lift state up when needed to share state between components.
+- Use context for intermediate state sharing when prop drilling becomes cumbersome.
+
+UI and Styling
+
+- Use Shadcn UI and Radix UI for component foundations.
+- Implement responsive design with Tailwind CSS v4; use a mobile-first approach.
+- Use Tailwind CSS v4 exclusively - refer to Tailwind v4 docs for syntax.
+- Never use @apply directive.
+- Use Tailwind utility classes for common utilities and layout.
+- Import styles from Shadcn UI components and extend them.
+- Implement consistent spacing using Tailwind's 8px base scale (24px, 32px, 48px, 64px for luxury feel).
+
+File Structure
+
+- Place component files next to their related files.
+- Example structure:
+  components/
+  Button/
+  Button.tsx
+  Button.test.tsx
+  ProductCard/
+  ProductCard.tsx
+  ProductCard.test.tsx
+
+Backend Integration
+
+- Supabase: Use for authentication, orders, carts, user profiles, addresses.
+- Sanity CMS: Use for product catalog, categories, variants, pricing tiers, static content.
+- Fetch products from Sanity using GROQ queries.
+- Handle transactions (orders, carts) with Supabase.
+- Use Supabase Auth for user authentication.
+- Store product images in Sanity CDN.
+
+API Integration
+
+- Use Next.js API Routes for serverless endpoints.
+- Use Server Actions for form submissions.
+- Fetch Sanity data in Server Components.
+- Use Stripe Elements for payment processing.
+- Use Resend for transactional emails.
+- Implement proper error handling with TypeScript error types.
+
+Performance Optimization
+
+- Minimize 'use client', 'useEffect', and 'useState'; favor React Server Components (RSC).
+- Wrap client components in Suspense with fallback.
+- Use dynamic loading for non-critical components.
+- Optimize images: use Next.js Image component with Sanity images.
+- Implement route-based code splitting in Next.js.
+- Use Server Components for data fetching when possible.
+- Cache Sanity queries appropriately.
+
+Forms and Validation
+
+- Use React Hook Form for form handling.
+- Use Zod for schema validation.
+- Implement both client-side and server-side validation.
+- Use controlled components for form inputs.
+
+Error Handling and Validation
+
+- Prioritize error handling and edge cases.
+- Handle errors and edge cases at the beginning of functions.
+- Use early returns for error conditions to avoid deeply nested if statements.
+- Place the happy path last in the function for improved readability.
+- Avoid unnecessary else statements; use if-return pattern instead.
+- Use guard clauses to handle preconditions and invalid states early.
+- Implement proper error logging and user-friendly error messages.
+- Model expected errors as return values in Server Actions.
+
+Accessibility (a11y)
+
+- Use semantic HTML elements.
+- Implement proper ARIA attributes.
+- Ensure keyboard navigation support.
+- Test with screen readers.
+
+Testing
+
+- Write unit tests for components using Jest and React Testing Library.
+- Implement integration tests for critical user flows.
+- Use snapshot testing judiciously.
+- Write tests for service layer functions and pricing calculations.
+
+Security
+
+- Sanitize user inputs to prevent XSS attacks.
+- Use dangerouslySetInnerHTML sparingly and only with sanitized content.
+- Validate all API inputs with Zod schemas.
+- Use Supabase RLS policies for database security.
+- Verify Stripe webhook signatures.
+
+Internationalization (i18n)
+
+- Use libraries like react-intl or next-i18next for internationalization if needed.
+
+Key Conventions
+
+- Use 'nuqs' for URL search parameter state management.
+- Optimize Web Vitals (LCP, CLS, FID).
+- Limit 'use client':
+  - Favor server components and Next.js SSR.
+  - Use only for Web API access in small components.
+  - Avoid for data fetching or state management.
+- Use Tailwind CSS v4 for all styling - no custom CSS unless absolutely necessary.
+- Follow immersive minimalism design philosophy with spacious layouts.
+- Use Inter font family with proper weights (700 for headings, 400 for body, 500 for labels).
+- Use Lucide Icons with consistent stroke-width (1.5px).
+
+Data Fetching Patterns
+
+- Sanity: Fetch product data in Server Components using GROQ queries.
+- Supabase: Use for real-time cart updates, order management, user data.
+- Cache Sanity queries with appropriate revalidation times.
+- Use Server Actions for mutations (cart updates, order creation).
+
+E-commerce Specific
+
+- Implement dynamic pricing engine that calculates tiered discounts based on quantity.
+- Display real-time price updates when quantity changes.
+- Handle both guest and authenticated shopping carts.
+- Use Stripe Payment Intents for secure payment processing.
+- Implement order confirmation emails via Resend.
+- Generate PDF invoices for orders.
+
+Follow Next.js docs for Data Fetching, Rendering, and Routing.
