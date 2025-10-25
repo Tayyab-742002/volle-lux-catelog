@@ -82,7 +82,6 @@
 This platform uses **two complementary systems**:
 
 1. **Sanity CMS**:
-
    - Manages product catalog, categories, variants, pricing tiers
    - Provides rich content editing interface for non-technical users
    - Stores product images via Sanity CDN
