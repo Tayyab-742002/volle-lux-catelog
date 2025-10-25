@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartItem, Cart } from "@/types/cart";
-import { Product, ProductVariant } from "@/types/product";
+import { Product, ProductVariant, PricingTier } from "@/types/product";
 
 interface CartStore {
   items: CartItem[];
@@ -19,6 +19,29 @@ interface CartStore {
   getItemCount: () => number;
 }
 
+// Helper function to calculate price per unit based on pricing tiers
+function calculatePricePerUnit(
+  quantity: number,
+  basePrice: number,
+  variantAdjustment: number,
+  pricingTiers?: PricingTier[]
+): number {
+  const adjustedBasePrice = basePrice + variantAdjustment;
+
+  if (!pricingTiers || pricingTiers.length === 0) {
+    return adjustedBasePrice;
+  }
+
+  // Find the appropriate tier based on quantity
+  const tier = pricingTiers.find((t) => {
+    const minMatch = quantity >= t.minQuantity;
+    const maxMatch = t.maxQuantity ? quantity <= t.maxQuantity : true;
+    return minMatch && maxMatch;
+  });
+
+  return tier?.pricePerUnit || adjustedBasePrice;
+}
+
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
@@ -27,13 +50,11 @@ export const useCartStore = create<CartStore>()(
       addItem: (product, variant, quantity = 1) => {
         set((state) => {
           const variantPriceAdjustment = variant?.price_adjustment || 0;
-          const pricePerUnit = product.basePrice + variantPriceAdjustment;
 
           // Check if item already exists in cart
           const existingItemIndex = state.items.findIndex(
             (item) =>
-              item.product.id === product.id &&
-              item.variant?.id === variant?.id
+              item.product.id === product.id && item.variant?.id === variant?.id
           );
 
           if (existingItemIndex >= 0) {
@@ -41,14 +62,31 @@ export const useCartStore = create<CartStore>()(
             const updatedItems = [...state.items];
             const existingItem = updatedItems[existingItemIndex];
             const newQuantity = existingItem.quantity + quantity;
+
+            // Calculate price based on new quantity and pricing tiers
+            const pricePerUnit = calculatePricePerUnit(
+              newQuantity,
+              product.basePrice,
+              variantPriceAdjustment,
+              product.pricingTiers
+            );
+
             updatedItems[existingItemIndex] = {
               ...existingItem,
               quantity: newQuantity,
+              pricePerUnit,
               totalPrice: pricePerUnit * newQuantity,
             };
             return { items: updatedItems };
           } else {
             // Add new item
+            const pricePerUnit = calculatePricePerUnit(
+              quantity,
+              product.basePrice,
+              variantPriceAdjustment,
+              product.pricingTiers
+            );
+
             const newItem: CartItem = {
               id: `${product.id}-${variant?.id || "default"}`,
               product,
@@ -75,15 +113,27 @@ export const useCartStore = create<CartStore>()(
         }
 
         set((state) => ({
-          items: state.items.map((item) =>
-            item.id === itemId
-              ? {
-                  ...item,
-                  quantity,
-                  totalPrice: item.pricePerUnit * quantity,
-                }
-              : item
-          ),
+          items: state.items.map((item) => {
+            if (item.id === itemId) {
+              const variantAdjustment = item.variant?.price_adjustment || 0;
+
+              // Recalculate price per unit based on new quantity and pricing tiers
+              const pricePerUnit = calculatePricePerUnit(
+                quantity,
+                item.product.basePrice,
+                variantAdjustment,
+                item.product.pricingTiers
+              );
+
+              return {
+                ...item,
+                quantity,
+                pricePerUnit,
+                totalPrice: pricePerUnit * quantity,
+              };
+            }
+            return item;
+          }),
         }));
       },
 
@@ -94,13 +144,21 @@ export const useCartStore = create<CartStore>()(
       getCartSummary: () => {
         const items = get().items;
         const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
-        
-        // TODO: Calculate discount based on pricing tiers
-        const discount = 0;
-        
-        // TODO: Calculate shipping based on order value
+
+        // Calculate discount based on pricing tiers
+        const discount = items.reduce((sum, item) => {
+          const variantAdjustment = item.variant?.price_adjustment || 0;
+          const basePrice = item.product.basePrice + variantAdjustment;
+          const tierPrice = item.pricePerUnit;
+
+          // Only count positive discounts (where tier price is less than base price)
+          const discountPerItem = Math.max(0, basePrice - tierPrice);
+          return sum + discountPerItem * item.quantity;
+        }, 0);
+
+        // Calculate shipping based on order value
         const shipping = subtotal > 100 ? 0 : 15;
-        
+
         const total = subtotal - discount + shipping;
 
         return {
@@ -121,4 +179,3 @@ export const useCartStore = create<CartStore>()(
     }
   )
 );
-

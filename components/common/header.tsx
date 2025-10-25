@@ -3,13 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Search, User, ShoppingCart, Menu, X } from "lucide-react";
+import { MiniCart } from "@/components/cart/mini-cart";
+import { useCartStore } from "@/lib/stores/cart-store";
 
-interface HeaderProps {
-  cartItemCount?: number;
-}
-
-export function Header({ cartItemCount = 0 }: HeaderProps) {
+export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { getItemCount } = useCartStore();
+  const cartItemCount = getItemCount();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -80,18 +80,19 @@ export function Header({ cartItemCount = 0 }: HeaderProps) {
             </Link>
 
             {/* Cart Icon */}
-            <Link
-              href="/cart"
-              aria-label="Shopping Cart"
-              className="relative p-2 transition-colors hover:text-primary"
-            >
-              <ShoppingCart className="h-5 w-5" strokeWidth={1.5} />
-              {cartItemCount > 0 && (
-                <span className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
-                  {cartItemCount > 9 ? "9+" : cartItemCount}
-                </span>
-              )}
-            </Link>
+            <MiniCart>
+              <button
+                aria-label="Shopping Cart"
+                className="relative p-2 transition-colors hover:text-primary"
+              >
+                <ShoppingCart className="h-5 w-5" strokeWidth={1.5} />
+                {cartItemCount > 0 && (
+                  <span className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+                    {cartItemCount > 9 ? "9+" : cartItemCount}
+                  </span>
+                )}
+              </button>
+            </MiniCart>
 
             {/* Mobile Menu Button */}
             <button
