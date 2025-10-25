@@ -1,10 +1,7 @@
 import {
   ProductGallery,
   ProductHeader,
-  VariantSelector,
-  PricingTable,
-  QuantityPriceSelector,
-  AddToCartButton,
+  ProductPurchaseSection,
   ProductInfoAccordion,
 } from "@/components/products";
 import { Product } from "@/types/product";
@@ -96,36 +93,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         {/* Right Column: Product Info & Purchase (60%) */}
         <div className="lg:col-span-3 space-y-8">
-          {/* Variant Selector */}
-          {product.variants && product.variants.length > 0 && (
-            <VariantSelector variants={product.variants} label="Size" />
-          )}
-
-          {/* Pricing Table */}
-          {product.pricingTiers && product.pricingTiers.length > 0 && (
-            <div className="rounded-lg border bg-card p-6">
-              <h3 className="label-luxury mb-4 text-sm font-medium">
-                Pricing Tiers
-              </h3>
-              <PricingTable
-                tiers={product.pricingTiers}
-                basePrice={product.basePrice}
-              />
-            </div>
-          )}
-
-          {/* Quantity Selector & Price Display */}
-          <QuantityPriceSelector
-            pricingTiers={product.pricingTiers || []}
-            basePrice={product.basePrice}
-          />
-
-          {/* Add to Cart Button */}
-          <AddToCartButton
-            productName={product.name}
-            quantity={1}
-            variantId={product.variants?.[0]?.id}
-          />
+          {/* Purchase Section */}
+          <ProductPurchaseSection product={product} />
 
           {/* Product Info Accordion */}
           <ProductInfoAccordion

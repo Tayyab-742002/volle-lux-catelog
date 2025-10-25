@@ -1,0 +1,204 @@
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Download, ShoppingCart, Package, Truck, MapPin } from "lucide-react";
+
+interface OrderDetailsPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function OrderDetailsPage({
+  params,
+}: OrderDetailsPageProps) {
+  const { id } = await params;
+
+  // Mock data - will be replaced with Supabase data later
+  const order = {
+    id: "ORD-001",
+    date: "Dec 15, 2024",
+    status: "Delivered",
+    total: 245.5,
+    subtotal: 225.0,
+    discount: 20.0,
+    shipping: 15.0,
+    shippingAddress: {
+      name: "John Doe",
+      street: "123 Business Street",
+      city: "New York",
+      state: "NY",
+      zip: "10001",
+      country: "United States",
+    },
+    items: [
+      {
+        id: "1",
+        name: "Heavy Duty Shipping Boxes",
+        variant: "C5",
+        quantity: 15,
+        pricePerUnit: 10.0,
+        total: 150.0,
+        image:
+          "https://images.unsplash.com/photo-1680034977375-3d83ee017e52?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=200",
+      },
+      {
+        id: "2",
+        name: "Premium Bubble Wrap",
+        variant: "Medium",
+        quantity: 10,
+        pricePerUnit: 7.5,
+        total: 75.0,
+        image:
+          "https://images.unsplash.com/photo-1592829016842-156c305ecc7e?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=200",
+      },
+    ],
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Delivered":
+        return "bg-green-100 text-green-800";
+      case "Shipped":
+        return "bg-blue-100 text-blue-800";
+      case "Processing":
+        return "bg-yellow-100 text-yellow-800";
+      case "Cancelled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-3xl font-bold">Order Details</h2>
+          <p className="mt-2 text-muted-foreground">Order #{order.id}</p>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="outline" size="lg">
+            <Download className="mr-2 h-5 w-5" />
+            Download Invoice
+          </Button>
+          <Button size="lg">
+            <ShoppingCart className="mr-2 h-5 w-5" />
+            Reorder
+          </Button>
+        </div>
+      </div>
+
+      {/* Order Info Card */}
+      <div className="mb-8 rounded-lg border bg-card p-6">
+        <div className="grid gap-6 md:grid-cols-3">
+          <div>
+            <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
+              <Package className="h-4 w-4" />
+              Order Date
+            </div>
+            <div className="font-semibold">{order.date}</div>
+          </div>
+          <div>
+            <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
+              <Truck className="h-4 w-4" />
+              Status
+            </div>
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(order.status)}`}
+            >
+              {order.status}
+            </span>
+          </div>
+          <div>
+            <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
+              <MapPin className="h-4 w-4" />
+              Total
+            </div>
+            <div className="text-2xl font-bold">${order.total.toFixed(2)}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Shipping Address */}
+      <div className="mb-8 rounded-lg border bg-card p-6">
+        <h3 className="mb-4 text-xl font-semibold">Shipping Address</h3>
+        <div className="text-muted-foreground">
+          <p className="font-medium text-foreground">
+            {order.shippingAddress.name}
+          </p>
+          <p>{order.shippingAddress.street}</p>
+          <p>
+            {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
+            {order.shippingAddress.zip}
+          </p>
+          <p>{order.shippingAddress.country}</p>
+        </div>
+      </div>
+
+      {/* Order Items */}
+      <div className="mb-8 rounded-lg border bg-card">
+        <div className="border-b p-6">
+          <h3 className="text-xl font-semibold">Order Items</h3>
+        </div>
+        <div className="divide-y">
+          {order.items.map((item) => (
+            <div
+              key={item.id}
+              className="flex gap-6 p-6 transition-colors hover:bg-muted/30"
+            >
+              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border">
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex-1">
+                <h4 className="mb-1 font-semibold">{item.name}</h4>
+                <p className="text-sm text-muted-foreground">
+                  Variant: {item.variant} • Quantity: {item.quantity}
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  ${item.pricePerUnit.toFixed(2)} / unit
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-lg font-semibold">
+                  ${item.total.toFixed(2)}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Order Summary */}
+      <div className="rounded-lg border bg-card p-6">
+        <h3 className="mb-4 text-xl font-semibold">Order Summary</h3>
+        <div className="space-y-3">
+          <div className="flex justify-between text-muted-foreground">
+            <span>Subtotal</span>
+            <span>${order.subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-muted-foreground">
+            <span>Discount</span>
+            <span className="text-green-600">
+              -${order.discount.toFixed(2)}
+            </span>
+          </div>
+          <div className="flex justify-between text-muted-foreground">
+            <span>Shipping</span>
+            <span>${order.shipping.toFixed(2)}</span>
+          </div>
+          <div className="border-t pt-3">
+            <div className="flex justify-between text-lg font-bold">
+              <span>Total</span>
+              <span>${order.total.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
