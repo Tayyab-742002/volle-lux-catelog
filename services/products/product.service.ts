@@ -1,62 +1,97 @@
 import { Product } from "@/types/product";
+import {
+  getAllProducts,
+  getProductsByCategory as getSanityProductsByCategory,
+  getFilteredProducts as getSanityFilteredProducts,
+  searchProducts as searchSanityProducts,
+  getProductBySlug as getSanityProductBySlug,
+  getProductsByIds as getSanityProductsByIds,
+  getFeaturedProducts,
+  getNewArrivals,
+} from "@/sanity/lib";
 
 /**
  * Product Service
  * Handles all product-related data fetching and operations
- * TODO: Integrate with Sanity CMS to fetch products using GROQ queries
+ * Integrated with Sanity CMS using GROQ queries
  * Reference: Architecture.md Section 4.2
  */
 
 /**
  * Fetch all products
- * TODO: Replace with Sanity GROQ query
- * Example: const query = `*[_type == "product"]`;
+ * Returns all active products from Sanity CMS
  */
 export async function getProducts(): Promise<Product[]> {
-  // TODO: Fetch products from Sanity CMS using GROQ
-  // TODO: Use Sanity CDN for product images
-  // TODO: Handle Sanity document relationships (variants, pricing tiers)
-  return Promise.resolve([]);
+  try {
+    const products = await getAllProducts();
+    return products || [];
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return [];
+  }
 }
 
 /**
  * Fetch products by category
- * TODO: Replace with Sanity GROQ query with category filter
+ * Returns products filtered by category slug
  */
 export async function getProductsByCategory(
   categorySlug: string
 ): Promise<Product[]> {
-  // TODO: Implement GROQ queries for filtering by category
-  return Promise.resolve([]);
+  try {
+    const products = await getSanityProductsByCategory(categorySlug);
+    return products || [];
+  } catch (error) {
+    console.error(
+      `Error fetching products for category ${categorySlug}:`,
+      error
+    );
+    return [];
+  }
 }
 
 /**
  * Fetch products with filters
- * TODO: Replace with Sanity GROQ query with multiple filters
+ * Returns products filtered by size, material, color, eco-friendly options
  */
 export async function getFilteredProducts(filters: {
+  category?: string;
   size?: string[];
   material?: string[];
   color?: string[];
   ecoFriendly?: string[];
+  priceMin?: number;
+  priceMax?: number;
 }): Promise<Product[]> {
-  // TODO: Implement GROQ queries for filtering products
-  // TODO: Support multiple filter combinations
-  return Promise.resolve([]);
+  try {
+    const products = await getSanityFilteredProducts(filters);
+    return products || [];
+  } catch (error) {
+    console.error("Error fetching filtered products:", error);
+    return [];
+  }
 }
 
 /**
  * Search products
- * TODO: Replace with Sanity GROQ query with search functionality
+ * Returns products matching the search query
  */
 export async function searchProducts(query: string): Promise<Product[]> {
-  // TODO: Implement Sanity full-text search
-  return Promise.resolve([]);
+  try {
+    if (!query.trim()) {
+      return [];
+    }
+    const products = await searchSanityProducts(query);
+    return products || [];
+  } catch (error) {
+    console.error(`Error searching products with query "${query}":`, error);
+    return [];
+  }
 }
 
 /**
  * Sort products
- * TODO: Replace with Sanity GROQ query ordering
+ * Returns products sorted by the specified criteria
  */
 export async function getSortedProducts(
   sortBy:
@@ -67,25 +102,73 @@ export async function getSortedProducts(
     | "name-asc"
     | "name-desc"
 ): Promise<Product[]> {
-  // TODO: Implement GROQ queries for sorting products
-  return Promise.resolve([]);
+  try {
+    const products = await getSanityFilteredProducts({}, sortBy);
+    return products || [];
+  } catch (error) {
+    console.error(`Error sorting products by ${sortBy}:`, error);
+    return [];
+  }
 }
 
 /**
  * Fetch a single product by slug
- * TODO: Replace with Sanity GROQ query
+ * Returns a single product with all variants and pricing tiers
  */
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  // TODO: Fetch single product from Sanity CMS
-  // TODO: Include all variants and pricing tiers
-  return Promise.resolve(null);
+  try {
+    if (!slug.trim()) {
+      return null;
+    }
+    const product = await getSanityProductBySlug(slug);
+    return product;
+  } catch (error) {
+    console.error(`Error fetching product with slug "${slug}":`, error);
+    return null;
+  }
 }
 
 /**
  * Fetch products by IDs
- * TODO: Replace with Sanity GROQ query
+ * Returns multiple products by their IDs
  */
 export async function getProductsByIds(ids: string[]): Promise<Product[]> {
-  // TODO: Fetch multiple products by IDs from Sanity
-  return Promise.resolve([]);
+  try {
+    if (!ids || ids.length === 0) {
+      return [];
+    }
+    const products = await getSanityProductsByIds(ids);
+    return products || [];
+  } catch (error) {
+    console.error(`Error fetching products by IDs:`, error);
+    return [];
+  }
+}
+
+/**
+ * Fetch featured products
+ * Returns products marked as featured
+ */
+export async function getFeaturedProductsList(): Promise<Product[]> {
+  try {
+    const products = await getFeaturedProducts();
+    return products || [];
+  } catch (error) {
+    console.error("Error fetching featured products:", error);
+    return [];
+  }
+}
+
+/**
+ * Fetch new arrival products
+ * Returns products marked as new arrivals
+ */
+export async function getNewArrivalsList(): Promise<Product[]> {
+  try {
+    const products = await getNewArrivals();
+    return products || [];
+  } catch (error) {
+    console.error("Error fetching new arrivals:", error);
+    return [];
+  }
 }
