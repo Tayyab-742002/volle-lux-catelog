@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/lib/stores/cart-store";
+import { useAuth } from "@/components/auth/auth-provider";
 import { CartItem as CartItemType } from "@/types/cart";
 
 interface CartItemProps {
@@ -14,12 +15,17 @@ interface CartItemProps {
 
 export function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeItem } = useCartStore();
+  const { user } = useAuth();
 
-  const handleQuantityChange = (value: string) => {
+  const handleQuantityChange = async (value: string) => {
     const numValue = parseInt(value, 10);
     if (!isNaN(numValue) && numValue > 0) {
-      updateQuantity(item.id, numValue);
+      await updateQuantity(item.id, numValue, user?.id);
     }
+  };
+
+  const handleRemove = async () => {
+    await removeItem(item.id, user?.id);
   };
 
   return (
@@ -69,7 +75,7 @@ export function CartItem({ item }: CartItemProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => removeItem(item.id)}
+              onClick={handleRemove}
               className="h-8 w-8 text-destructive hover:text-destructive"
             >
               <Trash2 className="h-4 w-4" strokeWidth={1.5} />

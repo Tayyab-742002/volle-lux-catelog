@@ -4,19 +4,21 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Package, Home } from "lucide-react";
 import { useCartStore } from "@/lib/stores/cart-store";
+import { useAuth } from "@/components/auth/auth-provider";
 import { OrderSummary } from "@/components/cart/order-summary";
 import { useEffect } from "react";
 
 export default function CheckoutSuccessPage() {
   const { getCartSummary, clearCart } = useCartStore();
+  const { user } = useAuth();
   const summary = getCartSummary();
 
   // Clear cart after successful checkout
   useEffect(() => {
     // TODO: Clear cart only after verifying payment success
     // For now, clear immediately
-    clearCart();
-  }, [clearCart]);
+    clearCart(user?.id);
+  }, [clearCart, user?.id]);
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">

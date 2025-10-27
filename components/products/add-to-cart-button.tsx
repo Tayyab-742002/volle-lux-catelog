@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Check } from "lucide-react";
 import { useCartStore } from "@/lib/stores/cart-store";
+import { useAuth } from "@/components/auth/auth-provider";
 import { Product, ProductVariant } from "@/types/product";
 
 interface AddToCartButtonProps {
@@ -21,14 +22,11 @@ export function AddToCartButton({
 }: AddToCartButtonProps) {
   const [isAdded, setIsAdded] = useState(false);
   const { addItem } = useCartStore();
+  const { user } = useAuth();
 
-  const handleClick = () => {
-    addItem(product, variant, quantity);
+  const handleClick = async () => {
+    await addItem(product, variant, quantity, user?.id);
     setIsAdded(true);
-
-    // TODO: Integrate with Supabase for cart persistence
-    // TODO: Sync cart with backend
-    // TODO: Handle authenticated vs guest cart
 
     setTimeout(() => setIsAdded(false), 2000);
   };

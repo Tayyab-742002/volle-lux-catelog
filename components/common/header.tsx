@@ -2,14 +2,28 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, User, ShoppingCart, Menu, X } from "lucide-react";
+import { Search, User, ShoppingCart, Menu, X, LogOut } from "lucide-react";
 import { MiniCart } from "@/components/cart/mini-cart";
 import { useCartStore } from "@/lib/stores/cart-store";
+import { useAuth } from "@/components/auth/auth-provider";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { getItemCount } = useCartStore();
+  const { user, isAuthenticated, signOut, loading } = useAuth();
   const cartItemCount = getItemCount();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -71,13 +85,65 @@ export function Header() {
             </button>
 
             {/* Account Icon */}
-            <Link
-              href="/account"
-              aria-label="Account"
-              className="p-2 transition-colors hover:text-primary"
-            >
-              <User className="h-5 w-5" strokeWidth={1.5} />
-            </Link>
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    aria-label="Account Menu"
+                    className="p-2 transition-colors hover:text-primary"
+                  >
+                    <User className="h-5 w-5" strokeWidth={1.5} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-1.5">
+                    <p className="text-sm font-medium">
+                      {user?.fullName || "User"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {user?.email}
+                    </p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/account" className="cursor-pointer">
+                      Account Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/account/orders" className="cursor-pointer">
+                      Order History
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/account/addresses" className="cursor-pointer">
+                      Saved Addresses
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/account/settings" className="cursor-pointer">
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="cursor-pointer"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" strokeWidth={1.5} />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link
+                href="/auth/login"
+                aria-label="Sign In"
+                className="p-2 transition-colors hover:text-primary"
+              >
+                <User className="h-5 w-5" strokeWidth={1.5} />
+              </Link>
+            )}
 
             {/* Cart Icon */}
             <MiniCart>
@@ -141,6 +207,69 @@ export function Header() {
               >
                 Contact
               </Link>
+
+              {/* Mobile Auth Links */}
+              <div className="border-t pt-4 mt-4">
+                {isAuthenticated ? (
+                  <>
+                    <div className="px-2 py-1 mb-2">
+                      <p className="text-sm font-medium">
+                        {user?.fullName || "User"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {user?.email}
+                      </p>
+                    </div>
+                    <Link
+                      href="/account"
+                      className="text-sm font-medium transition-colors hover:text-primary"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Account Dashboard
+                    </Link>
+                    <Link
+                      href="/account/orders"
+                      className="text-sm font-medium transition-colors hover:text-primary"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Order History
+                    </Link>
+                    <Link
+                      href="/account/settings"
+                      className="text-sm font-medium transition-colors hover:text-primary"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Settings
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleSignOut();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="text-sm font-medium transition-colors hover:text-primary text-left"
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/login"
+                      className="text-sm font-medium transition-colors hover:text-primary"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/auth/signup"
+                      className="text-sm font-medium transition-colors hover:text-primary"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
+              </div>
             </nav>
           </div>
         )}

@@ -4,14 +4,20 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/lib/stores/cart-store";
+import { useAuth } from "@/components/auth/auth-provider";
 import { CartItem } from "@/components/cart/cart-item";
 import { OrderSummary } from "@/components/cart/order-summary";
 
 export default function CartPage() {
   const { items, getCartSummary, clearCart } = useCartStore();
+  const { user } = useAuth();
   const summary = getCartSummary();
 
   const isEmpty = items.length === 0;
+
+  const handleClearCart = async () => {
+    await clearCart(user?.id);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
@@ -64,7 +70,7 @@ export default function CartPage() {
                 variant="outline"
                 size="sm"
                 className="mt-3 w-full"
-                onClick={clearCart}
+                onClick={handleClearCart}
               >
                 Clear Cart
               </Button>
