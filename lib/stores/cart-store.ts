@@ -4,19 +4,35 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartItem, Cart } from "@/types/cart";
 import { Product, ProductVariant, PricingTier } from "@/types/product";
+import {
+  saveCartToSupabase,
+  loadCartFromSupabase,
+  mergeGuestCartWithUserCart,
+} from "@/services/cart/cart.service";
+import { getOrCreateSessionId, clearSessionId } from "@/lib/utils/session";
+import { useAuth } from "@/components/auth/auth-provider";
 
 interface CartStore {
   items: CartItem[];
+  isLoading: boolean;
+  isInitialized: boolean;
   addItem: (
     product: Product,
     variant?: ProductVariant,
-    quantity?: number
-  ) => void;
-  removeItem: (itemId: string) => void;
-  updateQuantity: (itemId: string, quantity: number) => void;
-  clearCart: () => void;
+    quantity?: number,
+    userId?: string
+  ) => Promise<void>;
+  removeItem: (itemId: string, userId?: string) => Promise<void>;
+  updateQuantity: (
+    itemId: string,
+    quantity: number,
+    userId?: string
+  ) => Promise<void>;
+  clearCart: (userId?: string) => Promise<void>;
   getCartSummary: () => Cart;
   getItemCount: () => number;
+  initializeCart: (userId?: string) => Promise<void>;
+  syncCart: (userId?: string) => Promise<void>;
 }
 
 // Helper function to calculate price per unit based on pricing tiers
@@ -46,8 +62,72 @@ export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      isLoading: false,
+      isInitialized: false,
 
-      addItem: (product, variant, quantity = 1) => {
+      initializeCart: async (userId?: string) => {
+        if (get().isInitialized) return;
+
+        set({ isLoading: true });
+
+        try {
+          const sessionId = getOrCreateSessionId();
+          let cartItems: CartItem[] = [];
+
+          if (userId) {
+            // Load authenticated user cart
+            cartItems = await loadCartFromSupabase(userId);
+          } else {
+            // Load guest cart
+            cartItems = await loadCartFromSupabase(undefined, sessionId);
+          }
+
+          set({
+            items: cartItems,
+            isLoading: false,
+            isInitialized: true,
+          });
+        } catch (error) {
+          console.error("Failed to initialize cart:", error);
+          set({ isLoading: false, isInitialized: true });
+        }
+      },
+
+      syncCart: async (userId?: string) => {
+        const { items, isLoading } = get();
+        if (isLoading) {
+          console.log("Cart sync skipped: cart is loading");
+          return;
+        }
+
+        try {
+          const sessionId = getOrCreateSessionId();
+          console.log("Syncing cart to Supabase:", {
+            itemCount: items.length,
+            userId: userId || "guest",
+            sessionId,
+          });
+
+          await saveCartToSupabase(items, userId, sessionId);
+
+          console.log("Cart synced successfully to Supabase");
+        } catch (error) {
+          console.error("Failed to sync cart:", error);
+        }
+      },
+
+      addItem: async (product, variant, quantity = 1, userId) => {
+        console.log("Adding item to cart:", {
+          productId: product.id,
+          variantId: variant?.id,
+          quantity,
+          userId,
+        });
+
+        set({ isLoading: true });
+
+        let updatedItems: CartItem[] = [];
+
         set((state) => {
           const variantPriceAdjustment = variant?.price_adjustment || 0;
 
@@ -59,8 +139,8 @@ export const useCartStore = create<CartStore>()(
 
           if (existingItemIndex >= 0) {
             // Update existing item quantity
-            const updatedItems = [...state.items];
-            const existingItem = updatedItems[existingItemIndex];
+            const items = [...state.items];
+            const existingItem = items[existingItemIndex];
             const newQuantity = existingItem.quantity + quantity;
 
             // Calculate price based on new quantity and pricing tiers
@@ -71,13 +151,14 @@ export const useCartStore = create<CartStore>()(
               product.pricingTiers
             );
 
-            updatedItems[existingItemIndex] = {
+            items[existingItemIndex] = {
               ...existingItem,
               quantity: newQuantity,
               pricePerUnit,
               totalPrice: pricePerUnit * newQuantity,
             };
-            return { items: updatedItems };
+            updatedItems = items;
+            return { items: updatedItems, isLoading: false };
           } else {
             // Add new item
             const pricePerUnit = calculatePricePerUnit(
@@ -95,25 +176,55 @@ export const useCartStore = create<CartStore>()(
               pricePerUnit,
               totalPrice: pricePerUnit * quantity,
             };
-            return { items: [...state.items, newItem] };
+            updatedItems = [...state.items, newItem];
+            return { items: updatedItems, isLoading: false };
           }
         });
+
+        console.log("Cart items updated. New item count:", updatedItems.length);
+        console.log("Syncing cart to Supabase with userId:", userId);
+
+        // Sync to Supabase after state update
+        await get().syncCart(userId);
       },
 
-      removeItem: (itemId) => {
-        set((state) => ({
-          items: state.items.filter((item) => item.id !== itemId),
-        }));
+      removeItem: async (itemId, userId) => {
+        console.log("Removing item from cart:", { itemId, userId });
+
+        set({ isLoading: true });
+
+        set((state) => {
+          const filteredItems = state.items.filter(
+            (item) => item.id !== itemId
+          );
+          console.log(
+            "Item removed. New cart item count:",
+            filteredItems.length
+          );
+          return {
+            items: filteredItems,
+            isLoading: false,
+          };
+        });
+
+        // Sync to Supabase after state update
+        console.log("Syncing cart after item removal with userId:", userId);
+        await get().syncCart(userId);
       },
 
-      updateQuantity: (itemId, quantity) => {
+      updateQuantity: async (itemId, quantity, userId) => {
+        console.log("Updating item quantity:", { itemId, quantity, userId });
+
         if (quantity <= 0) {
-          get().removeItem(itemId);
+          console.log("Quantity is 0 or less, removing item instead");
+          await get().removeItem(itemId, userId);
           return;
         }
 
-        set((state) => ({
-          items: state.items.map((item) => {
+        set({ isLoading: true });
+
+        set((state) => {
+          const updatedItems = state.items.map((item) => {
             if (item.id === itemId) {
               const variantAdjustment = item.variant?.price_adjustment || 0;
 
@@ -125,6 +236,13 @@ export const useCartStore = create<CartStore>()(
                 item.product.pricingTiers
               );
 
+              console.log("Updated item:", {
+                itemId,
+                oldQuantity: item.quantity,
+                newQuantity: quantity,
+                newPricePerUnit: pricePerUnit,
+              });
+
               return {
                 ...item,
                 quantity,
@@ -133,12 +251,29 @@ export const useCartStore = create<CartStore>()(
               };
             }
             return item;
-          }),
-        }));
+          });
+
+          return {
+            items: updatedItems,
+            isLoading: false,
+          };
+        });
+
+        // Sync to Supabase after state update
+        console.log("Syncing cart after quantity update with userId:", userId);
+        await get().syncCart(userId);
       },
 
-      clearCart: () => {
-        set({ items: [] });
+      clearCart: async (userId) => {
+        console.log("Clearing cart for userId:", userId);
+        set({ isLoading: true });
+
+        set({ items: [], isLoading: false });
+
+        // Sync to Supabase after state update (empty cart)
+        console.log("Syncing empty cart to Supabase with userId:", userId);
+        await get().syncCart(userId);
+        console.log("Cart cleared and synced successfully");
       },
 
       getCartSummary: () => {
@@ -176,6 +311,8 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: "cart-storage",
+      // Don't persist isLoading and isInitialized states
+      partialize: (state) => ({ items: state.items }),
     }
   )
 );

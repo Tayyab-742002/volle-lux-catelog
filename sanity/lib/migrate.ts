@@ -429,6 +429,7 @@ export async function migrateProducts(categories: any[]) {
       
       const productWithCategory = {
         ...productData,
+        discount: productData.discount || 0, // Ensure discount is always a number
         category: {
           _type: 'reference',
           _ref: categoryId,
