@@ -48,4 +48,3 @@ export async function createServerSupabaseClient() {
 export type ServerSupabaseClient = Awaited<
   ReturnType<typeof createServerSupabaseClient>
 >;
-
