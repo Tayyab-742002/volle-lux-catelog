@@ -94,19 +94,24 @@ export function ProductFilters() {
     return filters;
   }, [searchParams]);
 
-  // Initialize local price range from URL
-  useEffect(() => {
-    const min = parseInt(searchParams.get("priceMin") || "0");
-    const max = parseInt(searchParams.get("priceMax") || "1000");
-    setLocalPriceRange([min, max]);
-  }, [searchParams]);
-
+  // Derive price range directly from URL params (avoid setState in effect)
   const priceRange = useMemo(() => {
     return {
       min: parseInt(searchParams.get("priceMin") || "0"),
       max: parseInt(searchParams.get("priceMax") || "1000"),
     };
   }, [searchParams]);
+
+  // Initialize local price range from URL params only when they change
+  useEffect(() => {
+    const min = priceRange.min;
+    const max = priceRange.max;
+    // Only update if different to avoid cascading renders
+    if (localPriceRange[0] !== min || localPriceRange[1] !== max) {
+      setLocalPriceRange([min, max]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [priceRange.min, priceRange.max]);
 
   // INSTANT filter updates (no transition)
   const updateFilters = useCallback(
@@ -173,6 +178,15 @@ export function ProductFilters() {
     priceRange.min > 0 ||
     priceRange.max < 1000;
 
+  // Get active category display name
+  const activeCategoryParam = searchParams.get("category");
+  const activeCategoryName = activeCategoryParam
+    ? activeCategoryParam
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+    : null;
+
   return (
     <aside className="sticky top-24 h-fit">
       <div className="rounded-lg border bg-card p-6">
@@ -190,6 +204,37 @@ export function ProductFilters() {
             </Button>
           )}
         </div>
+
+        {/* Active Category Badge */}
+        {activeCategoryName && (
+          <div className="mb-6 rounded-lg bg-primary/10 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Browsing
+                </p>
+                <p className="text-sm font-semibold text-primary">
+                  {activeCategoryName}
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.delete("category");
+                  router.replace(`/products?${params.toString()}`, {
+                    scroll: false,
+                  });
+                }}
+                className="h-8 w-8 p-0"
+                title="Clear category"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Price Range */}
         <div className="mb-6 space-y-4 border-b pb-6">

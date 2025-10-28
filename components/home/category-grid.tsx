@@ -14,6 +14,30 @@ export async function CategoryGrid() {
           <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
             Shop by Category
           </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Browse our complete range of packaging solutions
+          </p>
+          <div className="mt-6">
+            <Link
+              href="/categories"
+              className="inline-flex items-center text-sm font-medium text-primary transition-colors hover:text-primary/80"
+            >
+              View All Categories
+              <svg
+                className="ml-2 h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </Link>
+          </div>
         </div>
 
         {/* Masonry Grid */}
@@ -26,7 +50,7 @@ export async function CategoryGrid() {
               return (
                 <Link
                   key={category.id}
-                  href={`/products/category/${category.slug}`}
+                  href={`/products?category=${category.slug}`}
                   className={`group relative overflow-hidden rounded-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl ${
                     isDouble ? "md:col-span-2" : ""
                   }`}
@@ -47,11 +71,32 @@ export async function CategoryGrid() {
                     )}
                     {/* Overlay Gradient */}
                     <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
-                    {/* Category Title */}
+                    {/* Category Title & CTA */}
                     <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h3 className="text-3xl font-bold text-white md:text-4xl">
+                      <h3 className="mb-2 text-3xl font-bold text-white md:text-4xl">
                         {category.name}
                       </h3>
+                      {category.description && (
+                        <p className="mb-3 line-clamp-2 text-sm text-white/90">
+                          {category.description}
+                        </p>
+                      )}
+                      <span className="inline-flex items-center text-sm font-medium text-white transition-transform group-hover:translate-x-1">
+                        Shop Now
+                        <svg
+                          className="ml-2 h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </span>
                     </div>
                   </div>
                 </Link>
