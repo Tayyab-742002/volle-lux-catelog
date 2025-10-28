@@ -268,12 +268,21 @@ export const useCartStore = create<CartStore>()(
         console.log("Clearing cart for userId:", userId);
         set({ isLoading: true });
 
-        set({ items: [], isLoading: false });
+        try {
+          const sessionId = getOrCreateSessionId();
 
-        // Sync to Supabase after state update (empty cart)
-        console.log("Syncing empty cart to Supabase with userId:", userId);
-        await get().syncCart(userId);
-        console.log("Cart cleared and synced successfully");
+          // Clear local state
+          set({ items: [], isLoading: false });
+
+          // Delete cart from Supabase
+          console.log("Deleting cart from Supabase:", { userId, sessionId });
+          await saveCartToSupabase([], userId, sessionId);
+
+          console.log("Cart cleared and deleted from Supabase successfully");
+        } catch (error) {
+          console.error("Failed to clear cart:", error);
+          set({ isLoading: false });
+        }
       },
 
       getCartSummary: () => {

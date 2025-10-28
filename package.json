@@ -28,7 +28,7 @@
     "@sanity/image-url": "^1.2.0",
     "@sanity/vision": "^4.11.0",
     "@stripe/react-stripe-js": "^5.2.0",
-    "@stripe/stripe-js": "^8.1.0",
+    "@stripe/stripe-js": "^8.2.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.76.1",
     "class-variance-authority": "^0.7.1",

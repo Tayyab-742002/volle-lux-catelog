@@ -58,11 +58,12 @@ export default function CheckoutPage() {
 
         const data = await response.json();
 
-        // TODO: Redirect to Stripe Checkout
-        // window.location.href = data.url;
-
-        // For now, redirect to success page
-        router.push("/checkout/success");
+        // Redirect to Stripe hosted checkout page
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error("No checkout URL received");
+        }
       } catch (err) {
         console.error("Checkout error:", err);
         setError(err instanceof Error ? err.message : "An error occurred");
