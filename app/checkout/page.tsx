@@ -1,104 +1,698 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/stores/cart-store";
-import { Loader2 } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
-import { getDefaultSavedAddress } from "@/services/users/user.service";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
+import {
+  Loader2,
+  MapPin,
+  CreditCard,
+  Package,
+  Plus,
+  Check,
+} from "lucide-react";
+import { getSavedAddresses } from "@/services/users/user.service";
+import Link from "next/link";
+
+interface SavedAddress {
+  id: string;
+  name: string;
+  first_name: string;
+  last_name: string;
+  company?: string;
+  address_line_1: string;
+  address_line_2?: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
+  phone?: string;
+  is_default: boolean;
+}
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getCartSummary } = useCartStore();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
-  const [defaultAddress, setDefaultAddress] = useState<any | null>(null);
 
-  useEffect(() => {
-    // Load default address for authenticated user
-    (async () => {
-      if (!user?.id) return;
-      try {
-        const addr = await getDefaultSavedAddress(user.id);
-        setDefaultAddress(addr);
-      } catch (e) {
-        // Non-blocking
-        console.error("Failed to load default address", e);
-      }
-    })();
-  }, [user?.id]);
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
+    null
+  );
+  const [useNewAddress, setUseNewAddress] = useState(false);
+  const [sameAsBilling, setSameAsBilling] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // New address form state
+  const [shippingForm, setShippingForm] = useState({
+    first_name: "",
+    last_name: "",
+    company: "",
+    address_line_1: "",
+    address_line_2: "",
+    city: "",
+    state: "",
+    postal_code: "",
+    country: "US",
+    phone: "",
+  });
+
+  const [billingForm, setBillingForm] = useState({
+    first_name: "",
+    last_name: "",
+    company: "",
+    address_line_1: "",
+    address_line_2: "",
+    city: "",
+    state: "",
+    postal_code: "",
+    country: "US",
+    phone: "",
+  });
+
+  const summary = getCartSummary();
+
+  // Redirect if cart is empty
   useEffect(() => {
-    async function createCheckoutSession() {
-      if (items.length === 0) {
-        router.push("/cart");
+    if (items.length === 0) {
+      router.push("/cart");
+    }
+  }, [items, router]);
+
+  // Load saved addresses for authenticated users
+  useEffect(() => {
+    async function loadAddresses() {
+      if (!user?.id) {
+        setIsLoadingAddresses(false);
         return;
       }
 
       try {
-        setIsLoading(true);
+        const addresses = await getSavedAddresses(user.id);
+        setSavedAddresses(addresses);
 
-        // TODO: Call API to create Stripe Checkout session
-        const response = await fetch("/api/checkout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            items,
-            shippingAddress: defaultAddress || null,
-            billingAddress: defaultAddress || null,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to create checkout session");
-        }
-
-        const data = await response.json();
-
-        // Redirect to Stripe hosted checkout page
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          throw new Error("No checkout URL received");
+        // Auto-select default address
+        const defaultAddr = addresses.find((a) => a.is_default);
+        if (defaultAddr) {
+          setSelectedAddressId(defaultAddr.id);
         }
       } catch (err) {
-        console.error("Checkout error:", err);
-        setError(err instanceof Error ? err.message : "An error occurred");
+        console.error("Failed to load addresses:", err);
       } finally {
-        setIsLoading(false);
+        setIsLoadingAddresses(false);
       }
     }
 
-    createCheckoutSession();
-  }, [items, router, defaultAddress]);
+    loadAddresses();
+  }, [user?.id]);
 
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-24 text-center">
-        <h2 className="mb-4 text-2xl font-semibold text-destructive">
-          Checkout Error
-        </h2>
-        <p className="mb-8 text-muted-foreground">{error}</p>
-        <button
-          onClick={() => router.push("/cart")}
-          className="text-primary hover:underline"
-        >
-          Return to Cart
-        </button>
-      </div>
-    );
+  // Handle checkout submission
+  async function handleCheckout() {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      let shippingAddress;
+      let billingAddress;
+
+      // Determine shipping address
+      if (user?.id && selectedAddressId && !useNewAddress) {
+        // Use saved address
+        const selectedAddr = savedAddresses.find(
+          (a) => a.id === selectedAddressId
+        );
+        if (!selectedAddr) {
+          throw new Error("Selected address not found");
+        }
+
+        shippingAddress = {
+          fullName: `${selectedAddr.first_name} ${selectedAddr.last_name}`,
+          address: selectedAddr.address_line_1,
+          address2: selectedAddr.address_line_2 || "",
+          city: selectedAddr.city,
+          state: selectedAddr.state,
+          zipCode: selectedAddr.postal_code,
+          country: selectedAddr.country,
+          phone: selectedAddr.phone || "",
+        };
+      } else if (useNewAddress || !user?.id) {
+        // Use new address form (for guests or new address)
+        if (!shippingForm.first_name || !shippingForm.last_name || !shippingForm.address_line_1) {
+          throw new Error("Please fill in all required shipping fields");
+        }
+
+        shippingAddress = {
+          fullName: `${shippingForm.first_name} ${shippingForm.last_name}`,
+          address: shippingForm.address_line_1,
+          address2: shippingForm.address_line_2 || "",
+          city: shippingForm.city,
+          state: shippingForm.state,
+          zipCode: shippingForm.postal_code,
+          country: shippingForm.country,
+          phone: shippingForm.phone || "",
+        };
+      } else {
+        throw new Error("Please select or enter a shipping address");
+      }
+
+      // Determine billing address
+      if (sameAsBilling) {
+        billingAddress = shippingAddress;
+      } else {
+        if (!billingForm.first_name || !billingForm.last_name || !billingForm.address_line_1) {
+          throw new Error("Please fill in all required billing fields");
+        }
+
+        billingAddress = {
+          fullName: `${billingForm.first_name} ${billingForm.last_name}`,
+          address: billingForm.address_line_1,
+          address2: billingForm.address_line_2 || "",
+          city: billingForm.city,
+          state: billingForm.state,
+          zipCode: billingForm.postal_code,
+          country: billingForm.country,
+          phone: billingForm.phone || "",
+        };
+      }
+
+      // Create Stripe checkout session
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items,
+          shippingAddress,
+          billingAddress,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create checkout session");
+      }
+
+      const data = await response.json();
+
+      // Redirect to Stripe hosted checkout
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL received");
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+      setError(err instanceof Error ? err.message : "An error occurred");
+      setIsLoading(false);
+    }
+  }
+
+  if (items.length === 0) {
+    return null; // Will redirect via useEffect
   }
 
   return (
-    <div className="container mx-auto px-4 py-24 text-center">
-      <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-primary" />
-      <h2 className="mb-2 text-2xl font-semibold">Redirecting to Checkout</h2>
-      <p className="text-muted-foreground">
-        Please wait while we redirect you to secure checkout...
-      </p>
+    <div className="container mx-auto px-4 py-12">
+      <div className="mx-auto max-w-6xl">
+        <h1 className="mb-8 text-3xl font-bold">Checkout</h1>
+
+        <div className="grid gap-8 lg:grid-cols-3">
+          {/* Left Column - Shipping & Billing */}
+          <div className="lg:col-span-2">
+            {/* Shipping Address Section */}
+            <Card className="mb-6 p-6">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <h2 className="text-xl font-semibold">Shipping Address</h2>
+              </div>
+
+              {isLoadingAddresses ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                </div>
+              ) : user?.id && savedAddresses.length > 0 && !useNewAddress ? (
+                <>
+                  <RadioGroup
+                    value={selectedAddressId || ""}
+                    onValueChange={setSelectedAddressId}
+                  >
+                    {savedAddresses.map((address) => (
+                      <div
+                        key={address.id}
+                        className="flex items-start space-x-3 rounded-lg border p-4 transition-colors hover:bg-muted/50"
+                      >
+                        <RadioGroupItem
+                          value={address.id}
+                          id={address.id}
+                          className="mt-1"
+                        />
+                        <Label
+                          htmlFor={address.id}
+                          className="flex-1 cursor-pointer"
+                        >
+                          <div className="mb-1 flex items-center gap-2">
+                            <span className="font-semibold">
+                              {address.name}
+                            </span>
+                            {address.is_default && (
+                              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                                Default
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {address.first_name} {address.last_name}
+                            <br />
+                            {address.address_line_1}
+                            {address.address_line_2 && (
+                              <>
+                                , {address.address_line_2}
+                              </>
+                            )}
+                            <br />
+                            {address.city}, {address.state} {address.postal_code}
+                            <br />
+                            {address.country}
+                            {address.phone && (
+                              <>
+                                <br />
+                                {address.phone}
+                              </>
+                            )}
+                          </div>
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-4 w-full"
+                    onClick={() => setUseNewAddress(true)}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Use a New Address
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {user?.id && savedAddresses.length > 0 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="mb-4 w-full"
+                      onClick={() => setUseNewAddress(false)}
+                    >
+                      Use Saved Address
+                    </Button>
+                  )}
+
+                  {/* New Address Form */}
+                  <div className="grid gap-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <Label htmlFor="first_name">
+                          First Name <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                          id="first_name"
+                          value={shippingForm.first_name}
+                          onChange={(e) =>
+                            setShippingForm({
+                              ...shippingForm,
+                              first_name: e.target.value,
+                            })
+                          }
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="last_name">
+                          Last Name <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                          id="last_name"
+                          value={shippingForm.last_name}
+                          onChange={(e) =>
+                            setShippingForm({
+                              ...shippingForm,
+                              last_name: e.target.value,
+                            })
+                          }
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="company">Company (Optional)</Label>
+                      <Input
+                        id="company"
+                        value={shippingForm.company}
+                        onChange={(e) =>
+                          setShippingForm({
+                            ...shippingForm,
+                            company: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="address_line_1">
+                        Address <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="address_line_1"
+                        value={shippingForm.address_line_1}
+                        onChange={(e) =>
+                          setShippingForm({
+                            ...shippingForm,
+                            address_line_1: e.target.value,
+                          })
+                        }
+                        placeholder="Street address"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="address_line_2">
+                        Apartment, suite, etc. (Optional)
+                      </Label>
+                      <Input
+                        id="address_line_2"
+                        value={shippingForm.address_line_2}
+                        onChange={(e) =>
+                          setShippingForm({
+                            ...shippingForm,
+                            address_line_2: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-3">
+                      <div>
+                        <Label htmlFor="city">
+                          City <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                          id="city"
+                          value={shippingForm.city}
+                          onChange={(e) =>
+                            setShippingForm({
+                              ...shippingForm,
+                              city: e.target.value,
+                            })
+                          }
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="state">
+                          State <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                          id="state"
+                          value={shippingForm.state}
+                          onChange={(e) =>
+                            setShippingForm({
+                              ...shippingForm,
+                              state: e.target.value,
+                            })
+                          }
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="postal_code">
+                          ZIP Code <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                          id="postal_code"
+                          value={shippingForm.postal_code}
+                          onChange={(e) =>
+                            setShippingForm({
+                              ...shippingForm,
+                              postal_code: e.target.value,
+                            })
+                          }
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phone">Phone (Optional)</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={shippingForm.phone}
+                        onChange={(e) =>
+                          setShippingForm({
+                            ...shippingForm,
+                            phone: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </Card>
+
+            {/* Billing Address Section */}
+            <Card className="p-6">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <CreditCard className="h-5 w-5" />
+                </div>
+                <h2 className="text-xl font-semibold">Billing Address</h2>
+              </div>
+
+              <div className="mb-4">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={sameAsBilling}
+                    onChange={(e) => setSameAsBilling(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <span className="text-sm">Same as shipping address</span>
+                </label>
+              </div>
+
+              {!sameAsBilling && (
+                <div className="grid gap-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="billing_first_name">
+                        First Name <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="billing_first_name"
+                        value={billingForm.first_name}
+                        onChange={(e) =>
+                          setBillingForm({
+                            ...billingForm,
+                            first_name: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="billing_last_name">
+                        Last Name <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="billing_last_name"
+                        value={billingForm.last_name}
+                        onChange={(e) =>
+                          setBillingForm({
+                            ...billingForm,
+                            last_name: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="billing_address_line_1">
+                      Address <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="billing_address_line_1"
+                      value={billingForm.address_line_1}
+                      onChange={(e) =>
+                        setBillingForm({
+                          ...billingForm,
+                          address_line_1: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div>
+                      <Label htmlFor="billing_city">
+                        City <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="billing_city"
+                        value={billingForm.city}
+                        onChange={(e) =>
+                          setBillingForm({
+                            ...billingForm,
+                            city: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="billing_state">
+                        State <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="billing_state"
+                        value={billingForm.state}
+                        onChange={(e) =>
+                          setBillingForm({
+                            ...billingForm,
+                            state: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="billing_postal_code">
+                        ZIP Code <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="billing_postal_code"
+                        value={billingForm.postal_code}
+                        onChange={(e) =>
+                          setBillingForm({
+                            ...billingForm,
+                            postal_code: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Card>
+          </div>
+
+          {/* Right Column - Order Summary */}
+          <div className="lg:col-span-1">
+            <Card className="sticky top-24 p-6">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <Package className="h-5 w-5" />
+                </div>
+                <h2 className="text-xl font-semibold">Order Summary</h2>
+              </div>
+
+              <Separator className="my-4" />
+
+              {/* Cart Items */}
+              <div className="mb-4 space-y-3">
+                {items.map((item) => (
+                  <div key={item.id} className="flex gap-3">
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">
+                        {item.product.name}
+                      </p>
+                      {item.variant && (
+                        <p className="text-xs text-muted-foreground">
+                          {item.variant.name}
+                        </p>
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        Qty: {item.quantity}
+                      </p>
+                    </div>
+                    <div className="text-sm font-medium">
+                      ${(item.pricePerUnit * item.quantity).toFixed(2)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <Separator className="my-4" />
+
+              {/* Summary */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="font-medium">${summary.subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Shipping</span>
+                  <span className="font-medium">Calculated at next step</span>
+                </div>
+                <Separator className="my-2" />
+                <div className="flex justify-between text-base font-semibold">
+                  <span>Total</span>
+                  <span>${summary.total.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {error && (
+                <div className="mt-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                  {error}
+                </div>
+              )}
+
+              <Button
+                className="mt-6 w-full"
+                size="lg"
+                onClick={handleCheckout}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Check className="mr-2 h-4 w-4" />
+                    Continue to Payment
+                  </>
+                )}
+              </Button>
+
+              <p className="mt-4 text-center text-xs text-muted-foreground">
+                Secure checkout powered by Stripe
+              </p>
+            </Card>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
+

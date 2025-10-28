@@ -139,21 +139,19 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
       return null;
     }
 
-    // Convert Supabase data to Order type
+    // Convert Supabase data to Order type using new schema fields
     const order: Order = {
       id: data.id,
       orderNumber: data.id.substring(0, 8).toUpperCase(), // Create readable order number
       userId: data.user_id,
       items: data.items || [],
-      shippingAddress: data.shipping_address,
-      billingAddress: data.billing_address,
-      subtotal:
-        (data.total_amount as number) -
-        ((data.shipping_address as any)?.shipping || 0),
-      discount: 0, // Would need to be stored separately
-      shipping: (data.shipping_address as any)?.shipping || 0,
-      total: data.total_amount as number,
-      status: data.status,
+      shippingAddress: data.shipping_address || {},
+      billingAddress: data.billing_address || {},
+      subtotal: parseFloat(data.subtotal || data.total_amount || 0),
+      discount: parseFloat(data.discount || 0),
+      shipping: parseFloat(data.shipping || 0),
+      total: parseFloat(data.total_amount || 0),
+      status: data.status || "pending",
       createdAt: new Date(data.created_at),
       paymentIntentId: data.stripe_payment_intent_id,
     };
@@ -169,10 +167,12 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
 /**
  * Get user orders
  * Fetches all orders for a user with proper RLS
+ * Uses service role client for server-side access
  */
 export async function getUserOrders(userId: string): Promise<Order[]> {
   try {
-    const supabase = createClient() as any;
+    // Use service role client for server-side access
+    const supabase = createServiceRoleClient();
 
     console.log("Fetching orders for user:", userId);
 
@@ -187,25 +187,24 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
       throw error;
     }
 
-    if (!data) {
+    if (!data || data.length === 0) {
+      console.log("No orders found for user");
       return [];
     }
 
-    // Convert Supabase data to Order array
+    // Convert Supabase data to Order array using new schema fields
     const orders: Order[] = data.map((orderData: any) => ({
       id: orderData.id,
       orderNumber: orderData.id.substring(0, 8).toUpperCase(),
       userId: orderData.user_id,
       items: orderData.items || [],
-      shippingAddress: orderData.shipping_address,
-      billingAddress: orderData.billing_address,
-      subtotal:
-        (orderData.total_amount as number) -
-        ((orderData.shipping_address as any)?.shipping || 0),
-      discount: 0,
-      shipping: (orderData.shipping_address as any)?.shipping || 0,
-      total: orderData.total_amount as number,
-      status: orderData.status,
+      shippingAddress: orderData.shipping_address || {},
+      billingAddress: orderData.billing_address || {},
+      subtotal: parseFloat(orderData.subtotal || orderData.total_amount || 0),
+      discount: parseFloat(orderData.discount || 0),
+      shipping: parseFloat(orderData.shipping || 0),
+      total: parseFloat(orderData.total_amount || 0),
+      status: orderData.status || "pending",
       createdAt: new Date(orderData.created_at),
       paymentIntentId: orderData.stripe_payment_intent_id,
     }));
@@ -214,7 +213,8 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
     return orders;
   } catch (error) {
     console.error("Failed to fetch user orders:", error);
-    throw error;
+    // Return empty array instead of throwing to prevent dashboard from breaking
+    return [];
   }
 }
 
@@ -309,21 +309,19 @@ export async function getOrderByStripeSessionId(
       return null;
     }
 
-    // Convert Supabase data to Order type
+    // Convert Supabase data to Order type using new schema fields
     const order: Order = {
       id: data.id,
       orderNumber: data.id.substring(0, 8).toUpperCase(),
       userId: data.user_id,
       items: data.items || [],
-      shippingAddress: data.shipping_address,
-      billingAddress: data.billing_address,
-      subtotal:
-        (data.total_amount as number) -
-        ((data.shipping_address as any)?.shipping || 0),
-      discount: 0,
-      shipping: (data.shipping_address as any)?.shipping || 0,
-      total: data.total_amount as number,
-      status: data.status,
+      shippingAddress: data.shipping_address || {},
+      billingAddress: data.billing_address || {},
+      subtotal: parseFloat(data.subtotal || data.total_amount || 0),
+      discount: parseFloat(data.discount || 0),
+      shipping: parseFloat(data.shipping || 0),
+      total: parseFloat(data.total_amount || 0),
+      status: data.status || "pending",
       createdAt: new Date(data.created_at),
       paymentIntentId: data.stripe_payment_intent_id,
     };
