@@ -16,6 +16,9 @@ function ProductsContent() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Get active category from URL
+  const activeCategory = searchParams.get("category");
+
   // Load all products once on mount
   useEffect(() => {
     let cancelled = false;
@@ -60,9 +63,13 @@ function ProductsContent() {
 
     // Apply filters
     if (category) {
-      filtered = filtered.filter(
-        (p) => p.category?.toLowerCase() === category.toLowerCase()
-      );
+      filtered = filtered.filter((p) => {
+        // Compare with categorySlug (exact match) or category name (fallback)
+        return (
+          p.categorySlug?.toLowerCase() === category.toLowerCase() ||
+          p.category?.toLowerCase() === category.toLowerCase()
+        );
+      });
     }
 
     if (sizes.length > 0) {
@@ -138,18 +145,50 @@ function ProductsContent() {
     );
   }
 
+  // Format category name for display
+  const categoryDisplayName = activeCategory
+    ? activeCategory
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+    : null;
+
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
       {/* Breadcrumbs */}
-      <Breadcrumbs items={[{ label: "Products", href: "/products" }]} />
+      <Breadcrumbs
+        items={[
+          { label: "Products", href: "/products" },
+          ...(categoryDisplayName
+            ? [
+                {
+                  label: categoryDisplayName,
+                  href: `/products?category=${activeCategory}`,
+                },
+              ]
+            : []),
+        ]}
+      />
 
       {/* Page Header */}
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="mb-2 text-4xl font-bold md:text-5xl">All Products</h1>
+          <h1 className="mb-2 text-4xl font-bold md:text-5xl">
+            {categoryDisplayName || "All Products"}
+          </h1>
           <p className="text-muted-foreground">
-            Showing {filteredProducts.length} of {allProducts.length} product
-            {filteredProducts.length !== 1 ? "s" : ""}
+            {categoryDisplayName && (
+              <>
+                Showing {filteredProducts.length} of {allProducts.length}{" "}
+                products in {categoryDisplayName}
+              </>
+            )}
+            {!categoryDisplayName && (
+              <>
+                Showing {filteredProducts.length} product
+                {filteredProducts.length !== 1 ? "s" : ""}
+              </>
+            )}
           </p>
         </div>
         <ProductSort currentSort={searchParams.get("sort") || "newest"} />

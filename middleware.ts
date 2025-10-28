@@ -49,7 +49,10 @@ export async function middleware(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (authError) {
-      console.error("Auth error in middleware:", authError.message);
+      // Only log actual errors, not "Auth session missing" which is normal for unauthenticated users
+      if (authError.message !== "Auth session missing!") {
+        console.error("Auth error in middleware:", authError.message);
+      }
       // Continue without user - this is normal for unauthenticated requests
     } else {
       user = authUser;
