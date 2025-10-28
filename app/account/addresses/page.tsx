@@ -1,62 +1,60 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Edit, Trash2, Check } from "lucide-react";
-
-interface Address {
-  id: string;
-  type: "shipping" | "billing";
-  name: string;
-  street: string;
-  city: string;
-  state: string;
-  zip: string;
-  country: string;
-  isDefault: boolean;
-}
+import { useAuth } from "@/components/auth/auth-provider";
+import {
+  createSavedAddress,
+  deleteSavedAddress,
+  getSavedAddresses,
+  setDefaultSavedAddress,
+  updateSavedAddress,
+  type SavedAddress,
+} from "@/services/users/user.service";
 
 export default function SavedAddressesPage() {
-  const [addresses, setAddresses] = useState<Address[]>([
-    {
-      id: "1",
-      type: "shipping",
-      name: "John Doe",
-      street: "123 Business Street",
-      city: "New York",
-      state: "NY",
-      zip: "10001",
-      country: "United States",
-      isDefault: true,
-    },
-    {
-      id: "2",
-      type: "billing",
-      name: "John Doe",
-      street: "123 Business Street",
-      city: "New York",
-      state: "NY",
-      zip: "10001",
-      country: "United States",
-      isDefault: true,
-    },
-  ]);
+  const { user } = useAuth();
+  const [addresses, setAddresses] = useState<SavedAddress[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const handleDelete = (id: string) => {
-    setAddresses(addresses.filter((addr) => addr.id !== id));
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        setLoading(true);
+        const result = await getSavedAddresses(user.id);
+        if (!cancelled) setAddresses(result);
+      } catch (e) {
+        console.error(e);
+        if (!cancelled) setError("Failed to load addresses");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+
+  const handleDelete = async (id: string) => {
+    if (!user?.id) return;
+    await deleteSavedAddress(user.id, id);
+    setAddresses((prev) => prev.filter((addr) => addr.id !== id));
   };
 
-  const handleSetDefault = (id: string) => {
-    setAddresses(
-      addresses.map((addr) => ({
-        ...addr,
-        isDefault: addr.id === id,
-      }))
+  const handleSetDefault = async (id: string) => {
+    if (!user?.id) return;
+    await setDefaultSavedAddress(user.id, id);
+    setAddresses((prev) =>
+      prev.map((a) => ({ ...a, is_default: a.id === id }))
     );
   };
 
@@ -78,7 +76,9 @@ export default function SavedAddressesPage() {
       {/* Address List */}
       {addresses.length === 0 && !isAdding ? (
         <div className="rounded-lg border bg-card p-12 text-center">
-          <p className="text-muted-foreground">No addresses saved yet</p>
+          <p className="text-muted-foreground">
+            {loading ? "Loading..." : "No addresses saved yet"}
+          </p>
           <Button onClick={() => setIsAdding(true)} className="mt-4">
             Add Your First Address
           </Button>
@@ -94,16 +94,16 @@ export default function SavedAddressesPage() {
                 <div>
                   <div className="mb-1 flex items-center gap-2">
                     <span className="font-semibold capitalize">
-                      {address.type}
+                      {address.name}
                     </span>
-                    {address.isDefault && (
+                    {address.is_default && (
                       <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
                         Default
                       </span>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {address.name}
+                    {address.first_name} {address.last_name}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -125,14 +125,18 @@ export default function SavedAddressesPage() {
               </div>
 
               <div className="mb-4 text-sm text-muted-foreground">
-                <p>{address.street}</p>
                 <p>
-                  {address.city}, {address.state} {address.zip}
+                  {address.address_line_1}
+                  {address.address_line_2 ? `, ${address.address_line_2}` : ""}
+                </p>
+                <p>
+                  {address.city}, {address.state} {address.postal_code}
                 </p>
                 <p>{address.country}</p>
+                {address.phone && <p>{address.phone}</p>}
               </div>
 
-              {!address.isDefault && (
+              {!address.is_default && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -150,62 +154,211 @@ export default function SavedAddressesPage() {
           {isAdding && (
             <div className="rounded-lg border-2 border-dashed border-primary/30 bg-card p-6">
               <h3 className="mb-4 text-lg font-semibold">Add New Address</h3>
-              <form className="space-y-4">
-                <div>
-                  <Label htmlFor="type">Type</Label>
-                  <select
-                    id="type"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="shipping">Shipping</option>
-                    <option value="billing">Billing</option>
-                  </select>
-                </div>
-                <div>
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" placeholder="John Doe" />
-                </div>
-                <div>
-                  <Label htmlFor="street">Street Address</Label>
-                  <Input id="street" placeholder="123 Business Street" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="city">City</Label>
-                    <Input id="city" placeholder="New York" />
-                  </div>
-                  <div>
-                    <Label htmlFor="state">State</Label>
-                    <Input id="state" placeholder="NY" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="zip">ZIP Code</Label>
-                    <Input id="zip" placeholder="10001" />
-                  </div>
-                  <div>
-                    <Label htmlFor="country">Country</Label>
-                    <Input id="country" placeholder="United States" />
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <Button type="submit" className="flex-1">
-                    Save Address
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsAdding(false)}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
+              <AddressForm
+                onCancel={() => setIsAdding(false)}
+                onSubmit={async (payload) => {
+                  if (!user?.id) return;
+                  const created = await createSavedAddress(
+                    user.id,
+                    payload,
+                    payload.is_default
+                  );
+                  setAddresses((prev) => [
+                    created,
+                    ...prev.map((a) => ({
+                      ...a,
+                      is_default: created.is_default ? false : a.is_default,
+                    })),
+                  ]);
+                  setIsAdding(false);
+                }}
+              />
             </div>
           )}
         </div>
       )}
     </div>
+  );
+}
+
+interface AddressFormProps {
+  initial?: Partial<SavedAddress>;
+  onSubmit: (payload: {
+    name: string;
+    first_name: string;
+    last_name: string;
+    company?: string | null;
+    address_line_1: string;
+    address_line_2?: string | null;
+    city: string;
+    state: string;
+    postal_code: string;
+    country?: string;
+    phone?: string | null;
+    is_default?: boolean;
+  }) => void | Promise<void>;
+  onCancel: () => void;
+}
+
+function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
+  const [form, setForm] = useState({
+    name: initial?.name || "Home",
+    first_name: initial?.first_name || "",
+    last_name: initial?.last_name || "",
+    company: initial?.company || "",
+    address_line_1: initial?.address_line_1 || "",
+    address_line_2: initial?.address_line_2 || "",
+    city: initial?.city || "",
+    state: initial?.state || "",
+    postal_code: initial?.postal_code || "",
+    country: initial?.country || "US",
+    phone: initial?.phone || "",
+    is_default: Boolean(initial?.is_default) || false,
+  });
+
+  return (
+    <form
+      className="space-y-4"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        await onSubmit({
+          ...form,
+          company: form.company || null,
+          address_line_2: form.address_line_2 || null,
+          phone: form.phone || null,
+        });
+      }}
+    >
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="name">Label</Label>
+          <Input
+            id="name"
+            value={form.name}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            placeholder="Home, Office, Mom's House"
+          />
+        </div>
+        <div className="flex items-end gap-2">
+          <input
+            id="is_default"
+            type="checkbox"
+            checked={form.is_default}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, is_default: e.target.checked }))
+            }
+            className="h-4 w-4 rounded border-input"
+          />
+          <Label htmlFor="is_default">Set as default</Label>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="first_name">First name</Label>
+          <Input
+            id="first_name"
+            value={form.first_name}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, first_name: e.target.value }))
+            }
+            placeholder="John"
+          />
+        </div>
+        <div>
+          <Label htmlFor="last_name">Last name</Label>
+          <Input
+            id="last_name"
+            value={form.last_name}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, last_name: e.target.value }))
+            }
+            placeholder="Doe"
+          />
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="address_line_1">Street Address</Label>
+        <Input
+          id="address_line_1"
+          value={form.address_line_1}
+          onChange={(e) =>
+            setForm((f) => ({ ...f, address_line_1: e.target.value }))
+          }
+          placeholder="123 Business Street"
+        />
+      </div>
+      <div>
+        <Label htmlFor="address_line_2">Unit, Apt, etc.</Label>
+        <Input
+          id="address_line_2"
+          value={form.address_line_2 || ""}
+          onChange={(e) =>
+            setForm((f) => ({ ...f, address_line_2: e.target.value }))
+          }
+          placeholder="Suite 100"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="city">City</Label>
+          <Input
+            id="city"
+            value={form.city}
+            onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
+            placeholder="New York"
+          />
+        </div>
+        <div>
+          <Label htmlFor="state">State</Label>
+          <Input
+            id="state"
+            value={form.state}
+            onChange={(e) => setForm((f) => ({ ...f, state: e.target.value }))}
+            placeholder="NY"
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="postal_code">ZIP Code</Label>
+          <Input
+            id="postal_code"
+            value={form.postal_code}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, postal_code: e.target.value }))
+            }
+            placeholder="10001"
+          />
+        </div>
+        <div>
+          <Label htmlFor="country">Country</Label>
+          <Input
+            id="country"
+            value={form.country}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, country: e.target.value }))
+            }
+            placeholder="US"
+          />
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="phone">Phone (optional)</Label>
+        <Input
+          id="phone"
+          value={form.phone || ""}
+          onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+          placeholder="(555) 555-5555"
+        />
+      </div>
+      <div className="flex gap-3">
+        <Button type="submit" className="flex-1">
+          Save Address
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
+    </form>
   );
 }

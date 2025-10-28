@@ -26,7 +26,7 @@ export async function createOrder(orderData: {
   paymentIntentId?: string;
 }): Promise<string> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
 
     console.log("Creating order in Supabase:", {
       userId: orderData.userId,
@@ -74,7 +74,7 @@ export async function createOrder(orderData: {
  */
 export async function getOrderById(orderId: string): Promise<Order | null> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
 
     console.log("Fetching order by ID:", orderId);
 
@@ -130,7 +130,7 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
  */
 export async function getUserOrders(userId: string): Promise<Order[]> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
 
     console.log("Fetching orders for user:", userId);
 
@@ -150,7 +150,7 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
     }
 
     // Convert Supabase data to Order array
-    const orders: Order[] = data.map((orderData) => ({
+    const orders: Order[] = data.map((orderData: any) => ({
       id: orderData.id,
       orderNumber: orderData.id.substring(0, 8).toUpperCase(),
       userId: orderData.user_id,
@@ -185,7 +185,7 @@ export async function updateOrderStatus(
   status: Order["status"]
 ): Promise<void> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
 
     console.log("Updating order status:", { orderId, status });
 
@@ -215,7 +215,7 @@ export async function updateOrderStatus(
  */
 export async function getOrderStatus(orderId: string): Promise<string | null> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
 
     const { data, error } = await supabase
       .from("orders")

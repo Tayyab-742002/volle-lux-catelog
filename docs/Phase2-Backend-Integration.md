@@ -223,23 +223,24 @@ Transition from mock data to full backend integration with Sanity CMS, Supabase,
 - [x] `app/account/orders/page.tsx`
 - [x] `app/account/orders/[id]/page.tsx`
 
-#### Task 2.2.7: Address Management Integration
+#### Task 2.2.7: Address Management Integration ✅ COMPLETE
 
-- [ ] Integrate saved addresses
-- [ ] Implement add/edit/delete addresses
-- [ ] Set default address functionality
-- [ ] Connect to checkout flow
+- [x] Integrate saved addresses
+- [x] Implement add/edit/delete addresses
+- [x] Set default address functionality
+- [x] Connect to checkout flow
 
 **Deliverables:**
 
-- Address CRUD operations working
-- Default address set
-- Checkout using saved addresses
+- [x] Address CRUD operations working
+- [x] Default address set
+- [x] Checkout using saved addresses
 
-**Files to Modify:**
+**Files Modified:**
 
-- `app/account/addresses/page.tsx`
-- `services/users/user.service.ts`
+- [x] `app/account/addresses/page.tsx`
+- [x] `services/users/user.service.ts`
+- [x] `app/checkout/page.tsx` (loads default address)
 
 ---
 

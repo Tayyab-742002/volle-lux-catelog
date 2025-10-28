@@ -1,19 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Bell, Lock } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { User, Bell, Lock, Loader2, CheckCircle } from "lucide-react";
+import { useAuth } from "@/components/auth/auth-provider";
 
 export default function AccountSettingsPage() {
+  const router = useRouter();
+  const { user, loading, updateProfile, updatePassword } = useAuth();
+
   const [profile, setProfile] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    company: "ABC Corporation",
+    fullName: "",
+    email: "",
+    phone: "",
+    company: "",
+  });
+
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   const [preferences, setPreferences] = useState({
@@ -23,17 +35,130 @@ export default function AccountSettingsPage() {
     orderUpdates: true,
   });
 
-  const handleProfileSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [profileMessage, setProfileMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [passwordMessage, setPasswordMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  // Load user profile on mount
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        fullName: user.fullName || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        company: user.company || "",
+      });
+    }
+  }, [user]);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/auth/login");
+    }
+  }, [loading, user, router]);
+
+  const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Update profile in Supabase
-    alert("Profile updated successfully!");
+    setIsSubmitting(true);
+    setProfileMessage(null);
+
+    try {
+      const result = await updateProfile({
+        fullName: profile.fullName,
+        phone: profile.phone,
+        company: profile.company,
+      });
+
+      if (result.success) {
+        setProfileMessage({
+          type: "success",
+          text: "Profile updated successfully!",
+        });
+      } else {
+        setProfileMessage({
+          type: "error",
+          text: result.error || "Failed to update profile",
+        });
+      }
+    } catch {
+      setProfileMessage({
+        type: "error",
+        text: "An unexpected error occurred",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Update password in Supabase
-    alert("Password updated successfully!");
+    setIsSubmitting(true);
+    setPasswordMessage(null);
+
+    // Validate passwords match
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordMessage({ type: "error", text: "New passwords do not match" });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validate password length
+    if (passwordForm.newPassword.length < 6) {
+      setPasswordMessage({
+        type: "error",
+        text: "Password must be at least 6 characters",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const result = await updatePassword(passwordForm.newPassword);
+
+      if (result.success) {
+        setPasswordMessage({
+          type: "success",
+          text: "Password updated successfully!",
+        });
+        setPasswordForm({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } else {
+        setPasswordMessage({
+          type: "error",
+          text: result.error || "Failed to update password",
+        });
+      }
+    } catch {
+      setPasswordMessage({
+        type: "error",
+        text: "An unexpected error occurred",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div>
@@ -81,16 +206,26 @@ export default function AccountSettingsPage() {
             </div>
 
             <form onSubmit={handleProfileSubmit} className="p-6">
+              {profileMessage && (
+                <Alert
+                  className={`mb-6 ${profileMessage.type === "success" ? "bg-green-50 text-green-900 border-green-200" : "bg-red-50 text-red-900 border-red-200"}`}
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  <AlertDescription>{profileMessage.text}</AlertDescription>
+                </Alert>
+              )}
+
               <div className="space-y-6">
                 <div>
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="fullName">Full Name</Label>
                   <Input
-                    id="name"
-                    value={profile.name}
+                    id="fullName"
+                    value={profile.fullName}
                     onChange={(e) =>
-                      setProfile({ ...profile, name: e.target.value })
+                      setProfile({ ...profile, fullName: e.target.value })
                     }
                     className="mt-2"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -100,11 +235,12 @@ export default function AccountSettingsPage() {
                     id="email"
                     type="email"
                     value={profile.email}
-                    onChange={(e) =>
-                      setProfile({ ...profile, email: e.target.value })
-                    }
-                    className="mt-2"
+                    disabled
+                    className="mt-2 opacity-60"
                   />
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Email cannot be changed. Contact support if needed.
+                  </p>
                 </div>
 
                 <div>
@@ -117,6 +253,7 @@ export default function AccountSettingsPage() {
                       setProfile({ ...profile, phone: e.target.value })
                     }
                     className="mt-2"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -129,12 +266,33 @@ export default function AccountSettingsPage() {
                       setProfile({ ...profile, company: e.target.value })
                     }
                     className="mt-2"
+                    disabled={isSubmitting}
                   />
                 </div>
 
                 <div className="flex gap-3">
-                  <Button type="submit">Save Changes</Button>
-                  <Button type="button" variant="outline">
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Save Changes
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isSubmitting}
+                    onClick={() => {
+                      if (user) {
+                        setProfile({
+                          fullName: user.fullName || "",
+                          email: user.email || "",
+                          phone: user.phone || "",
+                          company: user.company || "",
+                        });
+                      }
+                      setProfileMessage(null);
+                    }}
+                  >
                     Cancel
                   </Button>
                 </div>
@@ -265,14 +423,31 @@ export default function AccountSettingsPage() {
             </div>
 
             <form onSubmit={handlePasswordSubmit} className="p-6">
+              {passwordMessage && (
+                <Alert
+                  className={`mb-6 ${passwordMessage.type === "success" ? "bg-green-50 text-green-900 border-green-200" : "bg-red-50 text-red-900 border-red-200"}`}
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  <AlertDescription>{passwordMessage.text}</AlertDescription>
+                </Alert>
+              )}
+
               <div className="space-y-6">
                 <div>
                   <Label htmlFor="currentPassword">Current Password</Label>
                   <Input
                     id="currentPassword"
                     type="password"
+                    value={passwordForm.currentPassword}
+                    onChange={(e) =>
+                      setPasswordForm({
+                        ...passwordForm,
+                        currentPassword: e.target.value,
+                      })
+                    }
                     placeholder="Enter current password"
                     className="mt-2"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -281,9 +456,20 @@ export default function AccountSettingsPage() {
                   <Input
                     id="newPassword"
                     type="password"
+                    value={passwordForm.newPassword}
+                    onChange={(e) =>
+                      setPasswordForm({
+                        ...passwordForm,
+                        newPassword: e.target.value,
+                      })
+                    }
                     placeholder="Enter new password"
                     className="mt-2"
+                    disabled={isSubmitting}
                   />
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Minimum 6 characters
+                  </p>
                 </div>
 
                 <div>
@@ -291,14 +477,39 @@ export default function AccountSettingsPage() {
                   <Input
                     id="confirmPassword"
                     type="password"
+                    value={passwordForm.confirmPassword}
+                    onChange={(e) =>
+                      setPasswordForm({
+                        ...passwordForm,
+                        confirmPassword: e.target.value,
+                      })
+                    }
                     placeholder="Confirm new password"
                     className="mt-2"
+                    disabled={isSubmitting}
                   />
                 </div>
 
                 <div className="flex gap-3">
-                  <Button type="submit">Update Password</Button>
-                  <Button type="button" variant="outline">
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Update Password
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isSubmitting}
+                    onClick={() => {
+                      setPasswordForm({
+                        currentPassword: "",
+                        newPassword: "",
+                        confirmPassword: "",
+                      });
+                      setPasswordMessage(null);
+                    }}
+                  >
                     Cancel
                   </Button>
                 </div>

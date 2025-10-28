@@ -1,28 +1,142 @@
+"use client";
+
+import { useState, useEffect, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { ProductFilters } from "@/components/products/product-filters";
 import { ProductCard } from "@/components/products/product-card";
+import { ProductSort } from "@/components/products/product-sort";
 import { Breadcrumbs } from "@/components/common/breadcrumbs";
-import { getProducts } from "@/services/products/product.service";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Product } from "@/types/product";
 
-interface ProductsPageProps {
-  searchParams: {
-    sort?: string;
-    category?: string;
-    search?: string;
-  };
-}
+// Disable static rendering
+export const dynamic = "force-dynamic";
 
-export default async function ProductsPage({
-  searchParams,
-}: ProductsPageProps) {
-  // Fetch products from Sanity CMS
-  const products = await getProducts();
+function ProductsContent() {
+  const searchParams = useSearchParams();
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load all products once on mount
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadProducts() {
+      try {
+        setIsLoading(true);
+        // Fetch from API route instead of direct Sanity import
+        const response = await fetch("/api/products");
+        const products = await response.json();
+        if (!cancelled) {
+          setAllProducts(products);
+        }
+      } catch (error) {
+        console.error("Error loading products:", error);
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadProducts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Client-side filtering and sorting (INSTANT)
+  const filteredProducts = useMemo(() => {
+    let filtered = [...allProducts];
+
+    // Parse filters from URL
+    const category = searchParams.get("category");
+    const sizes = searchParams.get("size")?.split(",") || [];
+    const materials = searchParams.get("material")?.split(",") || [];
+    const ecoFriendly = searchParams.get("ecoFriendly")?.split(",") || [];
+    const priceMin = parseInt(searchParams.get("priceMin") || "0");
+    const priceMax = parseInt(searchParams.get("priceMax") || "1000");
+    const sortBy = searchParams.get("sort") || "newest";
+
+    // Apply filters
+    if (category) {
+      filtered = filtered.filter(
+        (p) => p.category?.toLowerCase() === category.toLowerCase()
+      );
+    }
+
+    if (sizes.length > 0) {
+      filtered = filtered.filter((p) =>
+        p.variants?.some((v) =>
+          sizes.some((s) => v.name?.toLowerCase().includes(s.toLowerCase()))
+        )
+      );
+    }
+
+    if (materials.length > 0) {
+      filtered = filtered.filter((p) =>
+        materials.some(
+          (m) =>
+            p.name?.toLowerCase().includes(m.toLowerCase()) ||
+            p.description?.toLowerCase().includes(m.toLowerCase())
+        )
+      );
+    }
+
+    if (ecoFriendly.length > 0) {
+      filtered = filtered.filter((p) =>
+        ecoFriendly.some(
+          (eco) =>
+            p.name?.toLowerCase().includes(eco.toLowerCase()) ||
+            p.description?.toLowerCase().includes(eco.toLowerCase())
+        )
+      );
+    }
+
+    // Price range filter
+    filtered = filtered.filter((p) => {
+      const price = p.basePrice;
+      return price >= priceMin && price <= priceMax;
+    });
+
+    // Apply sorting
+    switch (sortBy) {
+      case "newest":
+        // Keep original order (newest first from Sanity)
+        break;
+      case "oldest":
+        // Reverse order
+        filtered.reverse();
+        break;
+      case "price-low":
+        filtered.sort((a, b) => a.basePrice - b.basePrice);
+        break;
+      case "price-high":
+        filtered.sort((a, b) => b.basePrice - a.basePrice);
+        break;
+      case "name-asc":
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "name-desc":
+        filtered.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+    }
+
+    return filtered;
+  }, [allProducts, searchParams]);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
+            <p className="text-muted-foreground">Loading products...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
@@ -34,22 +148,11 @@ export default async function ProductsPage({
         <div>
           <h1 className="mb-2 text-4xl font-bold md:text-5xl">All Products</h1>
           <p className="text-muted-foreground">
-            Showing {products.length} products
+            Showing {filteredProducts.length} of {allProducts.length} product
+            {filteredProducts.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <Select defaultValue={searchParams.sort || "newest"}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="newest">Newest First</SelectItem>
-            <SelectItem value="oldest">Oldest First</SelectItem>
-            <SelectItem value="price-low">Price: Low to High</SelectItem>
-            <SelectItem value="price-high">Price: High to Low</SelectItem>
-            <SelectItem value="name-asc">Name: A to Z</SelectItem>
-            <SelectItem value="name-desc">Name: Z to A</SelectItem>
-          </SelectContent>
-        </Select>
+        <ProductSort currentSort={searchParams.get("sort") || "newest"} />
       </div>
 
       {/* Main Content: 2-Column Layout */}
@@ -61,14 +164,14 @@ export default async function ProductsPage({
 
         {/* Product Grid */}
         <div className="lg:col-span-3">
-          {products.length > 0 ? (
+          {filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-12 text-center">
               <h3 className="mb-2 text-lg font-semibold">No products found</h3>
               <p className="text-muted-foreground">
                 Try adjusting your filters or check back later for new products.
@@ -78,5 +181,24 @@ export default async function ProductsPage({
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto px-4 py-8 md:py-12">
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
+              <p className="text-muted-foreground">Loading...</p>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <ProductsContent />
+    </Suspense>
   );
 }

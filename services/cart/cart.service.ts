@@ -17,7 +17,7 @@ export async function saveCartToSupabase(
   sessionId?: string
 ): Promise<void> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
 
     // Prepare cart data
     const cartData = {
@@ -136,7 +136,7 @@ export async function loadCartFromSupabase(
   sessionId?: string
 ): Promise<CartItem[]> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
 
     if (userId) {
       // Load authenticated user cart
@@ -183,7 +183,7 @@ export async function loadCartFromSupabase(
  */
 export async function storeOrder(order: Order): Promise<void> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
 
     const { error } = await supabase.from("orders").insert({
       user_id: order.userId || null,
@@ -215,7 +215,7 @@ export async function storeOrder(order: Order): Promise<void> {
  */
 export async function getOrderById(orderId: string): Promise<Order | null> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
 
     const { data, error } = await supabase
       .from("orders")
@@ -261,7 +261,7 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
  */
 export async function getUserOrders(userId: string): Promise<Order[]> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
 
     const { data, error } = await supabase
       .from("orders")
@@ -275,7 +275,7 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
     }
 
     // Convert Supabase data to Order array
-    const orders: Order[] = data.map((orderData) => ({
+    const orders: Order[] = data.map((orderData: any) => ({
       id: orderData.id,
       orderNumber: orderData.id,
       userId: orderData.user_id,
@@ -307,7 +307,7 @@ export async function updateOrderStatus(
   status: Order["status"]
 ): Promise<void> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
 
     const { error } = await supabase
       .from("orders")
@@ -336,7 +336,7 @@ export async function mergeGuestCartWithUserCart(
   userId: string
 ): Promise<void> {
   try {
-    const supabase = createClient();
+    const supabase = createClient() as any;
 
     // Get guest cart
     const { data: guestCart, error: guestError } = await supabase
