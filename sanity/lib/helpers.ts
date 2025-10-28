@@ -121,6 +121,7 @@ export function transformSanityProduct(sanityProduct: SanityProduct) {
     basePrice: sanityProduct.basePrice,
     discount: sanityProduct.discount,
     category: sanityProduct.category?.name,
+    categorySlug: sanityProduct.category?.slug?.current,
     variants:
       sanityProduct.variants?.map((variant) => ({
         id: `${sanityProduct._id}-${variant.sku}`,
@@ -156,6 +157,8 @@ export function transformSanityCategory(sanityCategory: SanityCategory) {
     slug: sanityCategory.slug.current,
     description: sanityCategory.description,
     image: sanityCategory.image?.asset?.url || "",
+    isActive: sanityCategory.isActive,
+    sortOrder: sanityCategory.sortOrder,
   };
 }
 
@@ -259,4 +262,3 @@ export async function safeQuery<T>(
     return null;
   }
 }
-

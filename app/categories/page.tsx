@@ -5,6 +5,9 @@ import { Breadcrumbs } from "@/components/common/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Package } from "lucide-react";
 
+// Revalidate every 60 seconds to ensure fresh category data
+export const revalidate = 60;
+
 export default async function CategoriesPage() {
   const categories = await getAllCategories();
 
@@ -27,7 +30,7 @@ export default async function CategoriesPage() {
       {/* Categories Grid */}
       {categories && categories.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {categories.map((category) => (
+          {categories.map((category: any) => (
             <Link
               key={category.id}
               href={`/products?category=${category.slug}`}

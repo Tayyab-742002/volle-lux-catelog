@@ -41,7 +41,7 @@ export default async function TestSanityPage() {
         </h2>
         {categories && categories.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {categories.map((category) => (
+            {categories.map((category: any) => (
               <div key={category.id} className="rounded border p-4">
                 <h3 className="font-semibold">{category.name}</h3>
                 <p className="text-sm text-gray-600">Slug: {category.slug}</p>
@@ -67,7 +67,7 @@ export default async function TestSanityPage() {
         </h2>
         {products && products.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => (
+            {products.map((product: any) => (
               <div key={product.id} className="rounded border p-4">
                 <h3 className="font-semibold">{product.name}</h3>
                 <p className="text-sm text-gray-600">
@@ -81,7 +81,8 @@ export default async function TestSanityPage() {
                 </p>
                 {product.variants && product.variants.length > 0 && (
                   <p className="text-sm text-gray-500">
-                    Variants: {product.variants.map((v) => v.name).join(", ")}
+                    Variants:{" "}
+                    {product.variants.map((v: any) => v.name).join(", ")}
                   </p>
                 )}
                 {product.pricingTiers && product.pricingTiers.length > 0 && (
@@ -125,4 +126,3 @@ export default async function TestSanityPage() {
     </div>
   );
 }
-

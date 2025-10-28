@@ -1,4 +1,5 @@
 import { client } from "./client";
+import { sanityFetch } from "./live";
 import {
   ALL_PRODUCTS_QUERY,
   FEATURED_PRODUCTS_QUERY,
@@ -31,24 +32,28 @@ import {
 // Products
 export async function getAllProducts() {
   return safeQuery(async () => {
-    const products = await client.fetch<SanityProduct[]>(ALL_PRODUCTS_QUERY);
-    return products.map(transformSanityProduct);
+    const { data } = await sanityFetch({
+      query: ALL_PRODUCTS_QUERY,
+    });
+    return (data as SanityProduct[]).map(transformSanityProduct);
   });
 }
 
 export async function getFeaturedProducts() {
   return safeQuery(async () => {
-    const products = await client.fetch<SanityProduct[]>(
-      FEATURED_PRODUCTS_QUERY
-    );
-    return products.map(transformSanityProduct);
+    const { data } = await sanityFetch({
+      query: FEATURED_PRODUCTS_QUERY,
+    });
+    return (data as SanityProduct[]).map(transformSanityProduct);
   });
 }
 
 export async function getNewArrivals() {
   return safeQuery(async () => {
-    const products = await client.fetch<SanityProduct[]>(NEW_ARRIVALS_QUERY);
-    return products.map(transformSanityProduct);
+    const { data } = await sanityFetch({
+      query: NEW_ARRIVALS_QUERY,
+    });
+    return (data as SanityProduct[]).map(transformSanityProduct);
   });
 }
 
@@ -120,9 +125,10 @@ export async function getFilteredProducts(
 // Categories
 export async function getAllCategories() {
   return safeQuery(async () => {
-    const categories =
-      await client.fetch<SanityCategory[]>(ALL_CATEGORIES_QUERY);
-    return categories.map(transformSanityCategory);
+    const { data } = await sanityFetch({
+      query: ALL_CATEGORIES_QUERY,
+    });
+    return (data as SanityCategory[]).map(transformSanityCategory);
   });
 }
 

@@ -43,7 +43,7 @@ export async function CategoryGrid() {
         {/* Masonry Grid */}
         {categories && categories.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {categories.map((category, index) => {
+            {categories.map((category: any, index: number) => {
               // Create varied layouts for masonry effect
               const isDouble = index === 1; // 2nd item spans 2 columns (on larger screens)
 

@@ -63,9 +63,13 @@ function ProductsContent() {
 
     // Apply filters
     if (category) {
-      filtered = filtered.filter(
-        (p) => p.category?.toLowerCase() === category.toLowerCase()
-      );
+      filtered = filtered.filter((p) => {
+        // Compare with categorySlug (exact match) or category name (fallback)
+        return (
+          p.categorySlug?.toLowerCase() === category.toLowerCase() ||
+          p.category?.toLowerCase() === category.toLowerCase()
+        );
+      });
     }
 
     if (sizes.length > 0) {

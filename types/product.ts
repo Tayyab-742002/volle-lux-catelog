@@ -25,6 +25,7 @@ export interface Product {
   discount?: number;
   variants?: ProductVariant[];
   category?: string;
+  categorySlug?: string; // Category slug for filtering
   pricingTiers?: PricingTier[]; // Tiered pricing for bulk orders
   specifications?: Record<string, string>; // Product specifications
   delivery?: string; // Delivery information
