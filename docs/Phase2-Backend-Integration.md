@@ -203,43 +203,44 @@ Transition from mock data to full backend integration with Sanity CMS, Supabase,
 - `lib/stores/cart-store.ts`
 - `services/cart/cart.service.ts`
 
-#### Task 2.2.6: Order Management Integration
+#### Task 2.2.6: Order Management Integration ✅ COMPLETE
 
-- [ ] Update `services/orders/order.service.ts`
-- [ ] Implement order creation
-- [ ] Implement order history fetching
-- [ ] Implement order status updates
-- [ ] Add order tracking
-
-**Deliverables:**
-
-- Orders stored in Supabase
-- Order history page functional
-- Order tracking working
-
-**Files to Modify:**
-
-- `services/orders/order.service.ts`
-- `app/account/orders/page.tsx`
-- `app/account/orders/[id]/page.tsx`
-
-#### Task 2.2.7: Address Management Integration
-
-- [ ] Integrate saved addresses
-- [ ] Implement add/edit/delete addresses
-- [ ] Set default address functionality
-- [ ] Connect to checkout flow
+- [x] Update `services/orders/order.service.ts`
+- [x] Implement order creation
+- [x] Implement order history fetching
+- [x] Implement order status updates
+- [x] Add order tracking
 
 **Deliverables:**
 
-- Address CRUD operations working
-- Default address set
-- Checkout using saved addresses
+- [x] Orders stored in Supabase
+- [x] Order history page functional
+- [x] Order tracking working
 
 **Files to Modify:**
 
-- `app/account/addresses/page.tsx`
-- `services/users/user.service.ts`
+- [x] `services/orders/order.service.ts`
+- [x] `app/account/orders/page.tsx`
+- [x] `app/account/orders/[id]/page.tsx`
+
+#### Task 2.2.7: Address Management Integration ✅ COMPLETE
+
+- [x] Integrate saved addresses
+- [x] Implement add/edit/delete addresses
+- [x] Set default address functionality
+- [x] Connect to checkout flow
+
+**Deliverables:**
+
+- [x] Address CRUD operations working
+- [x] Default address set
+- [x] Checkout using saved addresses
+
+**Files Modified:**
+
+- [x] `app/account/addresses/page.tsx`
+- [x] `services/users/user.service.ts`
+- [x] `app/checkout/page.tsx` (loads default address)
 
 ---
 

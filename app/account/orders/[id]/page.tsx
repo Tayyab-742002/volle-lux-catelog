@@ -2,6 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Download, ShoppingCart, Package, Truck, MapPin } from "lucide-react";
+import { getOrderById } from "@/services/orders/order.service";
+import { getCurrentUserServer } from "@/services/auth/auth-server.service";
+import { notFound } from "next/navigation";
 
 interface OrderDetailsPageProps {
   params: Promise<{ id: string }>;
@@ -12,45 +15,73 @@ export default async function OrderDetailsPage({
 }: OrderDetailsPageProps) {
   const { id } = await params;
 
-  // Mock data - will be replaced with Supabase data later
-  const order = {
-    id: "ORD-001",
-    date: "Dec 15, 2024",
-    status: "Delivered",
-    total: 245.5,
-    subtotal: 225.0,
-    discount: 20.0,
-    shipping: 15.0,
+  // Get current user
+  const authResult = await getCurrentUserServer();
+
+  if (!authResult.success || !authResult.user) {
+    return (
+      <div className="rounded-lg border bg-card p-12 text-center">
+        <p className="text-muted-foreground">
+          Please sign in to view order details
+        </p>
+        <Link href="/auth/login">
+          <Button className="mt-4">Sign In</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  // Fetch order from Supabase
+  const order = await getOrderById(id);
+
+  if (!order) {
+    notFound();
+  }
+
+  // Verify user owns this order
+  if (order.userId !== authResult.user.id) {
+    return (
+      <div className="rounded-lg border bg-card p-12 text-center">
+        <p className="text-muted-foreground">
+          You don't have access to this order
+        </p>
+        <Link href="/account/orders">
+          <Button className="mt-4">Back to Orders</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  // Format order data for display
+  const displayOrder = {
+    id: order.orderNumber,
+    date: order.createdAt.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }),
+    status: order.status,
+    total: order.total,
+    subtotal: order.subtotal,
+    discount: order.discount,
+    shipping: order.shipping,
     shippingAddress: {
-      name: "John Doe",
-      street: "123 Business Street",
-      city: "New York",
-      state: "NY",
-      zip: "10001",
-      country: "United States",
+      name: order.shippingAddress?.fullName || "N/A",
+      street: order.shippingAddress?.address || "N/A",
+      city: order.shippingAddress?.city || "N/A",
+      state: order.shippingAddress?.state || "N/A",
+      zip: order.shippingAddress?.zipCode || "N/A",
+      country: order.shippingAddress?.country || "N/A",
     },
-    items: [
-      {
-        id: "1",
-        name: "Heavy Duty Shipping Boxes",
-        variant: "C5",
-        quantity: 15,
-        pricePerUnit: 10.0,
-        total: 150.0,
-        image:
-          "https://images.unsplash.com/photo-1680034977375-3d83ee017e52?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=200",
-      },
-      {
-        id: "2",
-        name: "Premium Bubble Wrap",
-        variant: "Medium",
-        quantity: 10,
-        pricePerUnit: 7.5,
-        total: 75.0,
-        image:
-          "https://images.unsplash.com/photo-1592829016842-156c305ecc7e?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=200",
-      },
-    ],
+    items: order.items.map((item) => ({
+      id: item.id,
+      name: item.product.name,
+      variant: item.variant?.name || "Default",
+      quantity: item.quantity,
+      pricePerUnit: item.pricePerUnit,
+      total: item.totalPrice,
+      image: item.product.image,
+    })),
   };
 
   const getStatusColor = (status: string) => {
@@ -74,7 +105,7 @@ export default async function OrderDetailsPage({
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-3xl font-bold">Order Details</h2>
-          <p className="mt-2 text-muted-foreground">Order #{order.id}</p>
+          <p className="mt-2 text-muted-foreground">Order #{displayOrder.id}</p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" size="lg">
@@ -96,7 +127,7 @@ export default async function OrderDetailsPage({
               <Package className="h-4 w-4" />
               Order Date
             </div>
-            <div className="font-semibold">{order.date}</div>
+            <div className="font-semibold">{displayOrder.date}</div>
           </div>
           <div>
             <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
@@ -104,9 +135,9 @@ export default async function OrderDetailsPage({
               Status
             </div>
             <span
-              className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(order.status)}`}
+              className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(displayOrder.status)}`}
             >
-              {order.status}
+              {displayOrder.status}
             </span>
           </div>
           <div>
@@ -114,7 +145,9 @@ export default async function OrderDetailsPage({
               <MapPin className="h-4 w-4" />
               Total
             </div>
-            <div className="text-2xl font-bold">${order.total.toFixed(2)}</div>
+            <div className="text-2xl font-bold">
+              ${displayOrder.total.toFixed(2)}
+            </div>
           </div>
         </div>
       </div>
@@ -124,14 +157,15 @@ export default async function OrderDetailsPage({
         <h3 className="mb-4 text-xl font-semibold">Shipping Address</h3>
         <div className="text-muted-foreground">
           <p className="font-medium text-foreground">
-            {order.shippingAddress.name}
+            {displayOrder.shippingAddress.name}
           </p>
-          <p>{order.shippingAddress.street}</p>
+          <p>{displayOrder.shippingAddress.street}</p>
           <p>
-            {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
-            {order.shippingAddress.zip}
+            {displayOrder.shippingAddress.city},{" "}
+            {displayOrder.shippingAddress.state}{" "}
+            {displayOrder.shippingAddress.zip}
           </p>
-          <p>{order.shippingAddress.country}</p>
+          <p>{displayOrder.shippingAddress.country}</p>
         </div>
       </div>
 
@@ -141,7 +175,7 @@ export default async function OrderDetailsPage({
           <h3 className="text-xl font-semibold">Order Items</h3>
         </div>
         <div className="divide-y">
-          {order.items.map((item) => (
+          {displayOrder.items.map((item) => (
             <div
               key={item.id}
               className="flex gap-6 p-6 transition-colors hover:bg-muted/30"
@@ -179,22 +213,22 @@ export default async function OrderDetailsPage({
         <div className="space-y-3">
           <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
-            <span>${order.subtotal.toFixed(2)}</span>
+            <span>${displayOrder.subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-muted-foreground">
             <span>Discount</span>
             <span className="text-green-600">
-              -${order.discount.toFixed(2)}
+              -${displayOrder.discount.toFixed(2)}
             </span>
           </div>
           <div className="flex justify-between text-muted-foreground">
             <span>Shipping</span>
-            <span>${order.shipping.toFixed(2)}</span>
+            <span>${displayOrder.shipping.toFixed(2)}</span>
           </div>
           <div className="border-t pt-3">
             <div className="flex justify-between text-lg font-bold">
               <span>Total</span>
-              <span>${order.total.toFixed(2)}</span>
+              <span>${displayOrder.total.toFixed(2)}</span>
             </div>
           </div>
         </div>

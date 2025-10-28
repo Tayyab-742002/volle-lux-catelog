@@ -54,17 +54,20 @@ export async function getProductsByCategory(
  * Fetch products with filters
  * Returns products filtered by size, material, color, eco-friendly options
  */
-export async function getFilteredProducts(filters: {
-  category?: string;
-  size?: string[];
-  material?: string[];
-  color?: string[];
-  ecoFriendly?: string[];
-  priceMin?: number;
-  priceMax?: number;
-}): Promise<Product[]> {
+export async function getFilteredProducts(
+  filters: {
+    category?: string;
+    size?: string[];
+    material?: string[];
+    color?: string[];
+    ecoFriendly?: string[];
+    priceMin?: number;
+    priceMax?: number;
+  },
+  sortBy?: string
+): Promise<Product[]> {
   try {
-    const products = await getSanityFilteredProducts(filters);
+    const products = await getSanityFilteredProducts(filters, sortBy);
     return products || [];
   } catch (error) {
     console.error("Error fetching filtered products:", error);

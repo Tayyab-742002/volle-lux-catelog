@@ -1,53 +1,51 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
+import { getUserOrders } from "@/services/orders/order.service";
+import { getCurrentUserServer } from "@/services/auth/auth-server.service";
 
-export default function OrderHistoryPage() {
-  // Mock data - will be replaced with Supabase data later
-  const orders = [
-    {
-      id: "ORD-001",
-      date: "Dec 15, 2024",
-      total: 245.5,
-      status: "Delivered",
-      itemCount: 25,
-    },
-    {
-      id: "ORD-002",
-      date: "Dec 10, 2024",
-      total: 189.0,
-      status: "Shipped",
-      itemCount: 15,
-    },
-    {
-      id: "ORD-003",
-      date: "Dec 5, 2024",
-      total: 320.75,
-      status: "Delivered",
-      itemCount: 42,
-    },
-    {
-      id: "ORD-004",
-      date: "Nov 28, 2024",
-      total: 156.25,
-      status: "Processing",
-      itemCount: 12,
-    },
-    {
-      id: "ORD-005",
-      date: "Nov 20, 2024",
-      total: 498.0,
-      status: "Delivered",
-      itemCount: 60,
-    },
-    {
-      id: "ORD-006",
-      date: "Nov 15, 2024",
-      total: 87.5,
-      status: "Delivered",
-      itemCount: 8,
-    },
-  ];
+export default async function OrderHistoryPage() {
+  // Get current user
+  const authResult = await getCurrentUserServer();
+
+  // If not authenticated, show empty state
+  if (!authResult.success || !authResult.user) {
+    return (
+      <div>
+        <div className="mb-6">
+          <h2 className="text-3xl font-bold">Order History</h2>
+          <p className="mt-2 text-muted-foreground">
+            View and track all your past orders
+          </p>
+        </div>
+        <div className="rounded-lg border bg-card p-12 text-center">
+          <p className="text-muted-foreground">
+            Please sign in to view your orders
+          </p>
+          <Link href="/auth/login">
+            <Button className="mt-4">Sign In</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Fetch orders from Supabase
+  const orders = await getUserOrders(authResult.user.id);
+
+  // Format orders for display
+  const formattedOrders = orders.map((order) => ({
+    id: order.orderNumber,
+    date: order.createdAt.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }),
+    total: order.total,
+    status: order.status,
+    itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
+    fullOrder: order, // Keep reference to full order for linking
+  }));
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -73,7 +71,7 @@ export default function OrderHistoryPage() {
         </p>
       </div>
 
-      {orders.length === 0 ? (
+      {formattedOrders.length === 0 ? (
         <div className="rounded-lg border bg-card p-12 text-center">
           <p className="text-muted-foreground">No orders yet</p>
           <Link href="/products">
@@ -108,7 +106,7 @@ export default function OrderHistoryPage() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {orders.map((order) => (
+                {formattedOrders.map((order) => (
                   <tr
                     key={order.id}
                     className="transition-colors hover:bg-muted/30"
@@ -131,7 +129,7 @@ export default function OrderHistoryPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Link href={`/account/orders/${order.id}`}>
+                      <Link href={`/account/orders/${order.fullOrder.id}`}>
                         <Button variant="ghost" size="sm">
                           <Eye className="mr-2 h-4 w-4" />
                           View
@@ -146,7 +144,7 @@ export default function OrderHistoryPage() {
 
           {/* Mobile Cards */}
           <div className="md:hidden">
-            {orders.map((order) => (
+            {formattedOrders.map((order) => (
               <div key={order.id} className="border-b p-4 last:border-b-0">
                 <div className="mb-3 flex items-start justify-between">
                   <div>
@@ -169,7 +167,7 @@ export default function OrderHistoryPage() {
                     ${order.total.toFixed(2)}
                   </span>
                 </div>
-                <Link href={`/account/orders/${order.id}`}>
+                <Link href={`/account/orders/${order.fullOrder.id}`}>
                   <Button variant="outline" size="sm" className="w-full">
                     View Details
                   </Button>

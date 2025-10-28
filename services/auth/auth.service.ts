@@ -140,14 +140,14 @@ export async function signUp(data: SignUpData): Promise<AuthResult> {
     return {
       success: true,
       user: {
-        id: profile.id,
-        email: profile.email,
-        fullName: profile.full_name,
-        phone: profile.phone,
-        company: profile.company,
-        avatarUrl: profile.avatar_url,
-        createdAt: profile.created_at,
-        updatedAt: profile.updated_at,
+        id: (profile as any).id,
+        email: (profile as any).email,
+        fullName: (profile as any).full_name,
+        phone: (profile as any).phone,
+        company: (profile as any).company,
+        avatarUrl: (profile as any).avatar_url,
+        createdAt: (profile as any).created_at,
+        updatedAt: (profile as any).updated_at,
       },
       message:
         "Account created successfully. Please check your email to verify your account.",
@@ -207,14 +207,14 @@ export async function signIn(data: SignInData): Promise<AuthResult> {
     return {
       success: true,
       user: {
-        id: profile.id,
-        email: profile.email,
-        fullName: profile.full_name,
-        phone: profile.phone,
-        company: profile.company,
-        avatarUrl: profile.avatar_url,
-        createdAt: profile.created_at,
-        updatedAt: profile.updated_at,
+        id: (profile as any).id,
+        email: (profile as any).email,
+        fullName: (profile as any).full_name,
+        phone: (profile as any).phone,
+        company: (profile as any).company,
+        avatarUrl: (profile as any).avatar_url,
+        createdAt: (profile as any).created_at,
+        updatedAt: (profile as any).updated_at,
       },
       message: "Signed in successfully",
     };
@@ -347,7 +347,7 @@ export async function updateProfile(
     }
 
     // Update profile in database
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError } = await (supabase as any)
       .from("users")
       .update({
         full_name: data.fullName,
@@ -370,14 +370,14 @@ export async function updateProfile(
     return {
       success: true,
       user: {
-        id: profile.id,
-        email: profile.email,
-        fullName: profile.full_name,
-        phone: profile.phone,
-        company: profile.company,
-        avatarUrl: profile.avatar_url,
-        createdAt: profile.created_at,
-        updatedAt: profile.updated_at,
+        id: (profile as any).id,
+        email: (profile as any).email,
+        fullName: (profile as any).full_name,
+        phone: (profile as any).phone,
+        company: (profile as any).company,
+        avatarUrl: (profile as any).avatar_url,
+        createdAt: (profile as any).created_at,
+        updatedAt: (profile as any).updated_at,
       },
       message: "Profile updated successfully",
     };
@@ -428,14 +428,14 @@ export async function getCurrentUser(): Promise<AuthResult> {
     return {
       success: true,
       user: {
-        id: profile.id,
-        email: profile.email,
-        fullName: profile.full_name,
-        phone: profile.phone,
-        company: profile.company,
-        avatarUrl: profile.avatar_url,
-        createdAt: profile.created_at,
-        updatedAt: profile.updated_at,
+        id: (profile as any).id,
+        email: (profile as any).email,
+        fullName: (profile as any).full_name,
+        phone: (profile as any).phone,
+        company: (profile as any).company,
+        avatarUrl: (profile as any).avatar_url,
+        createdAt: (profile as any).created_at,
+        updatedAt: (profile as any).updated_at,
       },
     };
   } catch (error) {

@@ -97,24 +97,17 @@ export default function TestCartPersistencePage() {
       id: "test-product",
       name: "Test Product",
       slug: "test-product",
+      product_code: "TEST-001",
       description: "A test product for cart persistence testing",
-      shortDescription: "Test product",
       basePrice: 10.99,
       discount: 0,
-      isActive: true,
-      isFeatured: false,
       image:
         "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
-      category: {
-        id: "test-category",
-        name: "Test Category",
-        slug: "test-category",
-      },
+      category: "test-category",
       variants: [],
       pricingTiers: [],
-      specifications: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      specifications: {},
+      delivery: "2-3 days",
     };
 
     await useCartStore.getState().addItem(testProduct, undefined, 1, user?.id);

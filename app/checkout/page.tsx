@@ -4,12 +4,30 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/components/auth/auth-provider";
+import { getDefaultSavedAddress } from "@/services/users/user.service";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getCartSummary } = useCartStore();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+  const [defaultAddress, setDefaultAddress] = useState<any | null>(null);
+
+  useEffect(() => {
+    // Load default address for authenticated user
+    (async () => {
+      if (!user?.id) return;
+      try {
+        const addr = await getDefaultSavedAddress(user.id);
+        setDefaultAddress(addr);
+      } catch (e) {
+        // Non-blocking
+        console.error("Failed to load default address", e);
+      }
+    })();
+  }, [user?.id]);
 
   useEffect(() => {
     async function createCheckoutSession() {
@@ -27,7 +45,11 @@ export default function CheckoutPage() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ items }),
+          body: JSON.stringify({
+            items,
+            shippingAddress: defaultAddress || null,
+            billingAddress: defaultAddress || null,
+          }),
         });
 
         if (!response.ok) {
@@ -50,7 +72,7 @@ export default function CheckoutPage() {
     }
 
     createCheckoutSession();
-  }, [items, router]);
+  }, [items, router, defaultAddress]);
 
   if (error) {
     return (

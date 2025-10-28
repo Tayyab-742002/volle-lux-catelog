@@ -1,38 +1,64 @@
 import Link from "next/link";
 import { Package, ShoppingBag, DollarSign, TrendingUp } from "lucide-react";
+import { getCurrentUserServer } from "@/services/auth/auth-server.service";
+import { getUserOrders } from "@/services/orders/order.service";
+import { Button } from "@/components/ui/button";
 
-export default function AccountDashboard() {
-  // Mock data - will be replaced with Supabase data later
+export default async function AccountDashboard() {
+  // Get current user
+  const authResult = await getCurrentUserServer();
+
+  // If not authenticated, show sign-in prompt
+  if (!authResult.success || !authResult.user) {
+    return (
+      <div className="rounded-lg border bg-card p-12 text-center">
+        <h2 className="mb-4 text-2xl font-semibold">Welcome to Your Account</h2>
+        <p className="mb-6 text-muted-foreground">
+          Please sign in to view your dashboard
+        </p>
+        <Link href="/auth/login">
+          <Button>Sign In</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  // Fetch real orders from Supabase
+  const orders = await getUserOrders(authResult.user.id);
+
+  // Calculate real stats from orders
+  const totalOrders = orders.length;
+  const totalSpent = orders.reduce((sum, order) => sum + order.total, 0);
+  const averageOrder = totalOrders > 0 ? totalSpent / totalOrders : 0;
+  const lastOrderDate =
+    orders.length > 0
+      ? orders[0].createdAt.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+      : "No orders yet";
+
   const stats = {
-    totalOrders: 12,
-    totalSpent: 2450.0,
-    averageOrder: 204.17,
-    lastOrderDate: "Dec 15, 2024",
+    totalOrders,
+    totalSpent,
+    averageOrder,
+    lastOrderDate,
   };
 
-  const recentOrders = [
-    {
-      id: "ORD-001",
-      date: "Dec 15, 2024",
-      total: 245.5,
-      status: "Delivered",
-      itemCount: 25,
-    },
-    {
-      id: "ORD-002",
-      date: "Dec 10, 2024",
-      total: 189.0,
-      status: "Shipped",
-      itemCount: 15,
-    },
-    {
-      id: "ORD-003",
-      date: "Dec 5, 2024",
-      total: 320.75,
-      status: "Delivered",
-      itemCount: 42,
-    },
-  ];
+  // Get recent orders (last 3)
+  const recentOrders = orders.slice(0, 3).map((order) => ({
+    id: order.orderNumber,
+    fullId: order.id,
+    date: order.createdAt.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }),
+    total: order.total,
+    status: order.status,
+    itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
+  }));
 
   return (
     <div>
@@ -108,14 +134,17 @@ export default function AccountDashboard() {
                   <span className="font-semibold">{order.id}</span>
                   <span
                     className={`rounded-full px-2 py-1 text-xs font-medium ${
-                      order.status === "Delivered"
+                      order.status === "delivered"
                         ? "bg-green-100 text-green-800"
-                        : order.status === "Shipped"
+                        : order.status === "shipped"
                           ? "bg-blue-100 text-blue-800"
-                          : "bg-gray-100 text-gray-800"
+                          : order.status === "processing"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-gray-100 text-gray-800"
                     }`}
                   >
-                    {order.status}
+                    {order.status.charAt(0).toUpperCase() +
+                      order.status.slice(1)}
                   </span>
                 </div>
                 <div className="text-sm text-muted-foreground">
@@ -127,7 +156,7 @@ export default function AccountDashboard() {
                   ${order.total.toFixed(2)}
                 </div>
                 <Link
-                  href={`/account/orders/${order.id}`}
+                  href={`/account/orders/${order.fullId}`}
                   className="text-sm text-primary hover:underline"
                 >
                   View Details
