@@ -2,6 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Download, ShoppingCart, Package, Truck, MapPin } from "lucide-react";
+import { getOrderById } from "@/services/orders/order.service";
+import { getCurrentUserServer } from "@/services/auth/auth-server.service";
+import { notFound } from "next/navigation";
 
 interface OrderDetailsPageProps {
   params: Promise<{ id: string }>;
@@ -12,45 +15,73 @@ export default async function OrderDetailsPage({
 }: OrderDetailsPageProps) {
   const { id } = await params;
 
-  // Mock data - will be replaced with Supabase data later
-  const order = {
-    id: "ORD-001",
-    date: "Dec 15, 2024",
-    status: "Delivered",
-    total: 245.5,
-    subtotal: 225.0,
-    discount: 20.0,
-    shipping: 15.0,
+  // Get current user
+  const authResult = await getCurrentUserServer();
+
+  if (!authResult.success || !authResult.user) {
+    return (
+      <div className="rounded-lg border bg-card p-12 text-center">
+        <p className="text-muted-foreground">
+          Please sign in to view order details
+        </p>
+        <Link href="/auth/login">
+          <Button className="mt-4">Sign In</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  // Fetch order from Supabase
+  const order = await getOrderById(id);
+
+  if (!order) {
+    notFound();
+  }
+
+  // Verify user owns this order
+  if (order.userId !== authResult.user.id) {
+    return (
+      <div className="rounded-lg border bg-card p-12 text-center">
+        <p className="text-muted-foreground">
+          You don't have access to this order
+        </p>
+        <Link href="/account/orders">
+          <Button className="mt-4">Back to Orders</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  // Format order data for display
+  const displayOrder = {
+    id: order.orderNumber,
+    date: order.createdAt.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }),
+    status: order.status,
+    total: order.total,
+    subtotal: order.subtotal,
+    discount: order.discount,
+    shipping: order.shipping,
     shippingAddress: {
-      name: "John Doe",
-      street: "123 Business Street",
-      city: "New York",
-      state: "NY",
-      zip: "10001",
-      country: "United States",
+      name: order.shippingAddress?.name || "N/A",
+      street: order.shippingAddress?.street || "N/A",
+      city: order.shippingAddress?.city || "N/A",
+      state: order.shippingAddress?.state || "N/A",
+      zip: order.shippingAddress?.zip || "N/A",
+      country: order.shippingAddress?.country || "N/A",
     },
-    items: [
-      {
-        id: "1",
-        name: "Heavy Duty Shipping Boxes",
-        variant: "C5",
-        quantity: 15,
-        pricePerUnit: 10.0,
-        total: 150.0,
-        image:
-          "https://images.unsplash.com/photo-1680034977375-3d83ee017e52?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=200",
-      },
-      {
-        id: "2",
-        name: "Premium Bubble Wrap",
-        variant: "Medium",
-        quantity: 10,
-        pricePerUnit: 7.5,
-        total: 75.0,
-        image:
-          "https://images.unsplash.com/photo-1592829016842-156c305ecc7e?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=200",
-      },
-    ],
+    items: order.items.map((item) => ({
+      id: item.id,
+      name: item.product.name,
+      variant: item.variant?.name || "Default",
+      quantity: item.quantity,
+      pricePerUnit: item.pricePerUnit,
+      total: item.totalPrice,
+      image: item.product.image,
+    })),
   };
 
   const getStatusColor = (status: string) => {
