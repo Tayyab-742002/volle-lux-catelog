@@ -30,8 +30,10 @@ export interface SavedAddress extends SavedAddressInput {
 export async function getSavedAddresses(
   userId: string
 ): Promise<SavedAddress[]> {
+  console.log("🔍 getSavedAddresses called with userId:", userId);
   const supabase = createClient() as any;
 
+  console.log("📍 Querying saved_addresses table...");
   const { data, error } = await supabase
     .from("saved_addresses")
     .select("*")
@@ -39,12 +41,16 @@ export async function getSavedAddresses(
     .order("is_default", { ascending: false })
     .order("created_at", { ascending: false });
 
+  console.log("📍 Supabase response:", { data, error });
+
   if (error) {
-    console.error("Error fetching saved addresses:", error);
+    console.error("❌ Error fetching saved addresses:", error);
     throw error;
   }
 
-  return (data as unknown as SavedAddress[]) || [];
+  const result = (data as unknown as SavedAddress[]) || [];
+  console.log("✅ Returning addresses:", result.length, result);
+  return result;
 }
 
 export async function createSavedAddress(

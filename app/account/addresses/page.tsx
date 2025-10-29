@@ -25,22 +25,53 @@ export default function SavedAddressesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.log("🔍 No user ID, skipping address fetch");
+      setLoading(false);
+      return;
+    }
+
+    console.log("🔍 Loading saved addresses for user:", user.id);
     let cancelled = false;
+    let timeoutId: NodeJS.Timeout;
+
+    // Set timeout to force loading to false if it takes too long
+    timeoutId = setTimeout(() => {
+      if (!cancelled) {
+        console.error(
+          "⏰ Address loading timeout (5s) - forcing loading to false"
+        );
+        setLoading(false);
+        setError("Loading timeout - please refresh the page");
+      }
+    }, 5000); // 5 second timeout
+
     (async () => {
       try {
         setLoading(true);
+        setError(null);
+        console.log("📍 Fetching addresses from Supabase...");
         const result = await getSavedAddresses(user.id);
-        if (!cancelled) setAddresses(result);
+        console.log("📍 Fetched addresses:", result.length, result);
+        if (!cancelled) {
+          setAddresses(result);
+          console.log("✅ Addresses set in state");
+        }
       } catch (e) {
-        console.error(e);
+        console.error("❌ Error loading addresses:", e);
         if (!cancelled) setError("Failed to load addresses");
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          console.log("🔍 Loading set to false");
+        }
+        clearTimeout(timeoutId);
       }
     })();
+
     return () => {
       cancelled = true;
+      clearTimeout(timeoutId);
     };
   }, [user?.id]);
 
@@ -72,6 +103,8 @@ export default function SavedAddressesPage() {
           Add Address
         </Button>
       </div>
+
+      {/* Debug panel removed for production */}
 
       {/* Address List */}
       {addresses.length === 0 && !isAdding ? (

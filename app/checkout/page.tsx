@@ -78,11 +78,22 @@ export default function CheckoutPage() {
 
   // Load saved addresses for authenticated users (with infinite loop protection)
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    let isCancelled = false;
+
     async function loadAddresses() {
       const userId = user?.id;
 
-      // If no user or already loaded for this user, skip
+      console.log("🔍 CHECKOUT: loadAddresses called, userId:", userId);
+      console.log(
+        "🔍 CHECKOUT: addressesLoadedRef:",
+        addressesLoadedRef.current
+      );
+      console.log("🔍 CHECKOUT: lastUserIdRef:", lastUserIdRef.current);
+
+      // If no user, set loading to false and exit
       if (!userId) {
+        console.log("🔍 CHECKOUT: No user ID, setting loading to false");
         setIsLoadingAddresses(false);
         addressesLoadedRef.current = true;
         return;
@@ -90,37 +101,75 @@ export default function CheckoutPage() {
 
       // If already loaded for this exact user ID in this page load, skip
       if (addressesLoadedRef.current && lastUserIdRef.current === userId) {
-        console.log("Addresses already loaded for this page load, skipping...");
+        console.log(
+          "🔍 CHECKOUT: Addresses already loaded for this page load, skipping..."
+        );
         return;
       }
 
+      // Set timeout to force loading to false if it takes too long
+      timeoutId = setTimeout(() => {
+        if (!isCancelled) {
+          console.error(
+            "⏰ CHECKOUT: Address loading timeout (5s) - forcing loading to false"
+          );
+          setIsLoadingAddresses(false);
+          addressesLoadedRef.current = true;
+        }
+      }, 5000); // 5 second timeout
+
       // Mark as loading
+      console.log("🔍 CHECKOUT: Starting address loading...");
       setIsLoadingAddresses(true);
       lastUserIdRef.current = userId;
 
       try {
-        console.log("Loading saved addresses for user:", userId);
+        console.log("🔍 CHECKOUT: Fetching saved addresses for user:", userId);
         const addresses = await getSavedAddresses(userId);
-        console.log("Loaded addresses:", addresses.length);
+
+        if (isCancelled) return; // Don't update state if cancelled
+
+        console.log(
+          "✅ CHECKOUT: Loaded addresses:",
+          addresses.length,
+          addresses
+        );
         setSavedAddresses(addresses);
 
         // Auto-select default address
         const defaultAddr = addresses.find((a) => a.is_default);
         if (defaultAddr) {
           setSelectedAddressId(defaultAddr.id);
-          console.log("Auto-selected default address:", defaultAddr.id);
+          console.log(
+            "✅ CHECKOUT: Auto-selected default address:",
+            defaultAddr.id
+          );
+        } else {
+          console.log("🔍 CHECKOUT: No default address found");
         }
       } catch (err) {
-        console.error("Failed to load addresses:", err);
-        // Set empty array on error to prevent retry loops
-        setSavedAddresses([]);
+        console.error("❌ CHECKOUT: Failed to load addresses:", err);
+        if (!isCancelled) {
+          // Set empty array on error to prevent retry loops
+          setSavedAddresses([]);
+        }
       } finally {
-        setIsLoadingAddresses(false);
-        addressesLoadedRef.current = true;
+        if (!isCancelled) {
+          console.log("🔍 CHECKOUT: Setting isLoadingAddresses to false");
+          setIsLoadingAddresses(false);
+          addressesLoadedRef.current = true;
+        }
+        clearTimeout(timeoutId);
       }
     }
 
     loadAddresses();
+
+    // Cleanup
+    return () => {
+      isCancelled = true;
+      clearTimeout(timeoutId);
+    };
   }, [user?.id]);
 
   // Handle checkout submission
@@ -221,6 +270,8 @@ export default function CheckoutPage() {
       <div className="mx-auto max-w-6xl">
         <h1 className="mb-8 text-3xl font-bold">Checkout</h1>
 
+        {/* Debug panel removed for production */}
+
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Left Column - Shipping & Billing */}
           <div className="lg:col-span-2">
@@ -236,6 +287,9 @@ export default function CheckoutPage() {
               {isLoadingAddresses ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  <p className="ml-2 text-sm text-muted-foreground">
+                    Loading addresses...
+                  </p>
                 </div>
               ) : user?.id && savedAddresses.length > 0 && !useNewAddress ? (
                 <>
@@ -259,7 +313,7 @@ export default function CheckoutPage() {
                         >
                           <div className="mb-1 flex items-center gap-2">
                             <span className="font-semibold">
-                              {address.name}
+                              {address.first_name} {address.last_name}
                             </span>
                             {address.is_default && (
                               <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
@@ -268,8 +322,6 @@ export default function CheckoutPage() {
                             )}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {address.first_name} {address.last_name}
-                            <br />
                             {address.address_line_1}
                             {address.address_line_2 && (
                               <>, {address.address_line_2}</>
@@ -310,6 +362,7 @@ export default function CheckoutPage() {
                       className="mb-4 w-full"
                       onClick={() => setUseNewAddress(false)}
                     >
+                      <Check className="mr-2 h-4 w-4" />
                       Use Saved Address
                     </Button>
                   )}
