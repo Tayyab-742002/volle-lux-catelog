@@ -29,6 +29,15 @@ function CheckoutSuccessContent() {
 
   // Verify payment and fetch order with retry logic
   useEffect(() => {
+    // Add timeout to prevent infinite loading (30 seconds max)
+    const timeoutId = setTimeout(() => {
+      console.error("⏰ Payment verification timeout - forcing error state");
+      setError(
+        "Payment verification timed out. Please contact support if your payment was processed."
+      );
+      setLoading(false);
+    }, 30000); // 30 seconds timeout
+
     async function verifyAndFetchOrder() {
       console.log("🔍 Starting payment verification...");
       console.log("Session ID:", sessionId);
@@ -41,6 +50,7 @@ function CheckoutSuccessContent() {
           "No session ID provided. Please return from a valid Stripe checkout."
         );
         setLoading(false);
+        clearTimeout(timeoutId); // Clear timeout on early exit
         return;
       }
 
@@ -150,7 +160,13 @@ function CheckoutSuccessContent() {
         }
 
         console.log("✅ Setting order data in state");
+
+        // CRITICAL: Set order and loading state together to prevent race conditions
+        console.log("🔍 Setting order data and loading state atomically");
         setOrder(orderData);
+        setLoading(false); // Set loading to false immediately after setting order
+
+        console.log("✅ Order state updated, loading set to false");
 
         // Clear cart after confirming payment success (only once)
         // Note: Cart should already be cleared by webhook, this is a failsafe
@@ -174,14 +190,16 @@ function CheckoutSuccessContent() {
           "🎉 Payment verification and order fetch completed successfully!"
         );
 
-        // CRITICAL: Set loading to false immediately after success
-        console.log("🔍 Setting loading to false (SUCCESS PATH)");
-        setLoading(false);
+        // Clear timeout on success
+        clearTimeout(timeoutId);
       } catch (err) {
         console.error("❌ Error in payment verification process:", err);
         setError(
           err instanceof Error ? err.message : "Failed to verify payment"
         );
+
+        // Clear timeout on error
+        clearTimeout(timeoutId);
       } finally {
         console.log("🔍 Setting loading to false (FINALLY BLOCK)");
         setLoading(false);
@@ -189,6 +207,11 @@ function CheckoutSuccessContent() {
     }
 
     verifyAndFetchOrder();
+
+    // Cleanup timeout on component unmount
+    return () => {
+      clearTimeout(timeoutId);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]); // Only depend on sessionId - prevents infinite loops
 
@@ -208,19 +231,21 @@ function CheckoutSuccessContent() {
         <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-primary" />
         <h2 className="mb-2 text-2xl font-semibold">Verifying Payment</h2>
         <p className="text-muted-foreground">
-          Please wait while we confirm your order...
+          Please wait while we confirm your orderData...
         </p>
       </div>
     );
   }
 
-  // Error state
-  if (error || !order) {
+  // Error state - only show error if there's an explicit error OR (not loading AND no order)
+  if (error || (!loading && !order)) {
     console.log(
       "🔍 RENDER: Showing error screen, error:",
       error,
       "order:",
-      !!order
+      !!order,
+      "loading:",
+      loading
     );
     return (
       <div className="container mx-auto px-4 py-24">
@@ -252,6 +277,10 @@ function CheckoutSuccessContent() {
 
   // Success state with order details
   console.log("🔍 RENDER: Showing success screen with order:", order?.id);
+
+  // At this point, we know order exists (checked in render conditions above)
+  const orderData = order!;
+
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">
       <div className="mx-auto max-w-3xl">
@@ -274,7 +303,8 @@ function CheckoutSuccessContent() {
             Your order has been successfully placed
           </p>
           <p className="text-sm text-muted-foreground">
-            Order ID: <span className="font-mono font-medium">{order.id}</span>
+            Order ID:{" "}
+            <span className="font-mono font-medium">{orderData.id}</span>
           </p>
         </div>
 
@@ -284,7 +314,7 @@ function CheckoutSuccessContent() {
 
           {/* Order Items */}
           <div className="mb-6 space-y-4">
-            {order.items.map((item, index) => {
+            {orderData.items.map((item, index) => {
               // Safely access nested properties with fallbacks
               const productName = item.product?.name || "Product";
               const variantName = item.variant?.name || null;
@@ -324,23 +354,24 @@ function CheckoutSuccessContent() {
           <div className="border-t pt-4">
             <div className="flex justify-between text-lg font-semibold">
               <span>Total</span>
-              <span>${order.total.toFixed(2)}</span>
+              <span>${orderData.total.toFixed(2)}</span>
             </div>
           </div>
         </div>
 
         {/* Shipping Address */}
-        {order.shippingAddress && (
+        {orderData.shippingAddress && (
           <div className="mb-8 rounded-lg border bg-card p-6">
             <h3 className="mb-4 font-semibold">Shipping Address</h3>
             <div className="text-sm text-muted-foreground">
-              <p>{order.shippingAddress.fullName}</p>
-              <p>{order.shippingAddress.address}</p>
+              <p>{orderData.shippingAddress.fullName}</p>
+              <p>{orderData.shippingAddress.address}</p>
               <p>
-                {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
-                {order.shippingAddress.zipCode}
+                {orderData.shippingAddress.city},{" "}
+                {orderData.shippingAddress.state}{" "}
+                {orderData.shippingAddress.zipCode}
               </p>
-              <p>{order.shippingAddress.country}</p>
+              <p>{orderData.shippingAddress.country}</p>
             </div>
           </div>
         )}
@@ -348,7 +379,7 @@ function CheckoutSuccessContent() {
         {/* Action Buttons */}
         <div className="flex flex-col gap-4 sm:flex-row">
           <Button asChild size="lg" className="flex-1">
-            <Link href={`/account/orders/${order.id}`}>
+            <Link href={`/account/orders/${orderData.id}`}>
               <Package className="mr-2 h-5 w-5" strokeWidth={1.5} />
               Track Order
             </Link>

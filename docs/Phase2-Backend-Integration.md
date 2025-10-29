@@ -470,69 +470,7 @@ Transition from mock data to full backend integration with Sanity CMS, Supabase,
 
 ---
 
-## 3.0 Integration Order & Dependencies
 
-### Recommended Sequence
-
-```
-1. Sanity CMS Setup (2.1)
-   └─> Product Service Integration
-
-2. Supabase Setup (2.2)
-   ├─> Authentication
-   ├─> Cart Persistence
-   └─> Order Management
-
-3. Stripe Integration (2.3)
-   └─> Depends on: Cart & Orders
-
-4. Resend Email Integration (2.4)
-   └─> Depends on: Orders
-
-5. Testing & Refinement (2.5)
-   └─> All integrations
-```
-
-### Critical Path
-
-**Must complete in order:**
-
-1. Sanity → Products display with real data
-2. Supabase Auth → User accounts working
-3. Supabase Cart → Cart persistence
-4. Stripe → Payments processing
-5. Resend → Transactional emails
-
----
-
-## 4.0 Environment Variables Checklist
-
-### Required Variables
-
-```env
-# Sanity CMS
-NEXT_PUBLIC_SANITY_PROJECT_ID=
-NEXT_PUBLIC_SANITY_DATASET=
-SANITY_API_TOKEN=
-
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-
-# Stripe
-STRIPE_SECRET_KEY=
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
-STRIPE_WEBHOOK_SECRET=
-
-# Resend
-RESEND_API_KEY=
-
-# App
-NEXT_PUBLIC_APP_URL=
-```
-
----
 
 ## 5.0 Success Criteria
 
