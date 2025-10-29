@@ -25,23 +25,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
 
-    // Get user session (if authenticated)
+    // Get user session (must be authenticated)
     const supabase = await createServerSupabaseClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
+    if (!user?.id) {
+      return NextResponse.json(
+        { error: "You must be logged in to checkout" },
+        { status: 401 }
+      );
+    }
+
     // Create Stripe checkout session
     const session = await createCheckoutSession({
       items,
-      userId: user?.id,
-      userEmail: user?.email,
+      userId: user.id,
+      userEmail: user.email,
       shippingAddress,
       billingAddress,
     });
 
     // Store checkout session in Supabase for order tracking
-    if (user?.id) {
+    if (user.id) {
       // Store session metadata for tracking
       // This helps track abandoned carts and pending checkouts
       const { error: upsertError } = await supabase.from("carts").upsert(

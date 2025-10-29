@@ -46,6 +46,21 @@ export async function saveCartToSupabase(
       }
 
       if (existingCart) {
+        // If no items, delete cart row instead of storing empty array
+        if (cartItems.length === 0) {
+          console.log("Deleting cart row for user due to empty cart");
+          const { error } = await supabase
+            .from("carts")
+            .delete()
+            .eq("user_id", userId);
+
+          if (error) {
+            console.error("Error deleting authenticated cart:", error);
+            throw error;
+          }
+          console.log("Cart row deleted for user:", userId);
+          return;
+        }
         // Update existing cart
         console.log("Updating existing cart for user:", userId);
         const { error } = await supabase
@@ -62,6 +77,11 @@ export async function saveCartToSupabase(
         }
         console.log("Cart updated successfully for user:", userId);
       } else {
+        // If no items, nothing to persist
+        if (cartItems.length === 0) {
+          console.log("Empty cart - skipping insert for user");
+          return;
+        }
         // Insert new cart
         console.log("Creating new cart for user:", userId);
         const { error } = await supabase.from("carts").insert({
@@ -91,6 +111,20 @@ export async function saveCartToSupabase(
       }
 
       if (existingCart) {
+        // If no items, delete cart row instead of storing empty array
+        if (cartItems.length === 0) {
+          console.log("Deleting guest cart row due to empty cart");
+          const { error } = await supabase
+            .from("carts")
+            .delete()
+            .eq("session_id", sessionId);
+
+          if (error) {
+            console.error("Error deleting guest cart:", error);
+            throw error;
+          }
+          return;
+        }
         // Update existing guest cart
         const { error } = await supabase
           .from("carts")
@@ -105,6 +139,11 @@ export async function saveCartToSupabase(
           throw error;
         }
       } else {
+        // If no items, nothing to persist
+        if (cartItems.length === 0) {
+          console.log("Empty guest cart - skipping insert");
+          return;
+        }
         // Insert new guest cart
         const { error } = await supabase.from("carts").insert({
           user_id: null,
