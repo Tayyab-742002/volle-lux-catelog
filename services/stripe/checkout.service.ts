@@ -113,12 +113,14 @@ export async function createCheckoutSession(params: {
       cancel_url: STRIPE_CONFIG.cancelUrl,
       customer_email: userEmail || undefined,
       metadata,
-      // Enable shipping address collection if needed
+      // Enable shipping address collection if not provided
       shipping_address_collection: shippingAddress
         ? undefined
         : {
             allowed_countries: ["US", "CA", "GB", "AU"], // Add your supported countries
           },
+      // IMPORTANT: Enable billing address collection on Stripe checkout
+      billing_address_collection: "required",
       // Allow promotion codes
       allow_promotion_codes: true,
       // Payment intent data for additional context
@@ -182,5 +184,3 @@ export async function verifyPaymentStatus(sessionId: string): Promise<{
     throw error;
   }
 }
-
-

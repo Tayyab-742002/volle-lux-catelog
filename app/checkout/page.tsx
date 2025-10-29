@@ -18,24 +18,13 @@ import {
   Plus,
   Check,
 } from "lucide-react";
-import { getSavedAddresses } from "@/services/users/user.service";
-import Link from "next/link";
+import {
+  getSavedAddresses,
+  type SavedAddress as SavedAddressType,
+} from "@/services/users/user.service";
 
-interface SavedAddress {
-  id: string;
-  name: string;
-  first_name: string;
-  last_name: string;
-  company?: string;
-  address_line_1: string;
-  address_line_2?: string;
-  city: string;
-  state: string;
-  postal_code: string;
-  country: string;
-  phone?: string;
-  is_default: boolean;
-}
+// Use SavedAddress type from user service
+type SavedAddress = SavedAddressType;
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -47,26 +36,12 @@ export default function CheckoutPage() {
     null
   );
   const [useNewAddress, setUseNewAddress] = useState(false);
-  const [sameAsBilling, setSameAsBilling] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // New address form state
+  // New address form state (shipping only - billing collected by Stripe)
   const [shippingForm, setShippingForm] = useState({
-    first_name: "",
-    last_name: "",
-    company: "",
-    address_line_1: "",
-    address_line_2: "",
-    city: "",
-    state: "",
-    postal_code: "",
-    country: "US",
-    phone: "",
-  });
-
-  const [billingForm, setBillingForm] = useState({
     first_name: "",
     last_name: "",
     company: "",
@@ -122,7 +97,6 @@ export default function CheckoutPage() {
 
     try {
       let shippingAddress;
-      let billingAddress;
 
       // Determine shipping address
       if (user?.id && selectedAddressId && !useNewAddress) {
@@ -146,7 +120,14 @@ export default function CheckoutPage() {
         };
       } else if (useNewAddress || !user?.id) {
         // Use new address form (for guests or new address)
-        if (!shippingForm.first_name || !shippingForm.last_name || !shippingForm.address_line_1) {
+        if (
+          !shippingForm.first_name ||
+          !shippingForm.last_name ||
+          !shippingForm.address_line_1 ||
+          !shippingForm.city ||
+          !shippingForm.state ||
+          !shippingForm.postal_code
+        ) {
           throw new Error("Please fill in all required shipping fields");
         }
 
@@ -164,27 +145,8 @@ export default function CheckoutPage() {
         throw new Error("Please select or enter a shipping address");
       }
 
-      // Determine billing address
-      if (sameAsBilling) {
-        billingAddress = shippingAddress;
-      } else {
-        if (!billingForm.first_name || !billingForm.last_name || !billingForm.address_line_1) {
-          throw new Error("Please fill in all required billing fields");
-        }
-
-        billingAddress = {
-          fullName: `${billingForm.first_name} ${billingForm.last_name}`,
-          address: billingForm.address_line_1,
-          address2: billingForm.address_line_2 || "",
-          city: billingForm.city,
-          state: billingForm.state,
-          zipCode: billingForm.postal_code,
-          country: billingForm.country,
-          phone: billingForm.phone || "",
-        };
-      }
-
       // Create Stripe checkout session
+      // Note: Billing address will be collected by Stripe
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
@@ -193,7 +155,7 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           items,
           shippingAddress,
-          billingAddress,
+          // billingAddress will be collected by Stripe checkout
         }),
       });
 
@@ -277,12 +239,11 @@ export default function CheckoutPage() {
                             <br />
                             {address.address_line_1}
                             {address.address_line_2 && (
-                              <>
-                                , {address.address_line_2}
-                              </>
+                              <>, {address.address_line_2}</>
                             )}
                             <br />
-                            {address.city}, {address.state} {address.postal_code}
+                            {address.city}, {address.state}{" "}
+                            {address.postal_code}
                             <br />
                             {address.country}
                             {address.phone && (
@@ -475,133 +436,18 @@ export default function CheckoutPage() {
               )}
             </Card>
 
-            {/* Billing Address Section */}
+            {/* Note about billing address */}
             <Card className="p-6">
-              <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <CreditCard className="h-5 w-5" />
+              <div className="flex items-start gap-3">
+                <CreditCard className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <div>
+                  <h3 className="font-semibold mb-1">Billing Address</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Your billing address will be collected securely on the next
+                    page during payment processing.
+                  </p>
                 </div>
-                <h2 className="text-xl font-semibold">Billing Address</h2>
               </div>
-
-              <div className="mb-4">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={sameAsBilling}
-                    onChange={(e) => setSameAsBilling(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300"
-                  />
-                  <span className="text-sm">Same as shipping address</span>
-                </label>
-              </div>
-
-              {!sameAsBilling && (
-                <div className="grid gap-4">
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div>
-                      <Label htmlFor="billing_first_name">
-                        First Name <span className="text-destructive">*</span>
-                      </Label>
-                      <Input
-                        id="billing_first_name"
-                        value={billingForm.first_name}
-                        onChange={(e) =>
-                          setBillingForm({
-                            ...billingForm,
-                            first_name: e.target.value,
-                          })
-                        }
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="billing_last_name">
-                        Last Name <span className="text-destructive">*</span>
-                      </Label>
-                      <Input
-                        id="billing_last_name"
-                        value={billingForm.last_name}
-                        onChange={(e) =>
-                          setBillingForm({
-                            ...billingForm,
-                            last_name: e.target.value,
-                          })
-                        }
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="billing_address_line_1">
-                      Address <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      id="billing_address_line_1"
-                      value={billingForm.address_line_1}
-                      onChange={(e) =>
-                        setBillingForm({
-                          ...billingForm,
-                          address_line_1: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <div>
-                      <Label htmlFor="billing_city">
-                        City <span className="text-destructive">*</span>
-                      </Label>
-                      <Input
-                        id="billing_city"
-                        value={billingForm.city}
-                        onChange={(e) =>
-                          setBillingForm({
-                            ...billingForm,
-                            city: e.target.value,
-                          })
-                        }
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="billing_state">
-                        State <span className="text-destructive">*</span>
-                      </Label>
-                      <Input
-                        id="billing_state"
-                        value={billingForm.state}
-                        onChange={(e) =>
-                          setBillingForm({
-                            ...billingForm,
-                            state: e.target.value,
-                          })
-                        }
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="billing_postal_code">
-                        ZIP Code <span className="text-destructive">*</span>
-                      </Label>
-                      <Input
-                        id="billing_postal_code"
-                        value={billingForm.postal_code}
-                        onChange={(e) =>
-                          setBillingForm({
-                            ...billingForm,
-                            postal_code: e.target.value,
-                          })
-                        }
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
             </Card>
           </div>
 
@@ -622,9 +468,7 @@ export default function CheckoutPage() {
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-3">
                     <div className="flex-1">
-                      <p className="font-medium text-sm">
-                        {item.product.name}
-                      </p>
+                      <p className="font-medium text-sm">{item.product.name}</p>
                       {item.variant && (
                         <p className="text-xs text-muted-foreground">
                           {item.variant.name}
@@ -647,7 +491,9 @@ export default function CheckoutPage() {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span className="font-medium">${summary.subtotal.toFixed(2)}</span>
+                  <span className="font-medium">
+                    ${summary.subtotal.toFixed(2)}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
@@ -695,4 +541,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-

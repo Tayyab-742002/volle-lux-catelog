@@ -108,13 +108,23 @@ async function handleCheckoutSessionCompleted(
       }
     }
 
-    // Get billing address (usually same as shipping for e-commerce)
+    // Get billing address from Stripe
+    // When billing_address_collection is enabled, Stripe stores it in customer_details.address
     let billingAddress = null;
+
+    // Log what we have for debugging
+    console.log("Stripe session billing data:", {
+      hasCustomerDetails: !!fullSession.customer_details,
+      hasCustomerAddress: !!fullSession.customer_details?.address,
+      customerDetailsAddress: fullSession.customer_details?.address,
+      hasPaymentIntent: !!fullSession.payment_intent,
+    });
+
     if (fullSession.customer_details?.address) {
-      // Use customer billing address from Stripe
+      // Stripe collected billing address - this is the main path
       const billingAddr = fullSession.customer_details.address;
       billingAddress = {
-        fullName: customerName,
+        fullName: fullSession.customer_details.name || customerName,
         address: billingAddr.line1 || "",
         address2: billingAddr.line2 || "",
         city: billingAddr.city || "",
@@ -123,16 +133,22 @@ async function handleCheckoutSessionCompleted(
         country: billingAddr.country || "",
         phone: fullSession.customer_details?.phone || "",
       };
+      console.log(
+        "✅ Billing address captured from Stripe customer_details:",
+        billingAddress
+      );
     } else if (fullSession.metadata?.billing_address) {
-      // Fallback to metadata billing address
+      // Fallback: billing address was passed in metadata (legacy)
       try {
         billingAddress = JSON.parse(fullSession.metadata.billing_address);
+        console.log("✅ Billing address from metadata:", billingAddress);
       } catch (e) {
         console.error("Failed to parse billing address from metadata:", e);
       }
     } else {
-      // Default: Use shipping address as billing address
+      // Last resort: Use shipping address as billing address
       billingAddress = shippingAddress;
+      console.log("⚠️ Using shipping as billing address (fallback)");
     }
 
     // Parse cart items from metadata
@@ -234,6 +250,7 @@ async function handleCheckoutSessionCompleted(
       subtotal,
       discount: discountAmount,
       shipping: shippingCost,
+      tax: taxAmount,
       total: totalAmount,
       status: "processing" as const,
       stripeSessionId: fullSession.id,
@@ -249,6 +266,8 @@ async function handleCheckoutSessionCompleted(
       discount: orderData.discount,
       hasShippingAddress: !!shippingAddress,
       hasBillingAddress: !!billingAddress,
+      shippingAddressDetails: shippingAddress,
+      billingAddressDetails: billingAddress,
     });
 
     const orderId = await createOrder(orderData);
