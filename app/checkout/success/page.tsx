@@ -27,65 +27,182 @@ function CheckoutSuccessContent() {
   const [error, setError] = useState<string | null>(null);
   const [cartCleared, setCartCleared] = useState(false);
 
-  // Verify payment and fetch order
+  // Verify payment and fetch order with retry logic
   useEffect(() => {
     async function verifyAndFetchOrder() {
+      console.log("🔍 Starting payment verification...");
+      console.log("Session ID:", sessionId);
+      console.log("User:", user?.id);
+      console.log("Cart cleared:", cartCleared);
+
       if (!sessionId) {
-        setError("No session ID provided");
+        console.error("❌ No session ID provided in URL");
+        setError(
+          "No session ID provided. Please return from a valid Stripe checkout."
+        );
         setLoading(false);
         return;
       }
 
+      const MAX_RETRIES = 10; // Try up to 10 times
+      const RETRY_DELAY = 1500; // Wait 1.5 seconds between retries
+
       try {
+        console.log("🔍 Step 1: Verifying payment status...");
         // Verify payment status via server API
         const verifyResponse = await fetch(`/api/verify-payment/${sessionId}`);
+        console.log(
+          "Payment verification response status:",
+          verifyResponse.status
+        );
 
         if (!verifyResponse.ok) {
-          throw new Error("Failed to verify payment");
+          const errorText = await verifyResponse.text();
+          console.error("Payment verification failed:", errorText);
+          throw new Error(`Failed to verify payment: ${verifyResponse.status}`);
         }
 
-        const { paid } = await verifyResponse.json();
+        const verifyData = await verifyResponse.json();
+        console.log("Payment verification data:", verifyData);
 
-        if (!paid) {
-          setError("Payment not completed");
+        if (!verifyData.paid) {
+          console.error("❌ Payment not completed:", verifyData.paymentStatus);
+          setError(
+            `Payment not completed. Status: ${verifyData.paymentStatus}`
+          );
           setLoading(false);
           return;
         }
 
-        // Fetch order from Supabase using session ID
-        const orderResponse = await fetch(
-          `/api/orders/by-session/${sessionId}`
-        );
+        console.log("✅ Payment verified successfully");
+        console.log("🔍 Step 2: Fetching order from database...");
 
-        if (!orderResponse.ok) {
-          throw new Error("Order not found");
+        // Fetch order from Supabase with retry logic (webhook might still be processing)
+        let orderData = null;
+        let lastError = null;
+
+        for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+          try {
+            console.log(
+              `🔍 Fetching order (attempt ${attempt}/${MAX_RETRIES})...`
+            );
+
+            const orderResponse = await fetch(
+              `/api/orders/by-session/${sessionId}`
+            );
+
+            console.log(`Order fetch response status: ${orderResponse.status}`);
+
+            if (orderResponse.ok) {
+              orderData = await orderResponse.json();
+              console.log("✅ Order fetched successfully:", {
+                orderId: orderData.id,
+                itemCount: orderData.items?.length,
+                total: orderData.total,
+              });
+              break; // Success! Exit retry loop
+            } else if (orderResponse.status === 404) {
+              // Order not created yet, retry
+              console.log(
+                `⏳ Order not found yet (webhook still processing), retrying in ${RETRY_DELAY}ms...`
+              );
+              lastError = new Error("Order is still being created by webhook");
+
+              if (attempt < MAX_RETRIES) {
+                // Wait before retrying
+                await new Promise((resolve) =>
+                  setTimeout(resolve, RETRY_DELAY)
+                );
+              }
+            } else {
+              // Other error, throw immediately
+              const errorText = await orderResponse.text();
+              console.error(
+                `Order fetch error ${orderResponse.status}:`,
+                errorText
+              );
+              throw new Error(
+                `Failed to fetch order: ${orderResponse.status} - ${errorText}`
+              );
+            }
+          } catch (fetchError) {
+            lastError = fetchError;
+            console.error(`❌ Attempt ${attempt} failed:`, fetchError);
+
+            if (attempt < MAX_RETRIES) {
+              console.log(`⏳ Waiting ${RETRY_DELAY}ms before retry...`);
+              // Wait before retrying
+              await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+            }
+          }
         }
 
-        const orderData = await orderResponse.json();
+        // Check if we got the order
+        if (!orderData) {
+          console.error("❌ Failed to fetch order after all retries");
+          console.error("Last error:", lastError);
+          throw (
+            lastError ||
+            new Error(
+              "Order not found after multiple attempts. The webhook may have failed. Please check your email for confirmation or contact support."
+            )
+          );
+        }
+
+        console.log("✅ Setting order data in state");
         setOrder(orderData);
 
         // Clear cart after confirming payment success (only once)
+        // Note: Cart should already be cleared by webhook, this is a failsafe
         if (!cartCleared) {
-          console.log("Clearing cart after successful order...");
-          await clearCart(user?.id);
-          setCartCleared(true);
-          console.log("Cart cleared successfully");
+          try {
+            console.log("🔍 Step 3: Clearing cart...");
+            await clearCart(user?.id);
+            setCartCleared(true);
+            console.log("✅ Cart cleared successfully");
+          } catch (cartError) {
+            // Don't fail if cart clearing fails (it may already be cleared by webhook)
+            console.log(
+              "⚠️ Cart clearing skipped or already cleared:",
+              cartError
+            );
+            setCartCleared(true); // Mark as cleared to prevent retries
+          }
         }
+
+        console.log(
+          "🎉 Payment verification and order fetch completed successfully!"
+        );
+
+        // CRITICAL: Set loading to false immediately after success
+        console.log("🔍 Setting loading to false (SUCCESS PATH)");
+        setLoading(false);
       } catch (err) {
-        console.error("Error verifying payment:", err);
+        console.error("❌ Error in payment verification process:", err);
         setError(
           err instanceof Error ? err.message : "Failed to verify payment"
         );
       } finally {
+        console.log("🔍 Setting loading to false (FINALLY BLOCK)");
         setLoading(false);
       }
     }
 
     verifyAndFetchOrder();
-  }, [sessionId, clearCart, user?.id, cartCleared]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]); // Only depend on sessionId - prevents infinite loops
 
   // Loading state
+  console.log(
+    "🔍 RENDER: loading =",
+    loading,
+    "error =",
+    error,
+    "order =",
+    !!order
+  );
   if (loading) {
+    console.log("🔍 RENDER: Showing loading screen");
     return (
       <div className="container mx-auto px-4 py-24 text-center">
         <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-primary" />
@@ -99,6 +216,7 @@ function CheckoutSuccessContent() {
 
   // Error state
   if (error || !order) {
+    console.log("🔍 RENDER: Showing error screen, error:", error, "order:", !!order);
     return (
       <div className="container mx-auto px-4 py-24">
         <div className="mx-auto max-w-2xl text-center">
@@ -128,6 +246,7 @@ function CheckoutSuccessContent() {
   }
 
   // Success state with order details
+  console.log("🔍 RENDER: Showing success screen with order:", order?.id);
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">
       <div className="mx-auto max-w-3xl">

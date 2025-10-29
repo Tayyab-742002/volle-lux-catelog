@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -40,6 +40,10 @@ export default function CheckoutPage() {
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Track if addresses have been loaded to prevent infinite loop
+  const addressesLoadedRef = useRef(false);
+  const lastUserIdRef = useRef<string | null>(null);
+
   // New address form state (shipping only - billing collected by Stripe)
   const [shippingForm, setShippingForm] = useState({
     first_name: "",
@@ -63,27 +67,46 @@ export default function CheckoutPage() {
     }
   }, [items, router]);
 
-  // Load saved addresses for authenticated users
+  // Load saved addresses for authenticated users (with infinite loop protection)
   useEffect(() => {
     async function loadAddresses() {
-      if (!user?.id) {
+      const userId = user?.id;
+
+      // If no user or already loaded for this user, skip
+      if (!userId) {
         setIsLoadingAddresses(false);
+        addressesLoadedRef.current = true;
         return;
       }
 
+      // If already loaded for this exact user ID, skip
+      if (addressesLoadedRef.current && lastUserIdRef.current === userId) {
+        return;
+      }
+
+      // Mark as loading
+      setIsLoadingAddresses(true);
+      lastUserIdRef.current = userId;
+
       try {
-        const addresses = await getSavedAddresses(user.id);
+        console.log("Loading saved addresses for user:", userId);
+        const addresses = await getSavedAddresses(userId);
+        console.log("Loaded addresses:", addresses.length);
         setSavedAddresses(addresses);
 
         // Auto-select default address
         const defaultAddr = addresses.find((a) => a.is_default);
         if (defaultAddr) {
           setSelectedAddressId(defaultAddr.id);
+          console.log("Auto-selected default address:", defaultAddr.id);
         }
       } catch (err) {
         console.error("Failed to load addresses:", err);
+        // Set empty array on error to prevent retry loops
+        setSavedAddresses([]);
       } finally {
         setIsLoadingAddresses(false);
+        addressesLoadedRef.current = true;
       }
     }
 

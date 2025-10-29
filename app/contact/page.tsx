@@ -13,18 +13,59 @@ export default function ContactPage() {
   const [submitStatus, setSubmitStatus] = useState<
     "idle" | "success" | "error"
   >("idle");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus("idle");
+    setErrorMessage("");
 
-    // TODO: Integrate with Resend API
-    setTimeout(() => {
+    try {
+      // Get form data
+      const formData = new FormData(e.currentTarget);
+      const data = {
+        name: formData.get("name") as string,
+        email: formData.get("email") as string,
+        subject: formData.get("subject") as string,
+        message: formData.get("message") as string,
+        company: formData.get("company") as string,
+        phone: formData.get("phone") as string,
+      };
+
+      // Send to API
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setSubmitStatus("success");
+        e.currentTarget.reset();
+
+        // Scroll to success message
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      } else {
+        setSubmitStatus("error");
+        setErrorMessage(
+          result.error || "Failed to send message. Please try again."
+        );
+      }
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      setSubmitStatus("error");
+      setErrorMessage("An unexpected error occurred. Please try again later.");
+    } finally {
       setIsSubmitting(false);
-      setSubmitStatus("success");
-      e.currentTarget.reset();
-    }, 1000);
+    }
   };
 
   return (
@@ -102,7 +143,7 @@ export default function ContactPage() {
                   <div className="grid gap-5 md:grid-cols-2">
                     <div>
                       <Label htmlFor="name" className="mb-2">
-                        Name
+                        Name <span className="text-destructive">*</span>
                       </Label>
                       <Input
                         id="name"
@@ -115,7 +156,7 @@ export default function ContactPage() {
 
                     <div>
                       <Label htmlFor="email" className="mb-2">
-                        Email
+                        Email <span className="text-destructive">*</span>
                       </Label>
                       <Input
                         id="email"
@@ -127,9 +168,35 @@ export default function ContactPage() {
                     </div>
                   </div>
 
+                  <div className="grid gap-5 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="company" className="mb-2">
+                        Company (Optional)
+                      </Label>
+                      <Input
+                        id="company"
+                        name="company"
+                        type="text"
+                        placeholder="Your company name"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phone" className="mb-2">
+                        Phone (Optional)
+                      </Label>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="+1 (555) 123-4567"
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <Label htmlFor="subject" className="mb-2">
-                      Subject
+                      Subject <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="subject"
@@ -142,7 +209,7 @@ export default function ContactPage() {
 
                   <div>
                     <Label htmlFor="message" className="mb-2">
-                      Message
+                      Message <span className="text-destructive">*</span>
                     </Label>
                     <Textarea
                       id="message"
@@ -161,8 +228,9 @@ export default function ContactPage() {
                   )}
 
                   {submitStatus === "error" && (
-                    <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-                      Something went wrong. Please try again later.
+                    <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200">
+                      {errorMessage ||
+                        "Something went wrong. Please try again later."}
                     </div>
                   )}
 

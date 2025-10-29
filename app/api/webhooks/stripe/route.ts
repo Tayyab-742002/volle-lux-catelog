@@ -274,8 +274,73 @@ async function handleCheckoutSessionCompleted(
 
     console.log("Order created successfully:", orderId);
 
-    // TODO: Send confirmation email via Resend (Task 2.4)
-    // await sendOrderConfirmationEmail(orderId, userEmail);
+    // Clear the cart after successful order creation
+    try {
+      const { createClient: createServerClient } = await import(
+        "@supabase/supabase-js"
+      );
+
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+      const supabase = createServerClient(supabaseUrl, supabaseServiceRoleKey, {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      });
+
+      // Delete cart by user_id or session_id
+      if (userId) {
+        console.log("Deleting cart for user:", userId);
+        const { error: deleteError } = await supabase
+          .from("carts")
+          .delete()
+          .eq("user_id", userId);
+
+        if (deleteError) {
+          console.error("⚠️ Failed to delete user cart:", deleteError);
+        } else {
+          console.log("✅ Cart deleted successfully for user");
+        }
+      }
+    } catch (cartError) {
+      // Log error but don't fail the order
+      console.error("⚠️ Error deleting cart:", cartError);
+      console.log("Order created successfully, but cart deletion failed");
+    }
+
+    // Send order confirmation email
+    try {
+      // Import dynamically to avoid issues if Resend is not configured
+      const { sendOrderConfirmationEmail } = await import(
+        "@/services/emails/email.service"
+      );
+      const { getOrderById } = await import("@/services/orders/order.service");
+
+      // Fetch the complete order details
+      const order = await getOrderById(orderId);
+
+      if (order && userEmail) {
+        const emailResult = await sendOrderConfirmationEmail(order, userEmail);
+
+        if (emailResult.success) {
+          console.log(
+            `✅ Order confirmation email sent to ${userEmail} (Message ID: ${emailResult.messageId})`
+          );
+        } else {
+          console.error(
+            `⚠️ Failed to send order confirmation email: ${emailResult.error}`
+          );
+        }
+      } else {
+        console.warn("⚠️ Skipping email: Missing order or email address");
+      }
+    } catch (emailError) {
+      // Log email error but don't fail the order
+      console.error("⚠️ Error sending confirmation email:", emailError);
+      console.log("Order created successfully, but email failed to send");
+    }
 
     return { orderId };
   } catch (error) {

@@ -112,11 +112,13 @@ export async function createOrder(orderData: {
 
 /**
  * Get order by ID
- * Fetches order from Supabase with proper RLS
+ * Fetches order from Supabase
+ * Uses service role client for server-side access (webhooks, admin)
  */
 export async function getOrderById(orderId: string): Promise<Order | null> {
   try {
-    const supabase = createClient() as any;
+    // Use service role client to bypass RLS (works in webhook context)
+    const supabase = createServiceRoleClient();
 
     console.log("Fetching order by ID:", orderId);
 
@@ -221,13 +223,15 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
 /**
  * Update order status
  * Updates order status in Supabase
+ * Uses service role client for server-side access
  */
 export async function updateOrderStatus(
   orderId: string,
   status: Order["status"]
 ): Promise<void> {
   try {
-    const supabase = createClient() as any;
+    // Use service role client for admin operations
+    const supabase = createServiceRoleClient();
 
     console.log("Updating order status:", { orderId, status });
 
@@ -254,10 +258,12 @@ export async function updateOrderStatus(
 /**
  * Get order status
  * Returns the current status of an order
+ * Uses service role client for server-side access
  */
 export async function getOrderStatus(orderId: string): Promise<string | null> {
   try {
-    const supabase = createClient() as any;
+    // Use service role client for reliable access
+    const supabase = createServiceRoleClient();
 
     const { data, error } = await supabase
       .from("orders")
