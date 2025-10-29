@@ -216,7 +216,12 @@ function CheckoutSuccessContent() {
 
   // Error state
   if (error || !order) {
-    console.log("🔍 RENDER: Showing error screen, error:", error, "order:", !!order);
+    console.log(
+      "🔍 RENDER: Showing error screen, error:",
+      error,
+      "order:",
+      !!order
+    );
     return (
       <div className="container mx-auto px-4 py-24">
         <div className="mx-auto max-w-2xl text-center">

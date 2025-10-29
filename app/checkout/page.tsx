@@ -40,9 +40,10 @@ export default function CheckoutPage() {
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Track if addresses have been loaded to prevent infinite loop
+  // Track if addresses have been loaded for this page load to prevent infinite loop
   const addressesLoadedRef = useRef(false);
   const lastUserIdRef = useRef<string | null>(null);
+  const currentLoadPromiseRef = useRef<Promise<void> | null>(null);
 
   // New address form state (shipping only - billing collected by Stripe)
   const [shippingForm, setShippingForm] = useState({
@@ -59,6 +60,14 @@ export default function CheckoutPage() {
   });
 
   const summary = getCartSummary();
+
+  // Reset address loading state on component mount (allows fresh loading on new checkout)
+  useEffect(() => {
+    console.log("Checkout page mounted - resetting address loading state");
+    addressesLoadedRef.current = false;
+    lastUserIdRef.current = null;
+    currentLoadPromiseRef.current = null;
+  }, []); // Empty dependency array = runs only on mount
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -79,8 +88,9 @@ export default function CheckoutPage() {
         return;
       }
 
-      // If already loaded for this exact user ID, skip
+      // If already loaded for this exact user ID in this page load, skip
       if (addressesLoadedRef.current && lastUserIdRef.current === userId) {
+        console.log("Addresses already loaded for this page load, skipping...");
         return;
       }
 
