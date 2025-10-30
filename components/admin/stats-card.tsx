@@ -32,7 +32,8 @@ export function StatsCard({
               )}
             >
               <span>
-                {change.type === "increase" ? "↑" : "↓"} {Math.abs(change.value)}%
+                {change.type === "increase" ? "↑" : "↓"}{" "}
+                {Math.abs(change.value)}%
               </span>
               <span className="text-muted-foreground">vs last period</span>
             </p>
@@ -47,4 +48,3 @@ export function StatsCard({
     </Card>
   );
 }
-

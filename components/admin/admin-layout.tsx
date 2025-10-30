@@ -14,8 +14,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         {/* Sidebar */}
         <AdminSidebar />
 
-        {/* Content Area */}
-        <main className="flex-1 p-8">{children}</main>
+        {/* Content Area - Responsive Padding */}
+        <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 xl:px-12">
+          <div className="mx-auto max-w-7xl">{children}</div>
+        </main>
       </div>
     </div>
   );

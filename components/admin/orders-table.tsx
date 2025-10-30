@@ -162,8 +162,55 @@ export function OrdersTable({ orders, loading, onRefresh }: OrdersTableProps) {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-lg border bg-card">
+      {/* Mobile Card View */}
+      <div className="lg:hidden space-y-4">
+        {filteredOrders.length === 0 ? (
+          <div className="rounded-lg border bg-card p-12 text-center">
+            <p className="text-sm text-muted-foreground">
+              No orders match your filters
+            </p>
+          </div>
+        ) : (
+          filteredOrders.map((order) => (
+            <Link
+              key={order.id}
+              href={`/admin/orders/${order.id}`}
+              className="block rounded-xl border bg-card p-6 transition-all hover:border-primary/30 hover:shadow-md"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <div className="text-lg font-semibold mb-1">
+                    {order.orderNumber}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {order.email}
+                  </div>
+                </div>
+                <StatusBadge status={order.status} />
+              </div>
+              <div className="space-y-2 pt-4 border-t">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Total</span>
+                  <span className="font-semibold">{formatCurrency(order.total)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Date</span>
+                  <span>{formatDate(order.createdAt)}</span>
+                </div>
+                {order.customerName && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Customer</span>
+                    <span className="font-medium">{order.customerName}</span>
+                  </div>
+                )}
+              </div>
+            </Link>
+          ))
+        )}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden lg:block rounded-lg border bg-card">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>

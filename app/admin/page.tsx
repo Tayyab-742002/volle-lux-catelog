@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { StatsCard } from "@/components/admin/stats-card";
+import { StatsCard, StatsCardSkeleton } from "@/components/admin";
 import { ShoppingBag, Package, DollarSign, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -30,16 +30,18 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
       const response = await fetch("/api/admin/stats");
-      
+
       if (!response.ok) {
         throw new Error("Failed to fetch statistics");
       }
-      
+
       const data = await response.json();
       setStats(data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load statistics");
+      setError(
+        err instanceof Error ? err.message : "Failed to load statistics"
+      );
       console.error("Error fetching stats:", err);
     } finally {
       setLoading(false);
@@ -50,17 +52,14 @@ export default function AdminDashboard() {
     return (
       <div>
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="mt-2 text-muted-foreground">
+          <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
+          <p className="mt-4 text-base text-muted-foreground leading-relaxed">
             Overview of your store performance
           </p>
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="h-32 animate-pulse rounded-lg border bg-muted"
-            />
+            <StatsCardSkeleton key={i} />
           ))}
         </div>
       </div>
@@ -71,12 +70,12 @@ export default function AdminDashboard() {
     return (
       <div>
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="mt-2 text-muted-foreground">
+          <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
+          <p className="mt-4 text-base text-muted-foreground leading-relaxed">
             Overview of your store performance
           </p>
         </div>
-        <div className="rounded-lg border border-destructive bg-destructive/10 p-12 text-center">
+        <div className="rounded-xl border border-destructive bg-destructive/10 p-12 text-center">
           <p className="text-lg font-medium text-destructive">{error}</p>
           <Button onClick={fetchStats} className="mt-4">
             Try Again
@@ -93,14 +92,14 @@ export default function AdminDashboard() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="mt-2 text-muted-foreground">
+        <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
+        <p className="mt-4 text-base text-muted-foreground leading-relaxed">
           Overview of your store performance
         </p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Orders"
           value={stats.total}
@@ -124,7 +123,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <Link href="/admin/orders?status=pending">
           <div className="rounded-lg border bg-card p-6 transition-colors hover:border-primary/30 hover:bg-muted/50">
             <div className="flex items-center gap-4">
@@ -155,9 +154,7 @@ export default function AdminDashboard() {
                   Processing
                 </div>
                 <div className="text-2xl font-bold">{stats.processing}</div>
-                <div className="text-xs text-muted-foreground">
-                  In progress
-                </div>
+                <div className="text-xs text-muted-foreground">In progress</div>
               </div>
             </div>
           </div>
@@ -184,9 +181,11 @@ export default function AdminDashboard() {
       </div>
 
       {/* Additional Stats Summary */}
-      <div className="mt-8 rounded-lg border bg-card p-6">
-        <h3 className="mb-4 text-xl font-semibold">Order Status Summary</h3>
-        <div className="grid gap-4 md:grid-cols-4">
+      <div className="mt-8 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-card p-6 shadow-sm">
+        <h3 className="mb-6 text-xl font-semibold tracking-tight">
+          Order Status Summary
+        </h3>
+        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-4">
           <div className="text-center">
             <div className="text-3xl font-bold text-green-600">
               {stats.delivered}
@@ -216,4 +215,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-

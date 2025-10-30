@@ -8,4 +8,5 @@ export { RevenueChart } from "./revenue-chart";
 export { OrdersStatusChart } from "./orders-status-chart";
 export { TopProductsList } from "./top-products-list";
 export { ExportButton } from "./export-button";
+export { ChartSkeleton, DoughnutSkeleton, CardSkeleton, StatsCardSkeleton } from "./chart-skeleton";
 

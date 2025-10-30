@@ -66,30 +66,49 @@ export function TopProductsList({ initialData = [], limit = 10 }: TopProductsLis
 
   return (
     <div className="space-y-3">
-      {products.map((product, index) => (
-        <div
-          key={product.name}
-          className="flex items-center justify-between rounded-lg border bg-card p-4 transition-colors hover:bg-muted/30"
-        >
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-              <span className="font-bold text-primary">{index + 1}</span>
-            </div>
-            <div>
-              <div className="font-semibold">{product.name}</div>
-              <div className="text-sm text-muted-foreground">
-                {product.quantity} sold
+      {products.map((product, index) => {
+        // Medal colors for top 3
+        const getRankColor = (rank: number) => {
+          if (rank === 0) return "from-yellow-400 to-yellow-600 text-white";
+          if (rank === 1) return "from-gray-300 to-gray-500 text-white";
+          if (rank === 2) return "from-orange-300 to-orange-600 text-white";
+          return "from-slate-100 to-slate-200 text-slate-700";
+        };
+
+        return (
+          <div
+            key={product.name}
+            className="group flex items-center justify-between rounded-xl border bg-gradient-to-r from-white to-slate-50 p-5 transition-all hover:shadow-md dark:from-slate-900 dark:to-slate-800"
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${getRankColor(
+                  index
+                )} shadow-lg`}
+              >
+                <span className="text-lg font-bold">#{index + 1}</span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-semibold transition-colors group-hover:text-primary">
+                  {product.name}
+                </div>
+                <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Package className="h-3 w-3" />
+                    {product.quantity} sold
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="text-right">
-            <div className="font-bold text-primary">
-              {formatCurrency(product.revenue)}
+            <div className="text-right">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                {formatCurrency(product.revenue)}
+              </div>
+              <div className="text-xs text-muted-foreground">Revenue</div>
             </div>
-            <div className="text-xs text-muted-foreground">Total revenue</div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
