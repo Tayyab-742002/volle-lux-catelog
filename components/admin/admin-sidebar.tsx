@@ -8,7 +8,7 @@ import {
   ShoppingBag,
   Users,
   BarChart3,
-  Settings,
+
   Package,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -39,11 +39,6 @@ const navigation = [
     href: "/studio",
     icon: Package,
     external: true,
-  },
-  {
-    name: "Settings",
-    href: "/admin/settings",
-    icon: Settings,
   },
 ];
 
