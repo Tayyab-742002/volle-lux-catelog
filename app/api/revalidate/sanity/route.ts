@@ -61,7 +61,10 @@ export async function POST(req: NextRequest) {
       ].forEach((t) => touchedTags.add(t));
     }
 
-    touchedTags.forEach((tag) => revalidateTag(tag));
+    // Support different Next.js signatures across versions by bypassing TS overloads
+    touchedTags.forEach((tag) =>
+      (revalidateTag as unknown as (t: string) => void)(tag)
+    );
 
     return NextResponse.json({
       revalidated: true,

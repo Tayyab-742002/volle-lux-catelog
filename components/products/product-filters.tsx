@@ -12,7 +12,14 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { X } from "lucide-react";
-import { useMemo, useCallback, useState, useRef, useEffect } from "react";
+import {
+  useMemo,
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+  startTransition,
+} from "react";
 
 interface FilterOption {
   value: string;
@@ -25,8 +32,8 @@ interface FilterGroup {
   options: FilterOption[];
 }
 
-// Packaging industry filters
-const filters: FilterGroup[] = [
+// Packaging industry filters baseline
+const baseFilters: FilterGroup[] = [
   {
     name: "Category",
     key: "category",
@@ -71,12 +78,29 @@ const filters: FilterGroup[] = [
   },
 ];
 
-export function ProductFilters() {
+type CategoryOption = { value: string; label: string };
+
+export function ProductFilters({
+  categories,
+}: {
+  categories?: CategoryOption[];
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [localPriceRange, setLocalPriceRange] = useState([0, 1000]);
   const priceDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Compose filters with dynamic categories from server if provided
+  const filters: FilterGroup[] = useMemo(() => {
+    if (categories && categories.length > 0) {
+      return [
+        { name: "Category", key: "category", options: categories },
+        ...baseFilters.filter((f) => f.key !== "category"),
+      ];
+    }
+    return baseFilters;
+  }, [categories]);
 
   // Parse current filters from URL
   const activeFilters = useMemo(() => {
@@ -106,38 +130,31 @@ export function ProductFilters() {
   useEffect(() => {
     const min = priceRange.min;
     const max = priceRange.max;
-    // Only update if different to avoid cascading renders
     if (localPriceRange[0] !== min || localPriceRange[1] !== max) {
       setLocalPriceRange([min, max]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceRange.min, priceRange.max]);
 
-  // INSTANT filter updates (no transition)
+  // INSTANT filter updates (non-blocking with startTransition)
   const updateFilters = useCallback(
     (key: string, value: string, checked: boolean) => {
       const params = new URLSearchParams(searchParams.toString());
       const currentValues = params.get(key)?.split(",").filter(Boolean) || [];
 
       if (checked) {
-        if (!currentValues.includes(value)) {
-          currentValues.push(value);
-        }
+        if (!currentValues.includes(value)) currentValues.push(value);
       } else {
         const index = currentValues.indexOf(value);
-        if (index > -1) {
-          currentValues.splice(index, 1);
-        }
+        if (index > -1) currentValues.splice(index, 1);
       }
 
-      if (currentValues.length > 0) {
-        params.set(key, currentValues.join(","));
-      } else {
-        params.delete(key);
-      }
+      if (currentValues.length > 0) params.set(key, currentValues.join(","));
+      else params.delete(key);
 
-      // INSTANT update - no transition
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      startTransition(() => {
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      });
     },
     [searchParams, pathname, router]
   );
@@ -146,19 +163,15 @@ export function ProductFilters() {
   const updatePriceRange = useCallback(
     (values: number[]) => {
       setLocalPriceRange(values);
-
-      // Clear existing timeout
-      if (priceDebounceRef.current) {
-        clearTimeout(priceDebounceRef.current);
-      }
-
-      // Debounce for 150ms
+      if (priceDebounceRef.current) clearTimeout(priceDebounceRef.current);
       priceDebounceRef.current = setTimeout(() => {
         const params = new URLSearchParams(searchParams.toString());
         params.set("priceMin", values[0].toString());
         params.set("priceMax", values[1].toString());
-        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-      }, 150);
+        startTransition(() => {
+          router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+        });
+      }, 120);
     },
     [searchParams, pathname, router]
   );
@@ -170,7 +183,9 @@ export function ProductFilters() {
     if (sort) params.set("sort", sort);
     if (search) params.set("search", search);
     setLocalPriceRange([0, 1000]);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    startTransition(() => {
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    });
   }, [searchParams, pathname, router]);
 
   const hasActiveFilters =
@@ -223,8 +238,10 @@ export function ProductFilters() {
                 onClick={() => {
                   const params = new URLSearchParams(searchParams.toString());
                   params.delete("category");
-                  router.replace(`/products?${params.toString()}`, {
-                    scroll: false,
+                  startTransition(() => {
+                    router.replace(`/products?${params.toString()}`, {
+                      scroll: false,
+                    });
                   });
                 }}
                 className="h-8 w-8 p-0"

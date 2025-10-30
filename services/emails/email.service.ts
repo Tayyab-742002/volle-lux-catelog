@@ -6,6 +6,7 @@
  */
 
 import { render } from "@react-email/render";
+import React from "react";
 import {
   getResendClient,
   EMAIL_CONFIG,
@@ -43,7 +44,7 @@ export async function sendOrderConfirmationEmail(
 
     // Render email template to HTML string
     const emailHtml = await render(
-      OrderConfirmationEmail({
+      React.createElement(OrderConfirmationEmail, {
         order,
         customerEmail,
       }),
@@ -120,7 +121,7 @@ export async function sendContactFormEmail(data: {
 
     // Render email template to HTML string
     const emailHtml = await render(
-      ContactFormEmail({
+      React.createElement(ContactFormEmail, {
         ...data,
         submittedAt: new Date(),
       }),

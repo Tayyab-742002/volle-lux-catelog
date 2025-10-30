@@ -312,12 +312,27 @@ export const OrderConfirmationEmail: React.FC<
                             <strong>{order.shippingAddress.fullName}</strong>
                             <br />
                             {order.shippingAddress.address}
-                            {order.shippingAddress.address2 && (
-                              <>
-                                <br />
-                                {order.shippingAddress.address2}
-                              </>
-                            )}
+                            {(() => {
+                              const addr2 =
+                                (
+                                  order.shippingAddress as unknown as Record<
+                                    string,
+                                    unknown
+                                  >
+                                )?.address2 ||
+                                (
+                                  order.shippingAddress as unknown as Record<
+                                    string,
+                                    unknown
+                                  >
+                                )?.address_line_2;
+                              return addr2 ? (
+                                <>
+                                  <br />
+                                  {String(addr2)}
+                                </>
+                              ) : null;
+                            })()}
                             <br />
                             {order.shippingAddress.city},{" "}
                             {order.shippingAddress.state}{" "}
