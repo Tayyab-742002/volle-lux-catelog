@@ -15,6 +15,9 @@ export type Database = {
           email: string;
           full_name: string | null;
           avatar_url: string | null;
+          phone: string | null;
+          company: string | null;
+          role: 'customer' | 'admin';
           created_at: string;
           updated_at: string;
         };
@@ -23,6 +26,9 @@ export type Database = {
           email: string;
           full_name?: string | null;
           avatar_url?: string | null;
+          phone?: string | null;
+          company?: string | null;
+          role?: 'customer' | 'admin';
           created_at?: string;
           updated_at?: string;
         };
@@ -31,6 +37,9 @@ export type Database = {
           email?: string;
           full_name?: string | null;
           avatar_url?: string | null;
+          phone?: string | null;
+          company?: string | null;
+          role?: 'customer' | 'admin';
           created_at?: string;
           updated_at?: string;
         };
@@ -129,12 +138,28 @@ export type Database = {
             | "delivered"
             | "cancelled";
           total_amount: number;
+          subtotal: number;
+          discount: number;
+          shipping: number;
+          tax: number;
           currency: string;
           stripe_session_id: string | null;
           stripe_payment_intent_id: string | null;
           shipping_address: any; // JSON object
           billing_address: any; // JSON object
           items: any; // JSON array of order items
+          notes: string | null;
+          customer_name: string | null;
+          customer_phone: string | null;
+          tracking_number: string | null;
+          shipped_at: string | null;
+          delivered_at: string | null;
+          cancelled_at: string | null;
+          cancellation_reason: string | null;
+          refund_amount: number | null;
+          refund_status: "none" | "partial" | "full" | null;
+          payment_method: string;
+          metadata: any; // JSONB
           created_at: string;
           updated_at: string;
         };
@@ -149,12 +174,28 @@ export type Database = {
             | "delivered"
             | "cancelled";
           total_amount: number;
+          subtotal?: number;
+          discount?: number;
+          shipping?: number;
+          tax?: number;
           currency?: string;
           stripe_session_id?: string | null;
           stripe_payment_intent_id?: string | null;
           shipping_address: any;
           billing_address: any;
           items: any;
+          notes?: string | null;
+          customer_name?: string | null;
+          customer_phone?: string | null;
+          tracking_number?: string | null;
+          shipped_at?: string | null;
+          delivered_at?: string | null;
+          cancelled_at?: string | null;
+          cancellation_reason?: string | null;
+          refund_amount?: number | null;
+          refund_status?: "none" | "partial" | "full" | null;
+          payment_method?: string;
+          metadata?: any;
           created_at?: string;
           updated_at?: string;
         };
@@ -169,12 +210,28 @@ export type Database = {
             | "delivered"
             | "cancelled";
           total_amount?: number;
+          subtotal?: number;
+          discount?: number;
+          shipping?: number;
+          tax?: number;
           currency?: string;
           stripe_session_id?: string | null;
           stripe_payment_intent_id?: string | null;
           shipping_address?: any;
           billing_address?: any;
           items?: any;
+          notes?: string | null;
+          customer_name?: string | null;
+          customer_phone?: string | null;
+          tracking_number?: string | null;
+          shipped_at?: string | null;
+          delivered_at?: string | null;
+          cancelled_at?: string | null;
+          cancellation_reason?: string | null;
+          refund_amount?: number | null;
+          refund_status?: "none" | "partial" | "full" | null;
+          payment_method?: string;
+          metadata?: any;
           created_at?: string;
           updated_at?: string;
         };

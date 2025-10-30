@@ -68,6 +68,9 @@ export async function middleware(request: NextRequest) {
   // Define auth routes that should redirect if already authenticated
   const authRoutes = ["/auth/login", "/auth/signup"];
 
+  // Define admin routes that require admin role
+  const adminRoutes = ["/admin"];
+
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
@@ -75,6 +78,35 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = authRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
+
+  const isAdminRoute = adminRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  // Check admin routes - must be authenticated AND have admin role
+  if (isAdminRoute) {
+    if (!user) {
+      // Not logged in, redirect to login
+      const url = request.nextUrl.clone();
+      url.pathname = "/auth/login";
+      url.searchParams.set("redirectTo", request.nextUrl.pathname);
+      return NextResponse.redirect(url);
+    }
+
+    // Check if user has admin role
+    const { data: userData, error } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (error || userData?.role !== 'admin') {
+      // Not an admin, redirect to home
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
+  }
 
   // Redirect unauthenticated users from protected routes
   if (isProtectedRoute && !user) {
@@ -114,11 +146,11 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - admin-dashboard (Sanity Studio)
+     * - studio (Sanity Studio)
      * - api routes (handled separately)
      * - test-supabase (test page)
      * Feel free to modify this pattern to include more paths.
      */
-    "/((?!_next/static|_next/image|favicon.ico|admin-dashboard|api|test-supabase|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|studio|api|test-supabase|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

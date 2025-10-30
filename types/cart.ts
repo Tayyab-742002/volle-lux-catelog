@@ -20,10 +20,12 @@ export interface Cart {
 export interface ShippingAddress {
   fullName: string;
   address: string;
+  address2?: string;
   city: string;
   state: string;
   zipCode: string;
   country: string;
+  phone?: string;
 }
 
 export interface BillingAddress extends ShippingAddress {}
