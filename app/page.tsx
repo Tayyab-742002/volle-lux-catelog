@@ -5,6 +5,7 @@ import {
   FeaturedProducts,
   SustainabilityBlock,
   NewArrivals,
+  FinalCTA,
 } from "@/components/home";
 
 // Revalidate every 60 seconds to ensure fresh category data
@@ -19,6 +20,7 @@ export default function Home() {
       <FeaturedProducts />
       <SustainabilityBlock />
       <NewArrivals />
+      <FinalCTA />
     </>
   );
 }

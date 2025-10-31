@@ -4,6 +4,7 @@ import { getAllCategories } from "@/sanity/lib";
 import { Breadcrumbs } from "@/components/common/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Package } from "lucide-react";
+import { Category } from "@/types/category";
 
 // Revalidate every 60 seconds to ensure fresh category data
 export const revalidate = 60;
@@ -30,11 +31,11 @@ export default async function CategoriesPage() {
       {/* Categories Grid */}
       {categories && categories.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {categories.map((category: any) => (
+          {categories.map((category: Category) => (
             <Link
               key={category.id}
               href={`/products?category=${category.slug}`}
-              className="group flex flex-col overflow-hidden rounded-lg border bg-card transition-all hover:border-primary/50 hover:shadow-lg"
+              className="group flex flex-col overflow-hidden rounded-lg border border-neutral-300 bg-card transition-all hover:border-primary/50 hover:shadow-lg"
             >
               {/* Category Image */}
               <div className="relative h-48 overflow-hidden bg-muted">
@@ -103,7 +104,7 @@ export default async function CategoriesPage() {
       {/* Bottom CTA */}
       <div className="mt-16 rounded-lg border bg-muted/50 p-8 text-center">
         <h2 className="mb-4 text-2xl font-semibold">
-          Can't find what you're looking for?
+          Can&apos;t find what you&apos;re looking for?
         </h2>
         <p className="mb-6 text-muted-foreground">
           Browse all products or use our advanced filters to find exactly what

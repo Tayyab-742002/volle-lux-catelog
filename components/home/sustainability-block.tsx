@@ -31,7 +31,7 @@ export function SustainabilityBlock() {
         <div className="order-1 md:order-2">
           <div className="aspect-square overflow-hidden rounded-lg shadow-lg">
             <Image
-              src="https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/sustainability-hero.jpg"
+              src="https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/sustainibility-new.png"
               alt="Sustainable Packaging"
               width={800}
               height={800}
