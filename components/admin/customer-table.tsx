@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 
 interface CustomerTableProps {
   customers: AdminCustomer[];
@@ -33,7 +34,6 @@ interface CustomerTableProps {
 export function CustomerTable({
   customers,
   loading,
-  onRefresh,
 }: CustomerTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<string>("created_at");
@@ -109,7 +109,7 @@ export function CustomerTable({
             placeholder="Search customers..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 w-full"
+            className="pl-9 w-full border border-neutral-400 rounded-lg"
           />
         </div>
       </div>
@@ -135,7 +135,7 @@ export function CustomerTable({
       <div className="hidden md:block px-4 sm:px-6 pb-4 sm:pb-6">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="border-b border-neutral-200 ">
+            <thead className="border border-neutral-400 ">
               <tr>
                 <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   <button
@@ -226,7 +226,7 @@ export function CustomerTable({
 // Mobile Card Component
 function CustomerCard({ customer }: { customer: AdminCustomer }) {
   return (
-    <div className="p-4 hover:bg-neutral-50  transition-colors">
+    <div className="p-4 hover:bg-neutral-50 border border-neutral-400 transition-colors">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-start gap-3 flex-1 min-w-0">
           {customer.avatarUrl ? (
@@ -306,7 +306,7 @@ function CustomerCard({ customer }: { customer: AdminCustomer }) {
         </div>
       )}
 
-      <div className="flex items-center gap-1.5 pt-3 border-t border-neutral-200  text-xs text-muted-foreground">
+      <div className="flex items-center gap-1.5 pt-3 border-t border-neutral-400  text-xs text-muted-foreground">
         <Calendar className="h-3 w-3 shrink-0" />
         <span>Joined {formatDate(customer.createdAt)}</span>
       </div>
@@ -317,12 +317,14 @@ function CustomerCard({ customer }: { customer: AdminCustomer }) {
 // Desktop Table Row Component
 function CustomerRow({ customer }: { customer: AdminCustomer }) {
   return (
-    <tr className="hover:bg-neutral-50  transition-colors">
+    <tr className="hover:bg-neutral-50  border border-neutral-400 transition-colors">
       <td className="py-3 px-4">
         <div className="flex items-center gap-3 min-w-0">
           {customer.avatarUrl ? (
             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
-              <img
+              <Image
+                width={40}
+                height={40}
                 src={customer.avatarUrl}
                 alt={customer.fullName || customer.email}
                 className="h-full w-full object-cover"

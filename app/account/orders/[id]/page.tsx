@@ -6,6 +6,9 @@ import { getOrderById } from "@/services/orders/order.service";
 import { getCurrentUserServer } from "@/services/auth/auth-server.service";
 import { notFound } from "next/navigation";
 
+// Placeholder image for missing product images
+const PLACEHOLDER_IMAGE = "/placeholder-image.png";
+
 interface OrderDetailsPageProps {
   params: Promise<{ id: string }>;
 }
@@ -73,14 +76,14 @@ export default async function OrderDetailsPage({
       zip: order.shippingAddress?.zipCode || "N/A",
       country: order.shippingAddress?.country || "N/A",
     },
-    items: order.items.map((item) => ({
-      id: item.id,
-      name: item.product.name,
+    items: order.items.map((item, index) => ({
+      id: item.id || `${index}`,
+      name: item.product?.name || "Unknown Product",
       variant: item.variant?.name || "Default",
       quantity: item.quantity,
       pricePerUnit: item.pricePerUnit,
       total: item.totalPrice,
-      image: item.product.image,
+      image: item.product?.image || "/placeholder-image.png",
     })),
   };
 
@@ -180,13 +183,19 @@ export default async function OrderDetailsPage({
               key={item.id}
               className="flex gap-6 p-6 transition-colors hover:bg-muted/30"
             >
-              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border">
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  fill
-                  className="object-cover"
-                />
+              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border bg-muted">
+                {item.image && item.image !== PLACEHOLDER_IMAGE ? (
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <Package className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                )}
               </div>
               <div className="flex-1">
                 <h4 className="mb-1 font-semibold">{item.name}</h4>

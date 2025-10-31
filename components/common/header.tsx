@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Search, User, ShoppingCart, Menu, X, LogOut } from "lucide-react";
 import { MiniCart } from "@/components/cart/mini-cart";
@@ -17,9 +17,15 @@ import {
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { getItemCount } = useCartStore();
   const { user, isAuthenticated, signOut, loading } = useAuth();
   const cartItemCount = getItemCount();
+
+  // Prevent hydration mismatch by only showing cart count after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSignOut = async () => {
     await signOut();
@@ -152,7 +158,7 @@ export function Header() {
                 className="relative p-2 transition-colors hover:text-primary"
               >
                 <ShoppingCart className="h-5 w-5" strokeWidth={1.5} />
-                {cartItemCount > 0 && (
+                {mounted && cartItemCount > 0 && (
                   <span className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
                     {cartItemCount > 9 ? "9+" : cartItemCount}
                   </span>

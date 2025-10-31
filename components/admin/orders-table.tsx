@@ -119,7 +119,7 @@ export function OrdersTable({ orders, loading, onRefresh }: OrdersTableProps) {
               placeholder="Search orders..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 w-full"
+              className="pl-9 w-full border border-neutral-400 rounded-lg"
             />
           </div>
 
@@ -169,7 +169,7 @@ export function OrdersTable({ orders, loading, onRefresh }: OrdersTableProps) {
       <div className="hidden md:block px-4 sm:px-6 pb-4 sm:pb-6">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="border-b border-neutral-200 ">
+            <thead className="border border-neutral-400 ">
               <tr>
                 <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Order #
@@ -262,7 +262,7 @@ function OrderCard({ order }: { order: AdminOrder }) {
   return (
     <Link
       href={`/admin/orders/${order.id}`}
-      className="block p-4 hover:bg-neutral-50  transition-colors"
+      className="block p-4 hover:bg-neutral-50 border border-neutral-400 transition-colors"
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
@@ -314,7 +314,7 @@ function OrderCard({ order }: { order: AdminOrder }) {
 // Desktop Table Row Component
 function OrderRow({ order }: { order: AdminOrder }) {
   return (
-    <tr className="hover:bg-neutral-50  transition-colors">
+    <tr className="hover:bg-neutral-50 border border-neutral-400  transition-colors">
       <td className="py-3 px-4">
         <Link
           href={`/admin/orders/${order.id}`}
@@ -407,7 +407,7 @@ function OrdersTableSkeleton() {
       {/* Desktop Skeleton */}
       <div className="hidden md:block px-4 sm:px-6 pb-4 sm:pb-6">
         <table className="w-full">
-          <thead className="border-b border-neutral-200 ">
+          <thead className="border border-neutral-400 ">
             <tr>
               <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase">
                 Order #

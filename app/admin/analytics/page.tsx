@@ -48,49 +48,6 @@ export default function AnalyticsPage() {
         </p>
       </div>
 
-      {/* Key Metrics Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white shadow-lg transition-transform hover:scale-105">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium opacity-90">Total Revenue</p>
-              <p className="mt-2 text-3xl font-bold">$0.00</p>
-            </div>
-            <DollarSign className="h-10 w-10 opacity-80" />
-          </div>
-        </div>
-
-        <div className="rounded-xl border bg-gradient-to-br from-green-500 to-green-600 p-6 text-white shadow-lg transition-transform hover:scale-105">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium opacity-90">Total Orders</p>
-              <p className="mt-2 text-3xl font-bold">0</p>
-            </div>
-            <Package className="h-10 w-10 opacity-80" />
-          </div>
-        </div>
-
-        <div className="rounded-xl border bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white shadow-lg transition-transform hover:scale-105">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium opacity-90">Avg Order Value</p>
-              <p className="mt-2 text-3xl font-bold">$0.00</p>
-            </div>
-            <TrendingUp className="h-10 w-10 opacity-80" />
-          </div>
-        </div>
-
-        <div className="rounded-xl border bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white shadow-lg transition-transform hover:scale-105">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium opacity-90">Customers</p>
-              <p className="mt-2 text-3xl font-bold">0</p>
-            </div>
-            <Users className="h-10 w-10 opacity-80" />
-          </div>
-        </div>
-      </div>
-
       {/* Main Charts Grid */}
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Revenue Chart - Takes 2 columns */}

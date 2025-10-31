@@ -90,7 +90,7 @@ export default function CustomersPage() {
         {/* Quick Stats Bar - Responsive Grid */}
         {!loading && !error && customers.length > 0 && (
           <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 bg-card px-4 py-3 sm:px-5 sm:py-4 shadow-sm min-w-0">
+            <div className="flex items-center justify-between rounded-xl border border-neutral-400 bg-card px-4 py-3 sm:px-5 sm:py-4 shadow-sm min-w-0">
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-medium text-muted-foreground sm:text-sm truncate">
                   Total Customers
@@ -104,7 +104,7 @@ export default function CustomersPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 bg-card px-4 py-3 sm:px-5 sm:py-4 shadow-sm min-w-0">
+            <div className="flex items-center justify-between rounded-xl border border-neutral-400 bg-card px-4 py-3 sm:px-5 sm:py-4 shadow-sm min-w-0">
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-medium text-muted-foreground sm:text-sm truncate">
                   Active Customers
@@ -130,7 +130,7 @@ export default function CustomersPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 bg-card px-4 py-3 sm:px-5 sm:py-4 shadow-sm min-w-0 sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center justify-between rounded-xl border border-neutral-400 bg-card px-4 py-3 sm:px-5 sm:py-4 shadow-sm min-w-0 sm:col-span-2 lg:col-span-1">
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-medium text-muted-foreground sm:text-sm truncate">
                   New (30 days)
@@ -163,7 +163,7 @@ export default function CustomersPage() {
           <div className="flex items-center justify-center py-12 sm:py-16 lg:py-20">
             <div className="text-center space-y-4 max-w-md px-4 w-full">
               <div className="flex justify-center">
-                <div className="rounded-full bg-neutral-100 dark:bg-neutral-900 p-3 sm:p-4">
+                <div className="rounded-full bg-neutral-100 p-3 sm:p-4">
                   <AlertTriangle
                     className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground"
                     strokeWidth={1.5}
@@ -191,7 +191,7 @@ export default function CustomersPage() {
           </div>
         ) : (
           /* Customer Table - No Extra Wrapper Needed */
-          <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-card shadow-sm overflow-hidden">
+          <div className="rounded-xl  bg-card shadow-sm overflow-hidden">
             <CustomerTable
               customers={customers}
               loading={loading}
@@ -205,7 +205,7 @@ export default function CustomersPage() {
           <div className="flex items-center justify-center py-12 sm:py-16 lg:py-20">
             <div className="text-center space-y-4 max-w-md px-4 w-full">
               <div className="flex justify-center">
-                <div className="rounded-full bg-neutral-100 dark:bg-neutral-900 p-3 sm:p-4">
+                <div className="rounded-full bg-neutral-100  p-3 sm:p-4">
                   <Users
                     className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground"
                     strokeWidth={1.5}

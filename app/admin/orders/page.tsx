@@ -58,11 +58,11 @@ export default function OrdersPage() {
         {/* Quick Stats - Mobile: Stack, Tablet+: Row */}
         {!loading && !error && orders.length > 0 && (
           <div className="flex flex-wrap gap-3 sm:gap-4">
-            <div className="flex items-center gap-2 rounded-lg border border-neutral-300 bg-card px-4 py-2 shadow-sm">
-              <span className="text-sm font-medium text-muted-foreground">
+            <div className="flex items-center gap-2 rounded-lg bg-primary/30 px-4 py-2 shadow-sm">
+              <span className="text-sm font-medium ">
                 Total
               </span>
-              <span className="text-lg font-bold tracking-tight">
+              <span className="text-lg font-bold tracking-tight text-primary">
                 {orders.length}
               </span>
             </div>
@@ -71,7 +71,7 @@ export default function OrdersPage() {
               size="sm"
               onClick={fetchOrders}
               disabled={loading}
-              className="gap-2"
+              className="gap-2 border "
             >
               <RefreshCw
                 className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
@@ -109,7 +109,7 @@ export default function OrdersPage() {
         </div>
       ) : (
         /* Orders Table */
-        <div className="rounded-xl border border-neutral-300 p-4  bg-card shadow-sm overflow-hidden">
+        <div className="rounded-xl border  p-4  bg-card shadow-sm overflow-hidden">
           <OrdersTable
             orders={orders}
             loading={loading}
