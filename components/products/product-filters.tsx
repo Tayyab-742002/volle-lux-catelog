@@ -89,6 +89,9 @@ export function ProductFilters({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [localPriceRange, setLocalPriceRange] = useState([0, 1000]);
+  const [optimisticFilters, setOptimisticFilters] = useState<
+    Record<string, string[]>
+  >({});
   const priceDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Compose filters with dynamic categories from server if provided
@@ -136,27 +139,51 @@ export function ProductFilters({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceRange.min, priceRange.max]);
 
-  // INSTANT filter updates (non-blocking with startTransition)
+  // INSTANT filter updates with optimistic UI (non-blocking with startTransition)
   const updateFilters = useCallback(
     (key: string, value: string, checked: boolean) => {
+      // OPTIMISTIC: Update UI immediately
+      setOptimisticFilters((prev) => {
+        const newFilters = { ...prev };
+        const currentValues = newFilters[key] || activeFilters[key] || [];
+        const newValues = [...currentValues];
+
+        if (checked) {
+          if (!newValues.includes(value)) newValues.push(value);
+        } else {
+          const index = newValues.indexOf(value);
+          if (index > -1) newValues.splice(index, 1);
+        }
+
+        if (newValues.length > 0) {
+          newFilters[key] = newValues;
+        } else {
+          delete newFilters[key];
+        }
+
+        return newFilters;
+      });
+
+      // Update URL in background
       const params = new URLSearchParams(searchParams.toString());
       const currentValues = params.get(key)?.split(",").filter(Boolean) || [];
+      const newValues = [...currentValues];
 
       if (checked) {
-        if (!currentValues.includes(value)) currentValues.push(value);
+        if (!newValues.includes(value)) newValues.push(value);
       } else {
-        const index = currentValues.indexOf(value);
-        if (index > -1) currentValues.splice(index, 1);
+        const index = newValues.indexOf(value);
+        if (index > -1) newValues.splice(index, 1);
       }
 
-      if (currentValues.length > 0) params.set(key, currentValues.join(","));
+      if (newValues.length > 0) params.set(key, newValues.join(","));
       else params.delete(key);
 
       startTransition(() => {
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
       });
     },
-    [searchParams, pathname, router]
+    [searchParams, pathname, router, activeFilters]
   );
 
   // Debounced price range update
@@ -183,10 +210,16 @@ export function ProductFilters({
     if (sort) params.set("sort", sort);
     if (search) params.set("search", search);
     setLocalPriceRange([0, 1000]);
+    setOptimisticFilters({}); // Clear optimistic state
     startTransition(() => {
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     });
   }, [searchParams, pathname, router]);
+
+  // Sync optimistic filters with URL params when they update
+  useEffect(() => {
+    setOptimisticFilters({});
+  }, [searchParams]);
 
   const hasActiveFilters =
     Object.keys(activeFilters).length > 0 ||
@@ -292,7 +325,9 @@ export function ProductFilters({
               <AccordionContent>
                 <div className="space-y-3">
                   {filter.options.map((option) => {
+                    // Use optimistic filters for instant UI feedback
                     const isChecked =
+                      optimisticFilters[filter.key]?.includes(option.value) ||
                       activeFilters[filter.key]?.includes(option.value) ||
                       false;
                     return (

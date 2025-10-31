@@ -1,15 +1,11 @@
+import { Suspense } from "react"
 import { ProductFilters } from "@/components/products/product-filters";
-import { ProductCard } from "@/components/products/product-card";
 import { ProductSort } from "@/components/products/product-sort";
 import { Breadcrumbs } from "@/components/common/breadcrumbs";
-import {
-  getFilteredProducts,
-  getProducts,
-  searchProducts,
-} from "@/services/products/product.service";
+import { ProductGridWrapper } from "@/components/products/product-grid-wrapper";
 import { getAllCategories } from "@/sanity/lib";
 
-export const revalidate = 300;
+export const revalidate = 60; // Reduce cache time for faster filter updates
 
 export default async function ProductsPage({
   searchParams,
@@ -25,39 +21,13 @@ export default async function ProductsPage({
     sort?: string;
   }>;
 }) {
-  const sp = await searchParams;
-  const searchQuery = sp.search?.trim();
-  const category = sp.category;
-  const sizes = sp.size ? sp.size.split(",") : [];
-  const materials = sp.material ? sp.material.split(",") : [];
-  const ecoFriendly = sp.ecoFriendly ? sp.ecoFriendly.split(",") : [];
-  const priceMin = Number(sp.priceMin || 0);
-  const priceMax = Number(sp.priceMax || 100000);
-  const sortBy = (sp.sort as string) || "newest";
-
-  // If search query exists, use search instead of filters
-  let products;
-  if (searchQuery) {
-    products = await searchProducts(searchQuery);
-  } else {
-    products = await getFilteredProducts(
-      {
-        category,
-        size: sizes,
-        material: materials,
-        ecoFriendly,
-        priceMin,
-        priceMax,
-      },
-      sortBy
-    );
-    if (!products || products.length === 0) {
-      products = await getProducts();
-    }
-  }
+  // Fetch categories in parallel with searchParams
+  const [sp, categoriesList] = await Promise.all([
+    searchParams,
+    getAllCategories(),
+  ]);
 
   // Build category options for client filters to ensure exact matching to slugs
-  const categoriesList = await getAllCategories();
   const categoryOptions = (categoriesList || []).map(
     (c: { slug: string; name: string }) => ({
       value: c.slug,
@@ -65,12 +35,15 @@ export default async function ProductsPage({
     })
   );
 
+  const category = sp.category
   const categoryDisplayName = category
     ? category
         .split("-")
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
         .join(" ")
     : null;
+  
+  const searchQuery = sp.search?.trim();
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
@@ -95,13 +68,8 @@ export default async function ProductsPage({
               ? `Search Results: "${searchQuery}"`
               : categoryDisplayName || "All Products"}
           </h1>
-          <p className="text-muted-foreground">
-            {searchQuery
-              ? `Found ${products.length} result${products.length !== 1 ? "s" : ""}`
-              : `Showing ${products.length} product${products.length !== 1 ? "s" : ""}`}
-          </p>
         </div>
-        <ProductSort currentSort={sortBy} />
+        <ProductSort currentSort={sp.sort || "newest"} />
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
@@ -109,20 +77,7 @@ export default async function ProductsPage({
           <ProductFilters categories={categoryOptions} />
         </div>
         <div className="lg:col-span-3">
-          {products.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-12 text-center">
-              <h3 className="mb-2 text-lg font-semibold">No products found</h3>
-              <p className="text-muted-foreground">
-                Try adjusting your filters or check back later for new products.
-              </p>
-            </div>
-          )}
+          <ProductGridWrapper searchParams={sp} />
         </div>
       </div>
     </div>

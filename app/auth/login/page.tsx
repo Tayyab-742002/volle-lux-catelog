@@ -180,7 +180,7 @@ export default function LoginPage() {
             {/* Additional Links */}
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <Link
                   href="/auth/signup"
                   className="font-medium text-primary hover:text-primary/80"
@@ -191,28 +191,7 @@ export default function LoginPage() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Demo Account Info */}
-        <Card className="bg-blue-50 border-blue-200">
-          <CardContent className="pt-6">
-            <h3 className="text-sm font-medium text-blue-900 mb-2">
-              Demo Account
-            </h3>
-            <p className="text-sm text-blue-800">
-              For testing purposes, you can use:
-            </p>
-            <div className="mt-2 text-sm text-blue-700">
-              <p>
-                <strong>Email:</strong> demo@volle.com
-              </p>
-              <p>
-                <strong>Password:</strong> demo123
-              </p>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
 }
-

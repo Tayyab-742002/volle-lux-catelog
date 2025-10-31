@@ -4,7 +4,6 @@ import {
   ProductPurchaseSection,
   ProductInfoAccordion,
 } from "@/components/products";
-import { Product } from "@/types/product";
 import { getProductBySlug } from "@/services/products/product.service";
 import { getProductSlugs } from "@/sanity/lib/api";
 import { notFound } from "next/navigation";
