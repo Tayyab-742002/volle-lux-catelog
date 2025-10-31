@@ -1,5 +1,6 @@
 import { Breadcrumbs } from "@/components/common";
 import { Leaf, Recycle, Sprout, Earth } from "lucide-react";
+import Link from "next/link";
 
 export default function SustainabilityPage() {
   return (
@@ -27,10 +28,10 @@ export default function SustainabilityPage() {
           {/* Intro */}
           <div className="mb-12 rounded-lg border bg-muted/30 p-8 text-center">
             <p className="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground">
-              At Volle, we believe exceptional packaging doesn't have to come at
-              the expense of the environment. We're committed to reducing our
-              environmental impact through sustainable materials and responsible
-              manufacturing.
+              At Volle, we believe exceptional packaging doesn&apos;t have to
+              come at the expense of the environment. We&apos;re committed to
+              reducing our environmental impact through sustainable materials
+              and responsible manufacturing.
             </p>
           </div>
 
@@ -133,12 +134,12 @@ export default function SustainabilityPage() {
             <p className="mb-6 text-muted-foreground">
               Discover our selection of sustainable packaging solutions
             </p>
-            <a
+            <Link
               href="/products?filter=eco-friendly"
               className="inline-block rounded-md bg-primary px-8 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               View Eco-Friendly Products
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/types/product";
-import { Badge } from "@/components/ui/badge";
 
 interface ProductCardProps {
   product: Product;
@@ -11,63 +10,65 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   return (
-    <Link href={`/products/${product.slug}`} className="group block">
-      <div className="overflow-hidden rounded-lg bg-background transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-        {/* Image */}
-        <div className="relative aspect-square w-full overflow-hidden bg-muted">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            priority={false}
-            placeholder="empty"
-          />
-          {/* Badge */}
-          {product.discount && (
-            <Badge className="absolute left-3 top-3 bg-primary text-primary-foreground">
-              -{product.discount}%
-            </Badge>
-          )}
-        </div>
+    <div className="group">
+      <Link href={`/products/${product.slug}`}>
+        <div className="overflow-hidden bg-background p-4 transition-shadow duration-300 hover:shadow-xl">
+          {/* Image Container - 90% of card */}
+          <div className="relative aspect-square w-full overflow-hidden bg-muted">
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              priority={false}
+              placeholder="empty"
+            />
 
-        {/* Info */}
-        <div className="p-4">
-          {/* Title */}
-          <h3 className="mb-2 line-clamp-2 text-sm font-medium transition-colors group-hover:text-primary">
-            {product.name}
-          </h3>
-
-          {/* Price */}
-          <div className="mb-3 flex items-baseline gap-2">
-            <p className="font-medium">From ${product.basePrice.toFixed(2)}</p>
-            {product.variants && product.variants.length > 1 && (
-              <span className="text-xs text-muted-foreground">
-                (Bulk discounts available)
-              </span>
+            {/* Badge - Accent color pill */}
+            {product.discount && (
+              <div className="absolute left-3 top-3">
+                <span className="inline-flex items-center rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-lg">
+                  -{product.discount}%
+                </span>
+              </div>
             )}
           </div>
 
-          {/* Quick Variants - Show first 3 sizes if available */}
-          {product.variants && product.variants.length > 0 && (
-            <div className="flex gap-2">
-              {product.variants.slice(0, 3).map((variant) => (
-                <button
-                  key={variant.id}
-                  className="rounded border border-border px-2 py-1 text-xs transition-colors hover:border-primary hover:text-primary"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    // TODO: Handle variant selection
-                  }}
-                >
-                  {variant.name}
-                </button>
-              ))}
+          {/* Info Section */}
+          <div className="pt-4">
+            {/* Title */}
+            <h3 className="mb-2 line-clamp-2 text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+              {product.name}
+            </h3>
+
+            {/* Price */}
+            <div className="mb-3 flex items-baseline gap-2">
+              <span className="text-lg font-bold text-foreground">
+                ${product.basePrice.toFixed(2)}
+              </span>
+              {product.variants && product.variants.length > 1 && (
+                <span className="text-xs text-muted-foreground">From</span>
+              )}
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+
+      {/* Quick Variants - Separate from link to navigate to product page */}
+      {product.variants && product.variants.length > 0 && (
+        <div className="flex gap-2 px-4 pb-4">
+          {product.variants.slice(0, 3).map((variant) => (
+            <Link
+              key={variant.id}
+              href={`/products/${product.slug}`}
+              className="rounded border border-border bg-background px-3 py-1 text-xs font-medium text-foreground transition-all hover:border-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              {variant.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

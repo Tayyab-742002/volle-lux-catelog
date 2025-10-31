@@ -36,7 +36,8 @@
   --sidebar-accent-foreground: oklch(0.2101 0.0318 264.6645);
   --sidebar-border: oklch(0.9276 0.0058 264.5313);
   --sidebar-ring: oklch(0.6716 0.1368 48.513);
-  --font-sans: Geist Mono, ui-monospace, monospace;
+  --font-sans: var(--font-roboto), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
   --font-serif: serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 0.75rem;
@@ -91,7 +92,8 @@
   --sidebar-accent-foreground: oklch(0.8109 0 0);
   --sidebar-border: oklch(0.252 0 0);
   --sidebar-ring: oklch(0.7214 0.1337 49.9802);
-  --font-sans: Geist Mono, ui-monospace, monospace;
+  --font-sans: var(--font-roboto), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
   --font-serif: serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 0.75rem;
@@ -199,11 +201,4 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
-  .scrollbar-hide::-webkit-scrollbar {
-     display: none;
-    }
-   .scrollbar-hide {
-     -ms-overflow-style: none;
-       scrollbar-width: none;
-   }
 }

@@ -60,7 +60,7 @@ The palette will be based on the **default Shadcn UI / Tailwind CSS theme** to e
 
 ### 3.2 Typography
 
-- **Font Family:** `Inter` (Variable Font).
+- **Font Family:** `Roboto` (Variable Font).
 - **Headings (h1, h2):** `Bold (700)` weight.
 - **Subheadings (h3, h4):** `Regular (400)` or `Medium (500)` weight.
 - **Body & UI Elements:** `Regular (400)` weight, 16px base, with a generous line height.
