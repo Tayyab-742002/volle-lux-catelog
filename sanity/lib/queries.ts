@@ -167,6 +167,14 @@ export const ALL_CATEGORIES_QUERY = `*[_type == "category" && isActive == true] 
   ${CATEGORY_QUERY}
 }`;
 
+// Categories with featured products for mega menu
+export const CATEGORIES_WITH_FEATURED_PRODUCTS_QUERY = `*[_type == "category" && isActive == true] | order(sortOrder asc, name asc) {
+  ${CATEGORY_QUERY},
+  "featuredProducts": *[_type == "product" && isActive == true && isFeatured == true && category._ref == ^._id] | order(name asc) [0...3] {
+    ${PRODUCT_LISTING_QUERY}
+  }
+}`;
+
 // Search products query
 export const SEARCH_PRODUCTS_QUERY = `*[_type == "product" && isActive == true && (
   name match $searchTerm ||

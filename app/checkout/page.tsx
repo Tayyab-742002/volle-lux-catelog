@@ -22,6 +22,7 @@ import {
   getSavedAddresses,
   type SavedAddress as SavedAddressType,
 } from "@/services/users/user.service";
+import { fetchWithRetry } from "@/lib/utils/retry";
 
 // Use SavedAddress type from user service
 type SavedAddress = SavedAddressType;
@@ -75,6 +76,14 @@ export default function CheckoutPage() {
       router.push("/cart");
     }
   }, [items, router]);
+
+  // Enforce authentication for checkout
+  useEffect(() => {
+    if (!user?.id) {
+      const redirect = encodeURIComponent("/checkout");
+      router.push(`/auth/login?redirect=${redirect}`);
+    }
+  }, [user?.id, router]);
 
   // Load saved addresses for authenticated users (with infinite loop protection)
   useEffect(() => {
@@ -227,9 +236,9 @@ export default function CheckoutPage() {
         throw new Error("Please select or enter a shipping address");
       }
 
-      // Create Stripe checkout session
+      // Create Stripe checkout session (with retry)
       // Note: Billing address will be collected by Stripe
-      const response = await fetch("/api/checkout", {
+      const response = await fetchWithRetry("/api/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

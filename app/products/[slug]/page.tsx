@@ -6,6 +6,7 @@ import {
 } from "@/components/products";
 import { Product } from "@/types/product";
 import { getProductBySlug } from "@/services/products/product.service";
+import { getProductSlugs } from "@/sanity/lib/api";
 import { notFound } from "next/navigation";
 
 interface ProductPageProps {
@@ -57,4 +58,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </div>
     </div>
   );
+}
+
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  const slugs = (await getProductSlugs()) || [];
+  // Prebuild a subset of pages; the rest will ISR on-demand
+  return slugs.slice(0, 200).map((slug) => ({ slug }));
 }

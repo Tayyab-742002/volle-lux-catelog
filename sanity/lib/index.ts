@@ -24,6 +24,7 @@ export {
   searchProducts,
   getFilteredProducts,
   getAllCategories,
+  getCategoriesWithFeaturedProducts,
   getCategoryBySlug,
   getProductCountByCategory,
   getHomepageData,

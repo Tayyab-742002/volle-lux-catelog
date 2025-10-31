@@ -28,8 +28,9 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           alt={`${productName} - Image ${selectedImageIndex + 1}`}
           fill
           className="object-cover transition-opacity duration-300"
-          sizes="(max-width: 768px) 100vw, 40vw"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
           priority={selectedImageIndex === 0}
+          placeholder="empty"
         />
       </div>
 
@@ -53,6 +54,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 fill
                 className="object-cover"
                 sizes="80px"
+                placeholder="empty"
               />
             </button>
           ))}

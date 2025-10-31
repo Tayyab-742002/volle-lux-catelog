@@ -45,6 +45,7 @@ export default async function CategoriesPage() {
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-110"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    placeholder="empty"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center">

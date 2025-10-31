@@ -1,161 +1,79 @@
-"use client";
-
-import { useState, useEffect, useMemo, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import { ProductFilters } from "@/components/products/product-filters";
 import { ProductCard } from "@/components/products/product-card";
 import { ProductSort } from "@/components/products/product-sort";
 import { Breadcrumbs } from "@/components/common/breadcrumbs";
-import { Product } from "@/types/product";
+import {
+  getFilteredProducts,
+  getProducts,
+  searchProducts,
+} from "@/services/products/product.service";
+import { getAllCategories } from "@/sanity/lib";
 
-// Disable static rendering
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
-function ProductsContent() {
-  const searchParams = useSearchParams();
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    search?: string;
+    category?: string;
+    size?: string;
+    material?: string;
+    ecoFriendly?: string;
+    priceMin?: string;
+    priceMax?: string;
+    sort?: string;
+  }>;
+}) {
+  const sp = await searchParams;
+  const searchQuery = sp.search?.trim();
+  const category = sp.category;
+  const sizes = sp.size ? sp.size.split(",") : [];
+  const materials = sp.material ? sp.material.split(",") : [];
+  const ecoFriendly = sp.ecoFriendly ? sp.ecoFriendly.split(",") : [];
+  const priceMin = Number(sp.priceMin || 0);
+  const priceMax = Number(sp.priceMax || 100000);
+  const sortBy = (sp.sort as string) || "newest";
 
-  // Get active category from URL
-  const activeCategory = searchParams.get("category");
-
-  // Load all products once on mount
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadProducts() {
-      try {
-        setIsLoading(true);
-        // Fetch from API route instead of direct Sanity import
-        const response = await fetch("/api/products");
-        const products = await response.json();
-        if (!cancelled) {
-          setAllProducts(products);
-        }
-      } catch (error) {
-        console.error("Error loading products:", error);
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadProducts();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Client-side filtering and sorting (INSTANT)
-  const filteredProducts = useMemo(() => {
-    let filtered = [...allProducts];
-
-    // Parse filters from URL
-    const category = searchParams.get("category");
-    const sizes = searchParams.get("size")?.split(",") || [];
-    const materials = searchParams.get("material")?.split(",") || [];
-    const ecoFriendly = searchParams.get("ecoFriendly")?.split(",") || [];
-    const priceMin = parseInt(searchParams.get("priceMin") || "0");
-    const priceMax = parseInt(searchParams.get("priceMax") || "1000");
-    const sortBy = searchParams.get("sort") || "newest";
-
-    // Apply filters
-    if (category) {
-      filtered = filtered.filter((p) => {
-        // Compare with categorySlug (exact match) or category name (fallback)
-        return (
-          p.categorySlug?.toLowerCase() === category.toLowerCase() ||
-          p.category?.toLowerCase() === category.toLowerCase()
-        );
-      });
-    }
-
-    if (sizes.length > 0) {
-      filtered = filtered.filter((p) =>
-        p.variants?.some((v) =>
-          sizes.some((s) => v.name?.toLowerCase().includes(s.toLowerCase()))
-        )
-      );
-    }
-
-    if (materials.length > 0) {
-      filtered = filtered.filter((p) =>
-        materials.some(
-          (m) =>
-            p.name?.toLowerCase().includes(m.toLowerCase()) ||
-            p.description?.toLowerCase().includes(m.toLowerCase())
-        )
-      );
-    }
-
-    if (ecoFriendly.length > 0) {
-      filtered = filtered.filter((p) =>
-        ecoFriendly.some(
-          (eco) =>
-            p.name?.toLowerCase().includes(eco.toLowerCase()) ||
-            p.description?.toLowerCase().includes(eco.toLowerCase())
-        )
-      );
-    }
-
-    // Price range filter
-    filtered = filtered.filter((p) => {
-      const price = p.basePrice;
-      return price >= priceMin && price <= priceMax;
-    });
-
-    // Apply sorting
-    switch (sortBy) {
-      case "newest":
-        // Keep original order (newest first from Sanity)
-        break;
-      case "oldest":
-        // Reverse order
-        filtered.reverse();
-        break;
-      case "price-low":
-        filtered.sort((a, b) => a.basePrice - b.basePrice);
-        break;
-      case "price-high":
-        filtered.sort((a, b) => b.basePrice - a.basePrice);
-        break;
-      case "name-asc":
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case "name-desc":
-        filtered.sort((a, b) => b.name.localeCompare(a.name));
-        break;
-    }
-
-    return filtered;
-  }, [allProducts, searchParams]);
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8 md:py-12">
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center">
-            <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
-            <p className="text-muted-foreground">Loading products...</p>
-          </div>
-        </div>
-      </div>
+  // If search query exists, use search instead of filters
+  let products;
+  if (searchQuery) {
+    products = await searchProducts(searchQuery);
+  } else {
+    products = await getFilteredProducts(
+      {
+        category,
+        size: sizes,
+        material: materials,
+        ecoFriendly,
+        priceMin,
+        priceMax,
+      },
+      sortBy
     );
+    if (!products || products.length === 0) {
+      products = await getProducts();
+    }
   }
 
-  // Format category name for display
-  const categoryDisplayName = activeCategory
-    ? activeCategory
+  // Build category options for client filters to ensure exact matching to slugs
+  const categoriesList = await getAllCategories();
+  const categoryOptions = (categoriesList || []).map(
+    (c: { slug: string; name: string }) => ({
+      value: c.slug,
+      label: c.name,
+    })
+  );
+
+  const categoryDisplayName = category
+    ? category
         .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
         .join(" ")
     : null;
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
-      {/* Breadcrumbs */}
       <Breadcrumbs
         items={[
           { label: "Products", href: "/products" },
@@ -163,49 +81,37 @@ function ProductsContent() {
             ? [
                 {
                   label: categoryDisplayName,
-                  href: `/products?category=${activeCategory}`,
+                  href: `/products?category=${category}`,
                 },
               ]
             : []),
         ]}
       />
 
-      {/* Page Header */}
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="mb-2 text-4xl font-bold md:text-5xl">
-            {categoryDisplayName || "All Products"}
+            {searchQuery
+              ? `Search Results: "${searchQuery}"`
+              : categoryDisplayName || "All Products"}
           </h1>
           <p className="text-muted-foreground">
-            {categoryDisplayName && (
-              <>
-                Showing {filteredProducts.length} of {allProducts.length}{" "}
-                products in {categoryDisplayName}
-              </>
-            )}
-            {!categoryDisplayName && (
-              <>
-                Showing {filteredProducts.length} product
-                {filteredProducts.length !== 1 ? "s" : ""}
-              </>
-            )}
+            {searchQuery
+              ? `Found ${products.length} result${products.length !== 1 ? "s" : ""}`
+              : `Showing ${products.length} product${products.length !== 1 ? "s" : ""}`}
           </p>
         </div>
-        <ProductSort currentSort={searchParams.get("sort") || "newest"} />
+        <ProductSort currentSort={sortBy} />
       </div>
 
-      {/* Main Content: 2-Column Layout */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-        {/* Filters Sidebar */}
         <div className="lg:col-span-1">
-          <ProductFilters />
+          <ProductFilters categories={categoryOptions} />
         </div>
-
-        {/* Product Grid */}
         <div className="lg:col-span-3">
-          {filteredProducts.length > 0 ? (
+          {products.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredProducts.map((product) => (
+              {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
@@ -220,24 +126,5 @@ function ProductsContent() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function ProductsPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="container mx-auto px-4 py-8 md:py-12">
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
-              <p className="text-muted-foreground">Loading...</p>
-            </div>
-          </div>
-        </div>
-      }
-    >
-      <ProductsContent />
-    </Suspense>
   );
 }

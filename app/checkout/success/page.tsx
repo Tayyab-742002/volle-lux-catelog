@@ -320,10 +320,14 @@ function CheckoutSuccessContent() {
               const variantName = item.variant?.name || null;
               const quantity = item.quantity || 1;
               const pricePerUnit = item.pricePerUnit || 0;
+              // Create unique key: use item.id if exists, otherwise use index with product name
+              const uniqueKey = item.id 
+                ? `${item.id}-${index}` 
+                : `${productName}-${index}`;
 
               return (
                 <div
-                  key={item.id || index}
+                  key={uniqueKey}
                   className="flex justify-between border-b pb-4 last:border-0"
                 >
                   <div className="flex-1">

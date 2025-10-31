@@ -187,7 +187,10 @@ export function buildFilterString(filters: {
   const filterParts: string[] = [];
 
   if (filters.category) {
-    filterParts.push(`category._ref == "${filters.category}"`);
+    // Match by category slug (preferred) and fall back to name match
+    filterParts.push(
+      `(category->slug.current == "${filters.category}" || category->name match "${filters.category}")`
+    );
   }
 
   if (filters.size && filters.size.length > 0) {

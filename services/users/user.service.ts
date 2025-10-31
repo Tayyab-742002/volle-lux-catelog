@@ -4,6 +4,7 @@
  */
 
 import { createClient } from "@/lib/supabase/client";
+import { fetchWithRetry } from "@/lib/utils/retry";
 
 export interface SavedAddressInput {
   name: string;
@@ -31,26 +32,34 @@ export async function getSavedAddresses(
   userId: string
 ): Promise<SavedAddress[]> {
   console.log("🔍 getSavedAddresses called with userId:", userId);
-  const supabase = createClient() as any;
 
-  console.log("📍 Querying saved_addresses table...");
-  const { data, error } = await supabase
-    .from("saved_addresses")
-    .select("*")
-    .eq("user_id", userId)
-    .order("is_default", { ascending: false })
-    .order("created_at", { ascending: false });
+  // Prefer server API (service role) to avoid RLS/network edge cases
+  try {
+    const res = await fetchWithRetry(`/api/user/addresses/${userId}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    const data = (await res.json()) as SavedAddress[];
+    console.log("📍 Addresses via API:", data.length);
+    return data || [];
+  } catch (apiErr) {
+    console.warn("⚠️ Fallback to client Supabase for addresses", apiErr);
 
-  console.log("📍 Supabase response:", { data, error });
+    const supabase = createClient() as any;
+    const { data, error } = await supabase
+      .from("saved_addresses")
+      .select("*")
+      .eq("user_id", userId)
+      .order("is_default", { ascending: false })
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("❌ Error fetching saved addresses:", error);
-    throw error;
+    if (error) {
+      console.error("❌ Error fetching saved addresses:", error);
+      throw error;
+    }
+
+    return (data as unknown as SavedAddress[]) || [];
   }
-
-  const result = (data as unknown as SavedAddress[]) || [];
-  console.log("✅ Returning addresses:", result.length, result);
-  return result;
 }
 
 export async function createSavedAddress(
