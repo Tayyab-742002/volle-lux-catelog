@@ -7,6 +7,7 @@ import {
   PRODUCT_BY_SLUG_QUERY,
   PRODUCTS_BY_CATEGORY_QUERY,
   ALL_CATEGORIES_QUERY,
+  CATEGORIES_WITH_FEATURED_PRODUCTS_QUERY,
   SEARCH_PRODUCTS_QUERY,
   FILTERED_PRODUCTS_QUERY,
   PRODUCTS_BY_IDS_QUERY,
@@ -140,6 +141,27 @@ export async function getAllCategories() {
       tags: ["categories:all"],
     });
     return (data as SanityCategory[]).map(transformSanityCategory);
+  });
+}
+
+export async function getCategoriesWithFeaturedProducts() {
+  return safeQuery(async () => {
+    const { data } = await sanityFetch({
+      query: CATEGORIES_WITH_FEATURED_PRODUCTS_QUERY,
+      tags: ["categories:all"],
+    });
+    if (!data) return null;
+    
+    return (data as Array<SanityCategory & { featuredProducts?: SanityProduct[] }>).map((item) => ({
+      ...transformSanityCategory(item),
+      products: item.featuredProducts?.map((p) => transformSanityProduct(p)).map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        image: p.image,
+        price: p.basePrice,
+      })),
+    }));
   });
 }
 

@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 import { Header, Footer } from "@/components/common";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { SanityLive } from "@/sanity/lib";
+import { getCategoriesWithFeaturedProducts } from "@/sanity/lib";
 
-const inter = Inter({
+const roboto = Roboto({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-roboto", // 3. Set the CSS variable
   display: "swap",
+  weight: ["300", "400", "500", "700"], // Load the weights you need
 });
 
 export const metadata: Metadata = {
@@ -19,13 +21,16 @@ export const metadata: Metadata = {
     "Professional packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch categories with featured products for header mega menu
+  const categories = await getCategoriesWithFeaturedProducts();
+
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={roboto.variable} suppressHydrationWarning>
       <head>
         {/* Preconnects for image/CDN origins to improve LCP */}
         <link
@@ -60,14 +65,17 @@ export default function RootLayout({
           fetchPriority="high"
         />
       </head>
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body
+        className="min-h-screen bg-background font-sans antialiased"
+        suppressHydrationWarning
+      >
         {/* Silence noisy console logs in production to reduce JS overhead */}
         <Script id="silence-console" strategy="beforeInteractive">
           {`(function(){try{if(process&&process.env&&process.env.NODE_ENV==='production'){['log','info','debug','trace'].forEach(function(m){if(console&&console[m]){console[m]=function(){}}})}}catch(e){}})();`}
         </Script>
         <AuthProvider>
           <CartProvider>
-            <Header />
+            <Header categories={categories || []} />
             <main className="flex-1">{children}</main>
             <Footer />
 

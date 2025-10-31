@@ -199,4 +199,11 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
+  .scrollbar-hide::-webkit-scrollbar {
+     display: none;
+    }
+   .scrollbar-hide {
+     -ms-overflow-style: none;
+       scrollbar-width: none;
+   }
 }

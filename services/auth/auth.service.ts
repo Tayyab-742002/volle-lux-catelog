@@ -39,6 +39,7 @@ export interface AuthUser {
   phone?: string;
   company?: string;
   avatarUrl?: string;
+  role?: "customer" | "admin";
   createdAt: string;
   updatedAt: string;
 }
@@ -129,6 +130,7 @@ export async function signUp(data: SignUpData): Promise<AuthResult> {
           fullName: data.fullName,
           phone: data.phone,
           company: data.company,
+          role: "customer",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },
@@ -146,6 +148,7 @@ export async function signUp(data: SignUpData): Promise<AuthResult> {
         phone: (profile as any).phone,
         company: (profile as any).company,
         avatarUrl: (profile as any).avatar_url,
+        role: (profile as any).role || "customer",
         createdAt: (profile as any).created_at,
         updatedAt: (profile as any).updated_at,
       },
@@ -213,6 +216,7 @@ export async function signIn(data: SignInData): Promise<AuthResult> {
         phone: (profile as any).phone,
         company: (profile as any).company,
         avatarUrl: (profile as any).avatar_url,
+        role: (profile as any).role || "customer",
         createdAt: (profile as any).created_at,
         updatedAt: (profile as any).updated_at,
       },
@@ -376,6 +380,7 @@ export async function updateProfile(
         phone: (profile as any).phone,
         company: (profile as any).company,
         avatarUrl: (profile as any).avatar_url,
+        role: (profile as any).role || "customer",
         createdAt: (profile as any).created_at,
         updatedAt: (profile as any).updated_at,
       },
@@ -434,6 +439,7 @@ export async function getCurrentUser(): Promise<AuthResult> {
         phone: (profile as any).phone,
         company: (profile as any).company,
         avatarUrl: (profile as any).avatar_url,
+        role: (profile as any).role || "customer",
         createdAt: (profile as any).created_at,
         updatedAt: (profile as any).updated_at,
       },
