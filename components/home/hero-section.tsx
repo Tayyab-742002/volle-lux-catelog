@@ -2,17 +2,30 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export function HeroSection() {
   const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement search functionality
-    console.log("Search:", searchQuery);
+
+    // Trim and validate search query
+    const trimmedQuery = searchQuery.trim();
+
+    if (!trimmedQuery) {
+      // If empty, just go to products page
+      router.push("/products");
+      return;
+    }
+
+    // Navigate to products page with search query
+    const encodedQuery = encodeURIComponent(trimmedQuery);
+    router.push(`/products?search=${encodedQuery}`);
   };
 
   return (

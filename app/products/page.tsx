@@ -5,6 +5,7 @@ import { Breadcrumbs } from "@/components/common/breadcrumbs";
 import {
   getFilteredProducts,
   getProducts,
+  searchProducts,
 } from "@/services/products/product.service";
 import { getAllCategories } from "@/sanity/lib";
 
@@ -14,6 +15,7 @@ export default async function ProductsPage({
   searchParams,
 }: {
   searchParams: Promise<{
+    search?: string;
     category?: string;
     size?: string;
     material?: string;
@@ -24,6 +26,7 @@ export default async function ProductsPage({
   }>;
 }) {
   const sp = await searchParams;
+  const searchQuery = sp.search?.trim();
   const category = sp.category;
   const sizes = sp.size ? sp.size.split(",") : [];
   const materials = sp.material ? sp.material.split(",") : [];
@@ -32,19 +35,25 @@ export default async function ProductsPage({
   const priceMax = Number(sp.priceMax || 100000);
   const sortBy = (sp.sort as string) || "newest";
 
-  let products = await getFilteredProducts(
-    {
-      category,
-      size: sizes,
-      material: materials,
-      ecoFriendly,
-      priceMin,
-      priceMax,
-    },
-    sortBy
-  );
-  if (!products || products.length === 0) {
-    products = await getProducts();
+  // If search query exists, use search instead of filters
+  let products;
+  if (searchQuery) {
+    products = await searchProducts(searchQuery);
+  } else {
+    products = await getFilteredProducts(
+      {
+        category,
+        size: sizes,
+        material: materials,
+        ecoFriendly,
+        priceMin,
+        priceMax,
+      },
+      sortBy
+    );
+    if (!products || products.length === 0) {
+      products = await getProducts();
+    }
   }
 
   // Build category options for client filters to ensure exact matching to slugs
@@ -82,10 +91,14 @@ export default async function ProductsPage({
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="mb-2 text-4xl font-bold md:text-5xl">
-            {categoryDisplayName || "All Products"}
+            {searchQuery
+              ? `Search Results: "${searchQuery}"`
+              : categoryDisplayName || "All Products"}
           </h1>
           <p className="text-muted-foreground">
-            Showing {products.length} product{products.length !== 1 ? "s" : ""}
+            {searchQuery
+              ? `Found ${products.length} result${products.length !== 1 ? "s" : ""}`
+              : `Showing ${products.length} product${products.length !== 1 ? "s" : ""}`}
           </p>
         </div>
         <ProductSort currentSort={sortBy} />
