@@ -5,65 +5,31 @@
  */
 
 import { Badge } from "@/components/ui/badge";
-
-type OrderStatus =
-  | "pending"
-  | "processing"
-  | "shipped"
-  | "delivered"
-  | "cancelled";
+import type { OrderStatus } from "@/lib/constants";
+import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 
 interface StatusBadgeProps {
   status: OrderStatus;
   className?: string;
 }
-const statusColor= {
-  pending: "bg-gray-500 text-white",
-  processing: "bg-indigo-500 text-white",
-  shipped: "bg-purple-500 text-white",
-  delivered: "bg-green-500 text-white",
-  cancelled: "bg-red-500 text-white",
-};
-const statusConfig: Record<
+
+const variantConfig: Record<
   OrderStatus,
-  {
-    variant: "default" | "secondary" | "outline" | "destructive";
-    label: string;
-    className?: string;
-  }
+  "default" | "secondary" | "outline" | "destructive"
 > = {
-  pending: {
-    variant: "default",
-    label: "Pending",
-    className: statusColor.pending,
-  },
-  processing: {
-    variant: "secondary",
-    label: "Processing",
-    className: statusColor.processing,
-  },
-  shipped: {
-    variant: "outline",
-    label: "Shipped",
-    className: statusColor.shipped,
-  },
-  delivered: {
-    variant: "outline",
-    label: "Delivered",
-    className: statusColor.delivered,
-  },
-  cancelled: {
-    variant: "destructive",
-    label: "Cancelled",
-    className: statusColor.cancelled,
-  },
+  pending: "default",
+  processing: "secondary",
+  shipped: "outline",
+  delivered: "outline",
+  cancelled: "destructive",
 };
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const config = statusConfig[status] || statusConfig.pending;
+  const config = ORDER_STATUS_CONFIG[status];
+  const variant = variantConfig[status] || "default";
 
   return (
-    <Badge variant={config.variant} className={config.className || className}>
+    <Badge variant={variant} className={config.className || className}>
       {config.label}
     </Badge>
   );

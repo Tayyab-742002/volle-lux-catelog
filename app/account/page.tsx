@@ -5,6 +5,7 @@ import { Package, ShoppingBag, DollarSign, TrendingUp } from "lucide-react";
 import { getCurrentUserServer } from "@/services/auth/auth-server.service";
 import { getUserOrders } from "@/services/orders/order.service";
 import { Button } from "@/components/ui/button";
+import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 
 // Force fresh data on every request - no caching
 export const dynamic = "force-dynamic";
@@ -371,12 +372,7 @@ interface OrderCardProps {
 }
 
 function OrderCard({ order }: OrderCardProps) {
-  const statusColors: Record<string, string> = {
-    delivered: "bg-green-100 text-green-800 ",
-    shipped: "bg-blue-100 text-blue-800 ",
-    processing: "bg-yellow-100 text-yellow-800 ",
-    cancelled: "bg-neutral-100 text-neutral-800 ",
-  };
+  const statusConfig = ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG];
 
   return (
     <div className="p-4 sm:p-6 hover:bg-neutral-50  transition-colors">
@@ -388,11 +384,10 @@ function OrderCard({ order }: OrderCardProps) {
             </span>
             <span
               className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                statusColors[order.status.toLowerCase()] ||
-                statusColors.processing
+                statusConfig?.className || ORDER_STATUS_CONFIG.processing.className
               }`}
             >
-              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+              {statusConfig?.label || order.status.charAt(0).toUpperCase() + order.status.slice(1)}
             </span>
           </div>
           <div className="text-xs sm:text-sm text-muted-foreground">

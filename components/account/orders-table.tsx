@@ -11,6 +11,7 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import type { Order } from "@/types/cart";
+import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 import {
   Select,
   SelectContent,
@@ -420,27 +421,13 @@ function OrdersTableSkeleton() {
 
 // Status Badge Component
 function StatusBadge({ status }: { status: Order["status"] }) {
-  const statusConfig = {
-    pending: "bg-gray-500 text-white",
-    processing: "bg-indigo-500 text-white",
-    shipped: "bg-purple-500 text-white",
-    delivered: "bg-green-500 text-white",
-    cancelled: "bg-red-500 text-white",
-  };
-
-  const labelConfig = {
-    pending: "Pending",
-    processing: "Processing",
-    shipped: "Shipped",
-    delivered: "Delivered",
-    cancelled: "Cancelled",
-  };
+  const config = ORDER_STATUS_CONFIG[status];
 
   return (
     <span
-      className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusConfig[status]}`}
+      className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${config.className}`}
     >
-      {labelConfig[status]}
+      {config.label}
     </span>
   );
 }
@@ -453,4 +440,3 @@ function formatDate(date: Date): string {
     day: "numeric",
   }).format(date);
 }
-
