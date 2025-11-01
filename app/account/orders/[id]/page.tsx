@@ -28,7 +28,7 @@ export default async function OrderDetailsPage({
 
   if (!authResult.success || !authResult.user) {
     return (
-      <div className="rounded-lg border bg-card p-12 text-center">
+      <div className="rounded-lg border border-neutral-400 bg-card p-12 text-center">
         <p className="text-muted-foreground">
           Please sign in to view order details
         </p>
@@ -64,7 +64,7 @@ async function OrderDetailContent({
   // Verify user owns this order
   if (order.userId !== userId) {
     return (
-      <div className="rounded-lg border bg-card p-12 text-center">
+      <div className="rounded-lg border border-neutral-500 bg-card p-12 text-center">
         <p className="text-muted-foreground">
           You don&apos;t have access to this order
         </p>
@@ -110,15 +110,15 @@ async function OrderDetailContent({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Delivered":
-        return "bg-green-100 text-green-800";
+        return "bg-green-500 text-green-800";
       case "Shipped":
-        return "bg-blue-100 text-blue-800";
+        return "bg-purple-500 text-white";
       case "Processing":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-indigo-500 text-white";
       case "Cancelled":
-        return "bg-red-100 text-red-800";
+        return "bg-red-500 text-white";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-500 text-white";
     }
   };
 
@@ -143,7 +143,7 @@ async function OrderDetailContent({
       </div>
 
       {/* Order Info Card */}
-      <div className="mb-8 rounded-lg border bg-card p-6">
+      <div className="mb-8 rounded-lg  border border-neutral-400 bg-card p-6">
         <div className="grid gap-6 md:grid-cols-3">
           <div>
             <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
@@ -176,7 +176,7 @@ async function OrderDetailContent({
       </div>
 
       {/* Shipping Address */}
-      <div className="mb-8 rounded-lg border bg-card p-6">
+      <div className="mb-8 rounded-lg border border-neutral-400 bg-card p-6">
         <h3 className="mb-4 text-xl font-semibold">Shipping Address</h3>
         <div className="text-muted-foreground">
           <p className="font-medium text-foreground">
@@ -193,7 +193,7 @@ async function OrderDetailContent({
       </div>
 
       {/* Order Items */}
-      <div className="mb-8 rounded-lg border bg-card">
+      <div className="mb-8 rounded-lg border border-neutral-400 bg-card">
         <div className="border-b p-6">
           <h3 className="text-xl font-semibold">Order Items</h3>
         </div>
@@ -237,7 +237,7 @@ async function OrderDetailContent({
       </div>
 
       {/* Order Summary */}
-      <div className="rounded-lg border bg-card p-6">
+      <div className="rounded-lg border border-neutral-400 bg-card p-6">
         <h3 className="mb-4 text-xl font-semibold">Order Summary</h3>
         <div className="space-y-3">
           <div className="flex justify-between text-muted-foreground">
@@ -254,10 +254,10 @@ async function OrderDetailContent({
             <span>Shipping</span>
             <span>${displayOrder.shipping.toFixed(2)}</span>
           </div>
-          <div className="border-t pt-3">
+          <div className="border-t border-primary pt-3">
             <div className="flex justify-between text-lg font-bold">
-              <span>Total</span>
-              <span>${displayOrder.total.toFixed(2)}</span>
+              <span className="text-primary">Total</span>
+              <span className="text-primary">${displayOrder.total.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -283,7 +283,7 @@ function OrderDetailSkeleton() {
       </div>
 
       {/* Order Info Card Skeleton */}
-      <div className="mb-8 rounded-lg border bg-card p-6">
+      <div className="mb-8 rounded-lg border border-neutral-400 bg-card p-6">
         <div className="grid gap-6 md:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <div key={i} className="space-y-2">
@@ -295,7 +295,7 @@ function OrderDetailSkeleton() {
       </div>
 
       {/* Shipping Address Skeleton */}
-      <div className="mb-8 rounded-lg border bg-card p-6">
+      <div className="mb-8 rounded-lg border border-neutral-400 bg-card p-6">
         <div className="h-7 w-40 mb-4 bg-neutral-400 rounded animate-pulse" />
         <div className="space-y-2">
           <div className="h-5 w-48 bg-neutral-400 rounded animate-pulse" />
@@ -306,7 +306,7 @@ function OrderDetailSkeleton() {
       </div>
 
       {/* Order Items Skeleton */}
-      <div className="mb-8 rounded-lg border bg-card">
+      <div className="mb-8 rounded-lg border border-neutral-400 bg-card">
         <div className="border-b p-6">
           <div className="h-7 w-32 bg-neutral-400 rounded animate-pulse" />
         </div>
@@ -326,7 +326,7 @@ function OrderDetailSkeleton() {
       </div>
 
       {/* Order Summary Skeleton */}
-      <div className="rounded-lg border bg-card p-6">
+      <div className="rounded-lg border border-neutral-400 bg-card p-6">
         <div className="h-7 w-40 mb-4 bg-neutral-400 rounded animate-pulse" />
         <div className="space-y-3">
           {[1, 2, 3, 4].map((i) => (

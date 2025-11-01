@@ -13,7 +13,7 @@ import { useAuth } from "@/components/auth/auth-provider";
 export default function AccountSettingsPage() {
   const router = useRouter();
   const { user, loading, updateProfile, updatePassword } = useAuth();
-
+  console.log("USER DATA : ", user);
   const [profile, setProfile] = useState({
     fullName: "",
     email: "",
@@ -39,7 +39,7 @@ export default function AccountSettingsPage() {
 
   // Load user profile on mount
   useEffect(() => {
-    if (user) {
+    if (!loading && user) {
       setProfile({
         fullName: user.fullName || "",
         email: user.email || "",
@@ -47,7 +47,7 @@ export default function AccountSettingsPage() {
         company: user.company || "",
       });
     }
-  }, [user]);
+  }, [loading, user]);
 
   // Redirect if not authenticated
   useEffect(() => {
