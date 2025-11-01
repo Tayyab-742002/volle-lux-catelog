@@ -4,7 +4,7 @@
  * Reference: Architecture.md Section 4.3
  */
 
-import { createClient } from "@/lib/supabase/client";
+
 import { createClient as createServerClient } from "@supabase/supabase-js";
 import { Order, CartItem } from "@/types/cart";
 
@@ -44,6 +44,7 @@ export async function createOrder(orderData: {
   subtotal: number;
   discount: number;
   shipping: number;
+  tax?: number;
   total: number;
   status: Order["status"];
   stripeSessionId?: string;
@@ -52,13 +53,6 @@ export async function createOrder(orderData: {
   try {
     // Use service role client to bypass RLS policies
     const supabase = createServiceRoleClient();
-
-    console.log("Creating order in Supabase:", {
-      userId: orderData.userId,
-      email: orderData.email,
-      itemCount: orderData.items.length,
-      total: orderData.total,
-    });
 
     // Extract customer info from addresses
     const customerName =
@@ -79,7 +73,7 @@ export async function createOrder(orderData: {
         subtotal: orderData.subtotal,
         discount: orderData.discount,
         shipping: orderData.shipping,
-        tax: 0, // Will be calculated by Stripe if enabled
+        tax: orderData.tax || 0, // Tax amount from Stripe if enabled
         total_amount: orderData.total,
         currency: "USD",
         stripe_session_id: orderData.stripeSessionId || null,
@@ -120,8 +114,6 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
     // Use service role client to bypass RLS (works in webhook context)
     const supabase = createServiceRoleClient();
 
-    console.log("Fetching order by ID:", orderId);
-
     const { data, error } = await supabase
       .from("orders")
       .select("*")
@@ -158,7 +150,6 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
       paymentIntentId: data.stripe_payment_intent_id,
     };
 
-    console.log("Order fetched successfully");
     return order;
   } catch (error) {
     console.error("Failed to fetch order:", error);

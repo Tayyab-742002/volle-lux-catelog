@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { DASHBOARD_COLORS } from "@/lib/constants";
 
 interface DashboardStats {
   total: number;
@@ -78,14 +78,14 @@ export default function AdminDashboard() {
         </div>
 
         {/* Order Hub Skeleton */}
-        <div className="rounded-xl border border-neutral-200  bg-card p-4 md:p-8 shadow-sm">
-          <div className="h-6 w-48 bg-neutral-200  rounded animate-pulse mb-6 md:mb-8" />
+        <div className="rounded-xl  bg-card p-4 md:p-8 shadow-sm">
+          <div className="h-6 w-48 bg-neutral-400  rounded animate-pulse mb-6 md:mb-8" />
           <div className="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-5">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="space-y-3">
-                <div className="h-10 w-10 bg-neutral-200  rounded-lg animate-pulse" />
-                <div className="h-8 w-16 bg-neutral-200  rounded animate-pulse" />
-                <div className="h-4 w-20 bg-neutral-200  rounded animate-pulse" />
+                <div className="h-10 w-10 bg-neutral-400  rounded-lg animate-pulse" />
+                <div className="h-8 w-16 bg-neutral-400  rounded animate-pulse" />
+                <div className="h-4 w-20 bg-neutral-400  rounded animate-pulse" />
               </div>
             ))}
           </div>
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-center py-20">
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <div className="rounded-full bg-neutral-200  p-4">
+              <div className="rounded-full bg-neutral-400  p-4">
                 <AlertTriangle
                   className="h-8 w-8 text-muted-foreground"
                   strokeWidth={1.5}
@@ -155,26 +155,30 @@ export default function AdminDashboard() {
           title="Today's Revenue"
           value={`$${stats.todayRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           icon={<DollarSign className="h-5 w-5" />}
+          color="primary"
         />
         <StatsCard
           title="Total Orders"
           value={stats.total.toLocaleString()}
           icon={<ShoppingBag className="h-5 w-5" />}
+          color="secondary"
         />
         <StatsCard
           title="Average Order Value"
           value={`$${stats.averageOrderValue.toFixed(2)}`}
           icon={<TrendingUp className="h-5 w-5" />}
+          color="tertiary"
         />
         <StatsCard
           title="Total Customers"
           value={stats.totalCustomers?.toLocaleString() || "—"}
           icon={<Users className="h-5 w-5" />}
+          color="quaternary"
         />
       </div>
 
       {/* Row 2: Order Status Overview (The "Order Hub") */}
-      <div className="rounded-xl border border-neutral-200 bg-card p-8 shadow-sm">
+      <div className="rounded-xl  bg-card p-8 shadow-sm">
         <h2 className="text-xl font-semibold tracking-tight mb-8">
           Order Status Overview
         </h2>
@@ -219,28 +223,35 @@ export default function AdminDashboard() {
 // New Component: Order Status Item
 interface OrderStatusItemProps {
   href: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   value: number;
   label: string;
 }
 
-function OrderStatusItem({ href, icon, value, label }: OrderStatusItemProps) {
+function OrderStatusItem({ href, value, label }: OrderStatusItemProps) {
+  // Map labels to color keys
+  const colorMap: Record<
+    string,
+    "quinary" | "senary" | "septenary" | "octonary"
+  > = {
+    Processing: "quinary",
+    Shipped: "senary",
+    Delivered: "septenary",
+    Cancelled: "octonary",
+  };
+
+  const color = colorMap[label] || "quinary";
+
   return (
     <Link href={href}>
-      <div className="group space-y-3 transition-all border border-neutral-300 rounded-lg p-4 duration-200 hover:scale-[1.02]">
-        {/* Icon Container - Unified Brand Style */}
-        <div className="inline-flex items-center justify-center border border-neutral-300 w-10 h-10 rounded-lg bg-primary/20 text-primary transition-all duration-200 group-hover:bg-primary/20 group-hover:shadow-md">
-          {icon}
-        </div>
-
-        {/* Value */}
-        <div className="text-3xl font-bold tracking-tight transition-colors duration-200 group-hover:text-primary">
-          {value.toLocaleString()}
-        </div>
-
-        {/* Label */}
-        <div className="text-sm font-medium text-muted-foreground transition-colors duration-200 group-hover:text-foreground">
+      <div
+        className={`group rounded-lg border border-neutral-300 p-4 ${DASHBOARD_COLORS[color]} transition-all duration-200 hover:shadow-md`}
+      >
+        <div className="text-xs sm:text-sm font-medium mb-1 text-foreground/70">
           {label}
+        </div>
+        <div className="text-xl sm:text-2xl font-bold text-foreground/70">
+          {value.toLocaleString()}
         </div>
       </div>
     </Link>

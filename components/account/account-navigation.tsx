@@ -41,7 +41,7 @@ export function AccountNavigation() {
     <>
       {/* Mobile/Tablet Top Tabs (< 1024px) */}
       <div className="lg:hidden mb-6">
-        <div className="rounded-xl border border-neutral-200 bg-card shadow-sm overflow-hidden">
+        <div className=" border border-neutral-300 bg-card shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <nav className="flex min-w-max">
               {navigation.map((item) => {
@@ -70,7 +70,7 @@ export function AccountNavigation() {
 
       {/* Desktop Sidebar Navigation (≥ 1024px) */}
       <aside className="hidden lg:block lg:col-span-1">
-        <div className="sticky top-4 rounded-xl border border-neutral-200 bg-card shadow-sm overflow-hidden">
+        <div className="sticky top-4 border border-neutral-300 bg-card shadow-sm overflow-hidden">
           <nav className="divide-y divide-neutral-200">
             {navigation.map((item) => {
               const isActive = pathname === item.href;
@@ -80,7 +80,7 @@ export function AccountNavigation() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all",
+                    "flex items-center gap-3 px-4 py-3 border-b border-neutral-300 text-sm font-medium transition-all",
                     isActive
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-neutral-50 hover:text-foreground"
@@ -116,4 +116,3 @@ export function AccountBreadcrumbs() {
     </div>
   );
 }
-

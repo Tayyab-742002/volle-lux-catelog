@@ -1,38 +1,59 @@
 // components/admin/stats-card.tsx
 import { cn } from "@/lib/utils";
+import { DASHBOARD_COLORS } from "@/lib/constants";
 
 interface StatsCardProps {
   title: string;
   value: string | number;
   icon: React.ReactNode;
   className?: string;
+  color?:
+    | "primary"
+    | "secondary"
+    | "tertiary"
+    | "quaternary"
+    | "quinary"
+    | "senary"
+    | "septenary"
+    | "octonary"
+    | "nonary"
+    | "denary";
 }
 
-export function StatsCard({ title, value, icon, className }: StatsCardProps) {
+export function StatsCard({
+  title,
+  value,
+  icon,
+  className,
+  color = "primary",
+}: StatsCardProps) {
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-neutral-300 bg-card p-6 shadow-sm transition-all duration-300 hover:shadow-md",
+        "group relative overflow-hidden rounded-xl border border-neutral-300 p-6 shadow-sm transition-all duration-300 hover:shadow-md",
+        DASHBOARD_COLORS[color],
         className
       )}
     >
       <div className="flex items-start justify-between">
         {/* Content */}
         <div className="flex-1 space-y-3">
-          <p className="text-sm font-medium text-muted-foreground tracking-wide">
+          <p className="text-xs sm:text-sm font-medium text-foreground/50 tracking-wide">
             {title}
           </p>
-          <p className="text-3xl font-bold tracking-tight">{value}</p>
+          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground/70">
+            {value}
+          </p>
         </div>
 
         {/* Icon - Unified Brand Style */}
-        <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary transition-all duration-200 group-hover:bg-primary/20">
+        <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg text-white transition-all duration-200 group-hover:bg-primary/20">
           {icon}
         </div>
       </div>
 
       {/* Subtle Hover Effect */}
-      <div className="absolute inset-0 -z-10  from-primary/0 to-primary/0 transition-all duration-300 group-hover:from-primary/5 group-hover:to-primary/0" />
+      <div className="absolute inset-0 -z-10 from-primary/0 to-primary/0 transition-all duration-300 group-hover:from-primary/5 group-hover:to-primary/0" />
     </div>
   );
 }

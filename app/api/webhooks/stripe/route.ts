@@ -64,6 +64,7 @@ async function handleCheckoutSessionCompleted(
         expand: [
           "line_items",
           "line_items.data.price.product",
+          "line_items.data.price.product_data",
           "customer_details",
           "payment_intent",
           "total_details",
@@ -113,12 +114,6 @@ async function handleCheckoutSessionCompleted(
     let billingAddress = null;
 
     // Log what we have for debugging
-    console.log("Stripe session billing data:", {
-      hasCustomerDetails: !!fullSession.customer_details,
-      hasCustomerAddress: !!fullSession.customer_details?.address,
-      customerDetailsAddress: fullSession.customer_details?.address,
-      hasPaymentIntent: !!fullSession.payment_intent,
-    });
 
     if (fullSession.customer_details?.address) {
       // Stripe collected billing address - this is the main path
@@ -133,10 +128,6 @@ async function handleCheckoutSessionCompleted(
         country: billingAddr.country || "",
         phone: fullSession.customer_details?.phone || "",
       };
-      console.log(
-        "✅ Billing address captured from Stripe customer_details:",
-        billingAddress
-      );
     } else if (fullSession.metadata?.billing_address) {
       // Fallback: billing address was passed in metadata (legacy)
       try {
@@ -157,42 +148,114 @@ async function handleCheckoutSessionCompleted(
       cartItems = fullSession.metadata?.cart_items
         ? JSON.parse(fullSession.metadata.cart_items)
         : [];
+      console.log("✅ Parsed cart items from metadata:", cartItems.length);
     } catch (e) {
       console.error("Failed to parse cart items from metadata:", e);
+      console.error(
+        "Metadata cart_items value:",
+        fullSession.metadata?.cart_items
+      );
     }
 
     // Transform line items to order items format (matching CartItem structure)
+    // Match by price/product instead of index to handle Stripe merging
     const orderItems =
       fullSession.line_items?.data.map(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (item: any, index: number) => {
-          const cartItem = cartItems[index] || {};
+        (item: any) => {
           const quantity = item.quantity || 1;
           const pricePerUnit = item.amount_total
             ? item.amount_total / 100 / quantity
             : 0;
 
+          // Try to match cart item by variant SKU first, then by product ID
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          let cartItem: any = null;
+          if (item.price?.product_data?.metadata?.variant_sku) {
+            cartItem =
+              cartItems.find(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (ci: any) =>
+                  ci.variantSku === item.price.product_data.metadata.variant_sku
+              ) || null;
+          }
+
+          // If not found by SKU, try to match by product ID
+          if (!cartItem && item.price?.product_data?.metadata?.product_id) {
+            cartItem =
+              cartItems.find(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (ci: any) =>
+                  ci.id === item.price.product_data.metadata.product_id
+              ) || null;
+          }
+
+          // Fallback to first matching item if still not found
+          if (!cartItem && item.price?.product_data?.metadata?.product_id) {
+            const productId = item.price.product_data.metadata.product_id;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            cartItem = cartItems.find((ci: any) => ci.id === productId) || null;
+          }
+
           // Build proper nested structure matching CartItem interface
           return {
-            id: cartItem.id || item.price?.product || "",
-            code: cartItem.code || "",
+            id:
+              cartItem?.id ||
+              item.price?.product_data?.metadata?.product_id ||
+              "unknown",
+            code:
+              cartItem?.code ||
+              item.price?.product_data?.metadata?.product_code ||
+              "",
             product: {
-              id: cartItem.id || item.price?.product || "",
-              name: item.description || cartItem.name || "Product",
-              image: cartItem.image || "",
+              id:
+                cartItem?.id ||
+                item.price?.product_data?.metadata?.product_id ||
+                "unknown",
+              product_code:
+                cartItem?.code ||
+                item.price?.product_data?.metadata?.product_code ||
+                "",
+              name: item.description || cartItem?.name || "Product",
+              image: cartItem?.image || "",
             },
-            variant: cartItem.variant
-              ? {
-                  id: cartItem.variant,
-                  name: cartItem.variantName || "Standard",
-                }
-              : null,
+            variant:
+              cartItem?.variantId || cartItem?.variantName
+                ? {
+                    id: cartItem.variantId || "",
+                    name: cartItem.variantName || "Standard",
+                    sku: cartItem.variantSku || "",
+                    price_adjustment: cartItem.variantPriceAdjustment || 0,
+                  }
+                : null,
             quantity,
             pricePerUnit,
             totalPrice: pricePerUnit * quantity,
           };
         }
       ) || [];
+
+    console.log(
+      `✅ Transformed ${orderItems.length} order items from ${fullSession.line_items?.data.length || 0} line items`
+    );
+
+    // Validate order items before creating order
+    if (orderItems.length === 0) {
+      console.error("❌ No order items to create order");
+      throw new Error("Cannot create order with no items");
+    }
+
+    // Check for any invalid items
+    const invalidItems = orderItems.filter(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (item: any) => !item.id || item.id === "unknown"
+    );
+    if (invalidItems.length > 0) {
+      console.warn(
+        `⚠️ Found ${invalidItems.length} items with invalid IDs:`,
+        invalidItems
+      );
+    }
 
     // Calculate order totals
     const totalAmount = (fullSession.amount_total || 0) / 100; // Convert from cents
@@ -214,15 +277,6 @@ async function handleCheckoutSessionCompleted(
 
     // Calculate subtotal (before tax, shipping, and discounts)
     const subtotal = totalAmount - shippingCost - taxAmount + discountAmount;
-
-    console.log("Order calculation:", {
-      totalAmount,
-      subtotal,
-      discount: discountAmount,
-      shipping: shippingCost,
-      tax: taxAmount,
-      itemCount: orderItems.length,
-    });
 
     // Create order in Supabase with full details
     // Note: orderItems structure is compatible with CartItem but TypeScript needs explicit cast
@@ -257,22 +311,7 @@ async function handleCheckoutSessionCompleted(
       paymentIntentId: fullSession.payment_intent as string,
     };
 
-    console.log("Creating order with data:", {
-      userId: orderData.userId,
-      email: orderData.email,
-      itemCount: orderData.items.length,
-      total: orderData.total,
-      shipping: orderData.shipping,
-      discount: orderData.discount,
-      hasShippingAddress: !!shippingAddress,
-      hasBillingAddress: !!billingAddress,
-      shippingAddressDetails: shippingAddress,
-      billingAddressDetails: billingAddress,
-    });
-
     const orderId = await createOrder(orderData);
-
-    console.log("Order created successfully:", orderId);
 
     // Clear the cart after successful order creation
     try {
@@ -292,7 +331,6 @@ async function handleCheckoutSessionCompleted(
 
       // Delete cart by user_id or session_id
       if (userId) {
-        console.log("Deleting cart for user:", userId);
         const { error: deleteError } = await supabase
           .from("carts")
           .delete()
@@ -403,6 +441,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
 
+    console.log(`📥 Received webhook event: ${event.type}, ID: ${event.id}`);
+
     // Handle different event types
     switch (event.type) {
       case "checkout.session.completed": {
@@ -428,9 +468,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Return 200 to acknowledge receipt
+    console.log("✅ Webhook processed successfully");
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error("Webhook error:", error);
+    console.error("❌ Webhook error:", error);
+    if (error instanceof Error) {
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
     return NextResponse.json(
       { error: "Webhook handler failed" },
       { status: 500 }

@@ -4,7 +4,6 @@
  * Reference: ADMIN_DASHBOARD_PLAN.md
  */
 
-import { Badge } from "@/components/ui/badge";
 import type { OrderStatus } from "@/lib/constants";
 import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 
@@ -13,24 +12,16 @@ interface StatusBadgeProps {
   className?: string;
 }
 
-const variantConfig: Record<
-  OrderStatus,
-  "default" | "secondary" | "outline" | "destructive"
-> = {
-  pending: "default",
-  processing: "secondary",
-  shipped: "outline",
-  delivered: "outline",
-  cancelled: "destructive",
-};
-
 export function StatusBadge({ status, className }: StatusBadgeProps) {
   const config = ORDER_STATUS_CONFIG[status];
-  const variant = variantConfig[status] || "default";
 
   return (
-    <Badge variant={variant} className={config.className || className}>
-      {config.label}
-    </Badge>
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+        config?.className || className || ORDER_STATUS_CONFIG.processing.className
+      }`}
+    >
+      {config?.label || status.charAt(0).toUpperCase() + status.slice(1)}
+    </span>
   );
 }

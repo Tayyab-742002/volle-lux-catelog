@@ -17,7 +17,10 @@ function convertCartItemsToLineItems(
     price_data: {
       currency: STRIPE_CONFIG.currency,
       product_data: {
-        name: item.product.name,
+        // Make product name unique per variant to prevent Stripe from merging line items
+        name: item.variant
+          ? `${item.product.name} - ${item.variant.name} (${item.variant.sku})`
+          : item.product.name,
         description: item.variant
           ? `${item.product.name} - ${item.variant.name}`
           : item.product.name,
@@ -92,17 +95,47 @@ export async function createCheckoutSession(params: {
     }
 
     // Store cart items in metadata (Stripe allows up to 500 characters per value)
-    // For larger carts, we'll store the summary
-    metadata.cart_items = JSON.stringify(
-      items.map((item) => ({
+    // Safely truncate JSON array to fit within limit
+    const cartItemsData = items.map((item) => ({
+      id: item.product.id,
+      code: item.product.product_code,
+      name: item.product.name,
+      image: item.product.image,
+      variantId: item.variant?.id || null,
+      variantName: item.variant?.name || null,
+      variantSku: item.variant?.sku || null,
+      variantPriceAdjustment: item.variant?.price_adjustment || null,
+      quantity: item.quantity,
+      price: item.pricePerUnit,
+    }));
+
+    // Try to fit all items, progressively reduce if needed
+    let cartItemsJson = JSON.stringify(cartItemsData);
+    if (cartItemsJson.length > 500) {
+      // If too long, try removing less critical fields
+      const minimalCartItemsData = items.map((item) => ({
         id: item.product.id,
         code: item.product.product_code,
-        name: item.product.name,
-        variant: item.variant?.sku || null,
+        variantId: item.variant?.id || null,
+        variantSku: item.variant?.sku || null,
         quantity: item.quantity,
-        price: item.pricePerUnit,
-      }))
-    ).substring(0, 500); // Stripe metadata limit
+      }));
+      cartItemsJson = JSON.stringify(minimalCartItemsData);
+
+      // If still too long, truncate array length
+      if (cartItemsJson.length > 500) {
+        const truncatedItems = [...minimalCartItemsData];
+        while (
+          JSON.stringify(truncatedItems).length > 500 &&
+          truncatedItems.length > 0
+        ) {
+          truncatedItems.pop();
+        }
+        cartItemsJson = JSON.stringify(truncatedItems);
+      }
+    }
+
+    metadata.cart_items = cartItemsJson;
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({

@@ -33,3 +33,28 @@ export const ORDER_STATUS_CONFIG: Record<
     label: "Cancelled",
   },
 };
+
+export const DASHBOARD_COLORS: Record<
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "quaternary"
+  | "quinary"
+  | "senary"
+  | "septenary"
+  | "octonary"
+  | "nonary"
+  | "denary",
+  string
+> = {
+  primary: "bg-[#EA5B6F]",
+  secondary: "bg-[#FF894F]",
+  tertiary: "bg-[#FFCB61]",
+  quaternary: "bg-[#77BEF0]",
+  quinary: "bg-indigo-400",
+  senary: "bg-purple-400",
+  septenary: "bg-green-400",
+  octonary: "bg-red-400",
+  nonary: "bg-[#000000]",
+  denary: "bg-[#FFFFFF]",
+};

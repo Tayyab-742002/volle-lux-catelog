@@ -589,7 +589,7 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
           <div
             onMouseEnter={handleMegaMenuEnter}
             onMouseLeave={handleMegaMenuLeave}
-            className="hidden lg:block absolute left-0 right-0 top-full bg-white border-t border-border shadow-xl"
+            className="hidden lg:block absolute left-0 right-0 top-full bg-white border border-neutral-300 shadow-xl"
           >
             <div className="container mx-auto px-6 py-8">
               <div className="flex gap-12">

@@ -5,7 +5,7 @@ import { Package, ShoppingBag, DollarSign, TrendingUp } from "lucide-react";
 import { getCurrentUserServer } from "@/services/auth/auth-server.service";
 import { getUserOrders } from "@/services/orders/order.service";
 import { Button } from "@/components/ui/button";
-import { ORDER_STATUS_CONFIG } from "@/lib/constants";
+import { ORDER_STATUS_CONFIG, DASHBOARD_COLORS } from "@/lib/constants";
 
 // Force fresh data on every request - no caching
 export const dynamic = "force-dynamic";
@@ -91,7 +91,7 @@ async function DashboardContent({ userId }: { userId: string }) {
   return (
     <div className="space-y-8">
       {/* Stats Grid - Fully Responsive */}
-      <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 border lg:grid-cols-4">
         <StatCard
           icon={<ShoppingBag className="h-5 w-5" strokeWidth={1.5} />}
           label="Total Orders"
@@ -191,7 +191,7 @@ async function DashboardContent({ userId }: { userId: string }) {
             </div>
           </div>
         ) : (
-          <div className="divide-y divide-neutral-200 ">
+          <div>
             {recentOrders.map((order) => (
               <OrderCard key={order.id} order={order} />
             ))}
@@ -272,21 +272,9 @@ function StatCard({
     | "nonary"
     | "denary";
 }) {
-  const colors: Record<string, string> = {
-    primary: "bg-[#EA5B6F]",
-    secondary: "bg-[#FF894F] ",
-    tertiary: "bg-[#FFCB61] ",
-    quaternary: "bg-[#77BEF0] ",
-    quinary: "bg-[#B7A3E3] ",
-    senary: "bg-[#C2E2FA] ",
-    septenary: "bg-[#FF8F8F] ",
-    octonary: "bg-[#0BA6DF] ",
-    nonary: "bg-[#000000] ",
-    denary: "bg-[#FFFFFF] ",
-  };
   return (
     <div
-      className={`group relative overflow-hidden rounded-xl border border-neutral-300 p-4 sm:p-6 shadow-sm transition-all duration-300 hover:shadow-md ${colors[color]}`}
+      className={`group relative overflow-hidden rounded-xl border border-neutral-300 p-4 sm:p-6 shadow-sm transition-all duration-300 hover:shadow-md ${DASHBOARD_COLORS[color]}`}
     >
       <div className="flex items-start justify-between">
         {/* Content */}
@@ -337,24 +325,16 @@ function StatusCard({
     | "nonary"
     | "denary";
 }) {
-  const colors: Record<string, string> = {
-    primary: "bg-[#EA5B6F]",
-    secondary: "bg-[#FF894F] ",
-    tertiary: "bg-[#FFCB61] ",
-    quaternary: "bg-[#77BEF0] ",
-    quinary: "bg-[#B7A3E3] ",
-    senary: "bg-[#C2E2FA] ",
-    septenary: "bg-[#FF8F8F] ",
-    octonary: "bg-[#0BA6DF] ",
-    nonary: "bg-[#000000] ",
-    denary: "bg-[#FFFFFF] ",
-  };
   return (
     <div
-      className={`group rounded-lg border border-neutral-300 p-4 ${colors[color || "primary"]} transition-all duration-200 hover:shadow-md`}
+      className={`group rounded-lg border border-neutral-300 p-4 ${DASHBOARD_COLORS[color || "primary"]} transition-all duration-200 hover:shadow-md`}
     >
-      <div className="text-xs sm:text-sm font-medium mb-1 text-foreground/70">{label}</div>
-      <div className="text-xl sm:text-2xl font-bold text-foreground/70">{value}</div>
+      <div className="text-xs sm:text-sm font-medium mb-1 text-foreground/70">
+        {label}
+      </div>
+      <div className="text-xl sm:text-2xl font-bold text-foreground/70">
+        {value}
+      </div>
     </div>
   );
 }
@@ -372,10 +352,11 @@ interface OrderCardProps {
 }
 
 function OrderCard({ order }: OrderCardProps) {
-  const statusConfig = ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG];
+  const statusConfig =
+    ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG];
 
   return (
-    <div className="p-4 sm:p-6 hover:bg-neutral-50  transition-colors">
+    <div className="p-4 sm:p-6 border border-neutral-400 transition-colors">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap mb-1">
@@ -384,10 +365,12 @@ function OrderCard({ order }: OrderCardProps) {
             </span>
             <span
               className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                statusConfig?.className || ORDER_STATUS_CONFIG.processing.className
+                statusConfig?.className ||
+                ORDER_STATUS_CONFIG.processing.className
               }`}
             >
-              {statusConfig?.label || order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+              {statusConfig?.label ||
+                order.status.charAt(0).toUpperCase() + order.status.slice(1)}
             </span>
           </div>
           <div className="text-xs sm:text-sm text-muted-foreground">

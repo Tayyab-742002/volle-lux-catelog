@@ -6,6 +6,7 @@ import { Download, ShoppingCart, Package, Truck, MapPin } from "lucide-react";
 import { getOrderById } from "@/services/orders/order.service";
 import { getCurrentUserServer } from "@/services/auth/auth-server.service";
 import { notFound } from "next/navigation";
+import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 
 // Force fresh data on every request - no caching
 export const dynamic = "force-dynamic";
@@ -56,7 +57,7 @@ async function OrderDetailContent({
 }) {
   // Fetch order from Supabase
   const order = await getOrderById(orderId);
-
+  console.log("ORDER : ", order);
   if (!order) {
     notFound();
   }
@@ -103,23 +104,8 @@ async function OrderDetailContent({
       quantity: item.quantity,
       pricePerUnit: item.pricePerUnit,
       total: item.totalPrice,
-      image: item.product?.image || "/placeholder-image.png",
+      image: item.product.image || "/placeholder-image.png",
     })),
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Delivered":
-        return "bg-green-500 text-green-800";
-      case "Shipped":
-        return "bg-purple-500 text-white";
-      case "Processing":
-        return "bg-indigo-500 text-white";
-      case "Cancelled":
-        return "bg-red-500 text-white";
-      default:
-        return "bg-gray-500 text-white";
-    }
   };
 
   return (
@@ -158,9 +144,17 @@ async function OrderDetailContent({
               Status
             </div>
             <span
-              className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(displayOrder.status)}`}
+              className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${
+                ORDER_STATUS_CONFIG[
+                  displayOrder.status as keyof typeof ORDER_STATUS_CONFIG
+                ]?.className || ORDER_STATUS_CONFIG.pending.className
+              }`}
             >
-              {displayOrder.status}
+              {ORDER_STATUS_CONFIG[
+                displayOrder.status as keyof typeof ORDER_STATUS_CONFIG
+              ]?.label ||
+                displayOrder.status.charAt(0).toUpperCase() +
+                  displayOrder.status.slice(1)}
             </span>
           </div>
           <div>
@@ -257,7 +251,9 @@ async function OrderDetailContent({
           <div className="border-t border-primary pt-3">
             <div className="flex justify-between text-lg font-bold">
               <span className="text-primary">Total</span>
-              <span className="text-primary">${displayOrder.total.toFixed(2)}</span>
+              <span className="text-primary">
+                ${displayOrder.total.toFixed(2)}
+              </span>
             </div>
           </div>
         </div>
