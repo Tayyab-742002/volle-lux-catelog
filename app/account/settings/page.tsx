@@ -5,10 +5,9 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { User, Bell, Lock, Loader2, CheckCircle } from "lucide-react";
+import { User, Lock, Loader2, CheckCircle } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
 
 export default function AccountSettingsPage() {
@@ -26,13 +25,6 @@ export default function AccountSettingsPage() {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-  });
-
-  const [preferences, setPreferences] = useState({
-    emailNotifications: true,
-    smsNotifications: false,
-    marketingEmails: true,
-    orderUpdates: true,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -175,13 +167,6 @@ export default function AccountSettingsPage() {
             <User className="h-4 w-4" />
             Profile
           </TabsTrigger>
-          <TabsTrigger
-            value="notifications"
-            className="flex items-center gap-2"
-          >
-            <Bell className="h-4 w-4" />
-            Notifications
-          </TabsTrigger>
           <TabsTrigger value="password" className="flex items-center gap-2">
             <Lock className="h-4 w-4" />
             Password
@@ -298,110 +283,6 @@ export default function AccountSettingsPage() {
                 </div>
               </div>
             </form>
-          </div>
-        </TabsContent>
-
-        {/* Notifications Tab */}
-        <TabsContent value="notifications">
-          <div className="rounded-lg border bg-card">
-            <div className="border-b p-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <Bell className="h-6 w-6 text-primary" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold">
-                    Notification Preferences
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Choose how you want to be notified
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id="emailNotifications"
-                    checked={preferences.emailNotifications}
-                    onCheckedChange={(checked) =>
-                      setPreferences({
-                        ...preferences,
-                        emailNotifications: checked as boolean,
-                      })
-                    }
-                  />
-                  <Label
-                    htmlFor="emailNotifications"
-                    className="cursor-pointer font-normal"
-                  >
-                    Email Notifications
-                  </Label>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id="smsNotifications"
-                    checked={preferences.smsNotifications}
-                    onCheckedChange={(checked) =>
-                      setPreferences({
-                        ...preferences,
-                        smsNotifications: checked as boolean,
-                      })
-                    }
-                  />
-                  <Label
-                    htmlFor="smsNotifications"
-                    className="cursor-pointer font-normal"
-                  >
-                    SMS Notifications
-                  </Label>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id="marketingEmails"
-                    checked={preferences.marketingEmails}
-                    onCheckedChange={(checked) =>
-                      setPreferences({
-                        ...preferences,
-                        marketingEmails: checked as boolean,
-                      })
-                    }
-                  />
-                  <Label
-                    htmlFor="marketingEmails"
-                    className="cursor-pointer font-normal"
-                  >
-                    Marketing Emails
-                  </Label>
-                  <div className="flex items-center space-x-3">
-                    <Checkbox
-                      id="orderUpdates"
-                      checked={preferences.orderUpdates}
-                      onCheckedChange={(checked) =>
-                        setPreferences({
-                          ...preferences,
-                          orderUpdates: checked as boolean,
-                        })
-                      }
-                    />
-                    <Label
-                      htmlFor="orderUpdates"
-                      className="cursor-pointer font-normal"
-                    >
-                      Order Updates
-                    </Label>
-                  </div>
-
-                  <div className="pt-4">
-                    <Button>Save Preferences</Button>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </TabsContent>
 

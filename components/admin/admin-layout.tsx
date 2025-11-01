@@ -10,7 +10,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Main Layout */}
-      <div className="flex flex-1">
+      <div className="flex flex-1 ">
         {/* Sidebar */}
         <AdminSidebar />
 

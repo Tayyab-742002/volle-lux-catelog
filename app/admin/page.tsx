@@ -59,7 +59,7 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div>
+      <div className="bg-background min-h-screen">
         {/* Header */}
         <div className="mb-6 md:mb-10">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tighter">

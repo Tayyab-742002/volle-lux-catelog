@@ -3,23 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  MoreVertical,
   Package,
   DollarSign,
   Calendar,
-  User,
   Search,
   Filter,
   ArrowUpDown,
-  Eye,
 } from "lucide-react";
-import type { AdminOrder } from "@/services/admin/order.service";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import type { Order } from "@/types/cart";
 import {
   Select,
   SelectContent,
@@ -27,15 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { StatusBadge } from "./status-badge";
-import { ExportButton } from "./export-button";
 
 interface OrdersTableProps {
-  orders: AdminOrder[];
+  orders: Order[];
   loading?: boolean;
-  onRefresh?: () => void;
 }
 
 export function OrdersTable({ orders, loading }: OrdersTableProps) {
@@ -49,11 +36,7 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
     .filter((order) => {
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase();
-        return (
-          order.orderNumber.toLowerCase().includes(searchLower) ||
-          order.email.toLowerCase().includes(searchLower) ||
-          order.customerName?.toLowerCase().includes(searchLower)
-        );
+        return order.orderNumber.toLowerCase().includes(searchLower);
       }
       return true;
     })
@@ -88,7 +71,7 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
       <div className="flex items-center justify-center py-12 sm:py-16">
         <div className="text-center space-y-4 max-w-md px-4">
           <div className="flex justify-center">
-            <div className="rounded-full bg-neutral-100  p-4">
+            <div className="rounded-full bg-neutral-100 p-4">
               <Package
                 className="h-8 w-8 text-muted-foreground"
                 strokeWidth={1.5}
@@ -100,9 +83,15 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
               No orders found
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Orders will appear here once customers start placing orders
+              You haven&apos;t placed any orders yet
             </p>
           </div>
+          <Link
+            href="/products"
+            className="inline-block mt-4 px-4 py-2 text-sm font-medium text-primary hover:underline"
+          >
+            Start Shopping
+          </Link>
         </div>
       </div>
     );
@@ -138,12 +127,6 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
                 <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
-
-            <ExportButton
-              filters={
-                statusFilter !== "all" ? { status: statusFilter } : undefined
-              }
-            />
           </div>
         </div>
       </div>
@@ -157,7 +140,7 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-neutral-200 ">
+          <div className="divide-y divide-neutral-200">
             {filteredOrders.map((order) => (
               <OrderCard key={order.id} order={order} />
             ))}
@@ -169,11 +152,8 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
       <div className="hidden md:block px-4 sm:px-6 pb-4 sm:pb-6">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="border border-neutral-400 ">
+            <thead className="border border-neutral-400">
               <tr>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Order #
-                </th>
                 <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   <button
                     className="flex items-center gap-1 hover:text-foreground transition-colors"
@@ -191,7 +171,10 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
                   </button>
                 </th>
                 <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Customer
+                  Order #
+                </th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Items
                 </th>
                 <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   <button
@@ -230,7 +213,7 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-200 ">
+            <tbody className="divide-y divide-neutral-200">
               {filteredOrders.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-12 text-center">
@@ -258,10 +241,10 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
 }
 
 // Mobile Card Component
-function OrderCard({ order }: { order: AdminOrder }) {
+function OrderCard({ order }: { order: Order }) {
   return (
     <Link
-      href={`/admin/orders/${order.id}`}
+      href={`/account/orders/${order.id}`}
       className="block p-4 hover:bg-neutral-50 border border-neutral-400 transition-colors"
     >
       <div className="flex items-start justify-between mb-3">
@@ -270,12 +253,6 @@ function OrderCard({ order }: { order: AdminOrder }) {
             <h3 className="font-semibold text-sm">#{order.orderNumber}</h3>
             <StatusBadge status={order.status} />
           </div>
-          {order.customerName && (
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <User className="h-3 w-3 shrink-0" />
-              <span className="truncate">{order.customerName}</span>
-            </div>
-          )}
         </div>
       </div>
 
@@ -286,7 +263,9 @@ function OrderCard({ order }: { order: AdminOrder }) {
           </div>
           <div className="min-w-0">
             <p className="text-xs text-muted-foreground">Items</p>
-            <p className="text-sm font-semibold">{order.items?.length || 0}</p>
+            <p className="text-sm font-semibold">
+              {order.items.reduce((sum, item) => sum + item.quantity, 0)}
+            </p>
           </div>
         </div>
 
@@ -303,7 +282,7 @@ function OrderCard({ order }: { order: AdminOrder }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-neutral-200  text-xs text-muted-foreground">
+      <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-neutral-200 text-xs text-muted-foreground">
         <Calendar className="h-3 w-3 shrink-0" />
         <span>{formatDate(order.createdAt)}</span>
       </div>
@@ -312,12 +291,17 @@ function OrderCard({ order }: { order: AdminOrder }) {
 }
 
 // Desktop Table Row Component
-function OrderRow({ order }: { order: AdminOrder }) {
+function OrderRow({ order }: { order: Order }) {
   return (
-    <tr className="hover:bg-neutral-50 border border-neutral-400  transition-colors">
+    <tr className="hover:bg-neutral-50 border border-neutral-400 transition-colors">
+      <td className="py-3 px-4">
+        <p className="text-sm text-muted-foreground">
+          {formatDate(order.createdAt)}
+        </p>
+      </td>
       <td className="py-3 px-4">
         <Link
-          href={`/admin/orders/${order.id}`}
+          href={`/account/orders/${order.id}`}
           className="text-sm font-medium text-primary hover:underline"
         >
           #{order.orderNumber}
@@ -325,18 +309,8 @@ function OrderRow({ order }: { order: AdminOrder }) {
       </td>
       <td className="py-3 px-4">
         <p className="text-sm text-muted-foreground">
-          {formatDate(order.createdAt)}
+          {order.items.reduce((sum, item) => sum + item.quantity, 0)} items
         </p>
-      </td>
-      <td className="py-3 px-4">
-        <div className="min-w-0">
-          <p className="font-medium text-sm truncate">
-            {order.customerName || "Guest"}
-          </p>
-          <p className="text-xs text-muted-foreground truncate mt-0.5">
-            {order.email}
-          </p>
-        </div>
       </td>
       <td className="py-3 px-4">
         <p className="text-sm font-medium">${order.total.toFixed(2)}</p>
@@ -345,24 +319,11 @@ function OrderRow({ order }: { order: AdminOrder }) {
         <StatusBadge status={order.status} />
       </td>
       <td className="py-3 px-4 text-right">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
-              <Link
-                href={`/admin/orders/${order.id}`}
-                className="flex items-center"
-              >
-                <Eye className="mr-2 h-4 w-4" />
-                View Details
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Link href={`/account/orders/${order.id}`}>
+          <span className="text-sm text-primary hover:underline font-medium">
+            View
+          </span>
+        </Link>
       </td>
     </tr>
   );
@@ -375,30 +336,28 @@ function OrdersTableSkeleton() {
       {/* Filters Skeleton */}
       <div className="px-4 sm:px-6 pt-4 sm:pt-6">
         <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="h-10 flex-1 bg-neutral-400  rounded-lg animate-pulse" />
+          <div className="h-10 flex-1 bg-neutral-400 rounded-lg animate-pulse" />
           <div className="flex gap-2">
-            <div className="h-10 w-[140px] bg-neutral-400  rounded-lg animate-pulse" />
-            <div className="h-10 w-[100px] bg-neutral-400  rounded-lg animate-pulse" />
+            <div className="h-10 w-[140px] bg-neutral-400 rounded-lg animate-pulse" />
           </div>
         </div>
       </div>
 
       {/* Mobile Skeleton */}
-      <div className="md:hidden divide-y divide-neutral-200 ">
+      <div className="md:hidden divide-y divide-neutral-200">
         {[1, 2, 3, 4, 5].map((i) => (
           <div key={i} className="p-4 space-y-3">
             <div className="flex items-start justify-between">
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className="h-4 w-24 bg-neutral-400  rounded animate-pulse" />
-                  <div className="h-5 w-20 bg-neutral-400  rounded-full animate-pulse" />
+                  <div className="h-4 w-24 bg-neutral-400 rounded animate-pulse" />
+                  <div className="h-5 w-20 bg-neutral-400 rounded-full animate-pulse" />
                 </div>
-                <div className="h-3 w-32 bg-neutral-400  rounded animate-pulse" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="h-12 bg-neutral-400  rounded animate-pulse" />
-              <div className="h-12 bg-neutral-400  rounded animate-pulse" />
+              <div className="h-12 bg-neutral-400 rounded animate-pulse" />
+              <div className="h-12 bg-neutral-400 rounded animate-pulse" />
             </div>
           </div>
         ))}
@@ -407,16 +366,16 @@ function OrdersTableSkeleton() {
       {/* Desktop Skeleton */}
       <div className="hidden md:block px-4 sm:px-6 pb-4 sm:pb-6">
         <table className="w-full">
-          <thead className="border border-neutral-400 ">
+          <thead className="border border-neutral-400">
             <tr>
-              <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase">
-                Order #
-              </th>
               <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase">
                 Date
               </th>
               <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase">
-                Customer
+                Order #
+              </th>
+              <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase">
+                Items
               </th>
               <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase">
                 Total
@@ -429,26 +388,26 @@ function OrdersTableSkeleton() {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-neutral-400 ">
+          <tbody className="divide-y divide-neutral-400">
             {[1, 2, 3, 4, 5].map((i) => (
               <tr key={i}>
                 <td className="py-3 px-4">
-                  <div className="h-4 w-24 bg-neutral-400  rounded animate-pulse" />
+                  <div className="h-4 w-24 bg-neutral-400 rounded animate-pulse" />
                 </td>
                 <td className="py-3 px-4">
-                  <div className="h-4 w-24 bg-neutral-400  rounded animate-pulse" />
+                  <div className="h-4 w-24 bg-neutral-400 rounded animate-pulse" />
                 </td>
                 <td className="py-3 px-4">
-                      <div className="h-4 w-32 bg-neutral-400  rounded animate-pulse" />
+                  <div className="h-4 w-16 bg-neutral-400 rounded animate-pulse" />
                 </td>
                 <td className="py-3 px-4">
-                  <div className="h-4 w-16 bg-neutral-400  rounded animate-pulse" />
+                  <div className="h-4 w-16 bg-neutral-400 rounded animate-pulse" />
                 </td>
                 <td className="py-3 px-4">
-                  <div className="h-5 w-20 bg-neutral-400  rounded-full animate-pulse" />
+                  <div className="h-5 w-20 bg-neutral-400 rounded-full animate-pulse" />
                 </td>
                 <td className="py-3 px-4 text-right">
-                  <div className="h-8 w-8 bg-neutral-400  rounded animate-pulse ml-auto" />
+                  <div className="h-4 w-12 bg-neutral-400 rounded animate-pulse ml-auto" />
                 </td>
               </tr>
             ))}
@@ -456,6 +415,33 @@ function OrdersTableSkeleton() {
         </table>
       </div>
     </div>
+  );
+}
+
+// Status Badge Component
+function StatusBadge({ status }: { status: Order["status"] }) {
+  const statusConfig = {
+    pending: "bg-gray-500 text-white",
+    processing: "bg-indigo-500 text-white",
+    shipped: "bg-purple-500 text-white",
+    delivered: "bg-green-500 text-white",
+    cancelled: "bg-red-500 text-white",
+  };
+
+  const labelConfig = {
+    pending: "Pending",
+    processing: "Processing",
+    shipped: "Shipped",
+    delivered: "Delivered",
+    cancelled: "Cancelled",
+  };
+
+  return (
+    <span
+      className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusConfig[status]}`}
+    >
+      {labelConfig[status]}
+    </span>
   );
 }
 
@@ -467,3 +453,4 @@ function formatDate(date: Date): string {
     day: "numeric",
   }).format(date);
 }
+

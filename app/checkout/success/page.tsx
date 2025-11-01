@@ -10,6 +10,7 @@ import {
   Home,
   Loader2,
   AlertCircle,
+  Download,
 } from "lucide-react";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -26,6 +27,7 @@ function CheckoutSuccessContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cartCleared, setCartCleared] = useState(false);
+  const [downloadingReceipt, setDownloadingReceipt] = useState(false);
 
   // Verify payment and fetch order with retry logic
   useEffect(() => {
@@ -275,6 +277,52 @@ function CheckoutSuccessContent() {
     );
   }
 
+  // Handle receipt download
+  const handleDownloadReceipt = async () => {
+    if (!order) return;
+
+    try {
+      setDownloadingReceipt(true);
+
+      const response = await fetch(`/api/receipt/${order.id}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to download receipt");
+      }
+
+      // Get PDF blob
+      const blob = await response.blob();
+
+      // Get filename from Content-Disposition header or use default
+      const contentDisposition = response.headers.get("Content-Disposition");
+      let filename = `receipt-${order.orderNumber}.pdf`;
+
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Error downloading receipt:", err);
+      setError("Failed to download receipt. Please try again.");
+    } finally {
+      setDownloadingReceipt(false);
+    }
+  };
+
   // Success state with order details
   console.log("🔍 RENDER: Showing success screen with order:", order?.id);
 
@@ -321,8 +369,8 @@ function CheckoutSuccessContent() {
               const quantity = item.quantity || 1;
               const pricePerUnit = item.pricePerUnit || 0;
               // Create unique key: use item.id if exists, otherwise use index with product name
-              const uniqueKey = item.id 
-                ? `${item.id}-${index}` 
+              const uniqueKey = item.id
+                ? `${item.id}-${index}`
                 : `${productName}-${index}`;
 
               return (
@@ -382,6 +430,25 @@ function CheckoutSuccessContent() {
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-4 sm:flex-row">
+          <Button
+            onClick={handleDownloadReceipt}
+            disabled={downloadingReceipt}
+            size="lg"
+            className="flex-1"
+            variant="outline"
+          >
+            {downloadingReceipt ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Downloading...
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-5 w-5" strokeWidth={1.5} />
+                Download Receipt
+              </>
+            )}
+          </Button>
           <Button asChild size="lg" className="flex-1">
             <Link href={`/account/orders/${orderData.id}`}>
               <Package className="mr-2 h-5 w-5" strokeWidth={1.5} />

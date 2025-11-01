@@ -27,7 +27,7 @@ export default function OrdersPage() {
 
       const data = await response.json();
       // Convert dates from strings to Date objects
-      const ordersWithDates = data.orders.map((order: any) => ({
+      const ordersWithDates = data.orders.map((order: AdminOrder) => ({
         ...order,
         createdAt: new Date(order.createdAt),
         updatedAt: new Date(order.updatedAt),

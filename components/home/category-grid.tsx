@@ -24,81 +24,81 @@ export async function CategoryGrid() {
         {/* Masonry Grid */}
         {categories && categories.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {categories.map(
-                (
-                  category: {
-                    id: string;
-                    name: string;
-                    slug: string;
-                    image?: string;
-                    description?: string;
-                  },
-                  index: number
-                ) => {
-                  // Create varied layouts for masonry effect
-                  const isDouble = index === 1; // 2nd item spans 2 columns (on larger screens)
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {categories.map(
+              (
+                category: {
+                  id: string;
+                  name: string;
+                  slug: string;
+                  image?: string;
+                  description?: string;
+                },
+                index: number
+              ) => {
+                // Create varied layouts for masonry effect
+                const isDouble = index === 1; // 2nd item spans 2 columns (on larger screens)
 
-                  return (
-                    <Link
-                      key={category.id}
-                      href={`/products?category=${category.slug}`}
-                      className={`group relative overflow-hidden rounded-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl ${
-                        isDouble ? "md:col-span-2" : ""
-                      }`}
-                    >
-                      <div className="relative h-[300px] md:h-[400px]">
-                        {category.image ? (
-                          <Image
-                            src={category.image}
-                            alt={category.name}
-                            fill
-                            className="object-cover transition-transform duration-300 group-hover:scale-105 group-hover:brightness-110"
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            placeholder="empty"
-                          />
-                        ) : (
-                          <div className="flex h-full items-center justify-center bg-muted">
-                            <span className="text-muted-foreground">
-                              No image
-                            </span>
-                          </div>
-                        )}
-                        {/* Overlay Gradient */}
-                        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
-                        {/* Category Title & CTA */}
-                        <div className="absolute bottom-0 left-0 right-0 p-6">
-                          <h3 className="mb-2 text-3xl font-bold text-white md:text-4xl">
-                            {category.name}
-                          </h3>
-                          {category.description && (
-                            <p className="mb-3 line-clamp-2 text-sm text-white/90">
-                              {category.description}
-                            </p>
-                          )}
-                          <span className="inline-flex items-center text-sm font-medium text-white transition-transform group-hover:translate-x-1">
-                            Shop Now
-                            <svg
-                              className="ml-2 h-4 w-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 5l7 7-7 7"
-                              />
-                            </svg>
+                return (
+                  <Link
+                    key={category.id}
+                    href={`/products?category=${category.slug}`}
+                    className={`group relative overflow-hidden rounded-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl ${
+                      isDouble ? "md:col-span-2" : ""
+                    }`}
+                  >
+                    <div className="relative h-[300px] md:h-[400px]">
+                      {category.image ? (
+                        <Image
+                          src={category.image}
+                          alt={category.name}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105 group-hover:brightness-110"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          placeholder="empty"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center bg-muted">
+                          <span className="text-muted-foreground">
+                            No image
                           </span>
                         </div>
+                      )}
+                      {/* Overlay Gradient */}
+                      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
+                      {/* Category Title & CTA */}
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 className="mb-2 text-3xl font-bold text-white md:text-4xl">
+                          {category.name}
+                        </h3>
+                        {category.description && (
+                          <p className="mb-3 line-clamp-2 text-sm text-white/90">
+                            {category.description}
+                          </p>
+                        )}
+                        <span className="inline-flex items-center text-sm font-medium text-white transition-transform group-hover:translate-x-1">
+                          Shop Now
+                          <svg
+                            className="ml-2 h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
+                        </span>
                       </div>
-                    </Link>
-                  );
-                }
-              )}
-            </div>
+                    </div>
+                  </Link>
+                );
+              }
+            )}
+          </div>
 
             {/* View All Button */}
             <div className="mt-12 text-center">

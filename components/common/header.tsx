@@ -290,9 +290,10 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
   const [hoveredCategory, setHoveredCategory] = useState<Category | null>(null);
   const [isMobileProductsOpen, setIsMobileProductsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mounted, setMounted] = useState(false);
 
   const { getItemCount } = useCartStore();
-  const { user, isAuthenticated, signOut } = useAuth();
+  const { user, isAuthenticated, signOut, loading: authLoading } = useAuth();
   const cartItemCount = getItemCount();
 
   // Ref to store the timeout for closing mega menu
@@ -305,6 +306,11 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
         clearTimeout(megaMenuTimeoutRef.current);
       }
     };
+  }, []);
+
+  // Set mounted state after initial render to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   const handleSignOut = useCallback(async () => {
@@ -336,8 +342,8 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
   const handleMegaMenuLeave = useCallback(() => {
     // Set timeout to close menu after 300ms delay
     megaMenuTimeoutRef.current = setTimeout(() => {
-      setIsMegaMenuOpen(false);
-      setHoveredCategory(null);
+    setIsMegaMenuOpen(false);
+    setHoveredCategory(null);
     }, 300);
   }, []);
 
@@ -404,31 +410,31 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-1">
               <div
-                onMouseEnter={handleMegaMenuEnter}
-                onMouseLeave={handleMegaMenuLeave}
-                className="relative"
-              >
-                <button
-                  className="px-4 py-2 text-sm font-medium text-foreground hover:text-foreground transition-colors"
-                  aria-expanded={isMegaMenuOpen}
+                  onMouseEnter={handleMegaMenuEnter}
+                  onMouseLeave={handleMegaMenuLeave}
+                  className="relative"
                 >
-                  Products
-                </button>
+                  <button
+                  className="px-4 py-2 text-sm font-medium text-foreground hover:text-foreground transition-colors"
+                    aria-expanded={isMegaMenuOpen}
+                  >
+                    Products
+                  </button>
               </div>
 
               {/* <Link
                 href="/solutions"
                 className="px-4 py-2 text-sm font-medium text-foreground hover:text-foreground transition-colors"
-              >
+                  >
                 Solutions
               </Link> */}
 
-              <Link
-                href="/sustainability"
+                  <Link
+                    href="/sustainability"
                 className="px-4 py-2 text-sm font-medium text-foreground hover:text-foreground transition-colors"
-              >
-                Sustainability
-              </Link>
+                  >
+                    Sustainability
+                  </Link>
 
               <Link
                 href="/about"
@@ -437,12 +443,12 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                 About
               </Link>
 
-              <Link
-                href="/contact"
+                  <Link
+                    href="/contact"
                 className="px-4 py-2 text-sm font-medium text-foreground hover:text-foreground transition-colors"
-              >
-                Contact
-              </Link>
+                  >
+                    Contact
+                  </Link>
 
               {isAuthenticated && user?.role === "admin" && (
                 <Link
@@ -479,7 +485,7 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
               </Link>
 
               {/* Account */}
-              {isAuthenticated ? (
+              {!authLoading && isAuthenticated ? (
                 <div className="hidden lg:block relative group">
                   <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground hover:text-foreground hover:bg-primary rounded-lg transition-colors">
                     <User className="h-5 w-5" strokeWidth={1.5} />
@@ -538,7 +544,7 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                     </div>
                   </div>
                 </div>
-              ) : (
+              ) : !authLoading ? (
                 <Link
                   href="/auth/login"
                   className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground hover:text-foreground transition-colors"
@@ -546,7 +552,7 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                   <User className="h-5 w-5" strokeWidth={1.5} />
                   Sign In
                 </Link>
-              )}
+              ) : null}
 
               {/* Cart */}
               <MiniCart>
@@ -555,7 +561,7 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                     className="h-5 w-5 text-foreground"
                     strokeWidth={1.5}
                   />
-                  {cartItemCount > 0 && (
+                  {mounted && cartItemCount > 0 && (
                     <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
                       {cartItemCount > 9 ? "9+" : cartItemCount}
                     </span>
@@ -594,18 +600,18 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                   </h3>
                   <nav className="space-y-0.5">
                     {categories.map((category) => (
-                      <button
+                        <button
                         key={category.id}
-                        onMouseEnter={() => handleCategoryHover(category)}
+                          onMouseEnter={() => handleCategoryHover(category)}
                         className={`w-full flex items-center justify-between px-3 py-2.5 text-left text-sm rounded-lg transition-colors ${
-                          hoveredCategory?.id === category.id
+                            hoveredCategory?.id === category.id
                             ? "bg-primary text-white"
                             : "text-foreground hover:bg-primary"
-                        }`}
-                      >
-                        <span className="font-medium">{category.name}</span>
+                          }`}
+                        >
+                          <span className="font-medium">{category.name}</span>
                         <ChevronRight className="h-4 w-4" />
-                      </button>
+                        </button>
                     ))}
                   </nav>
                 </div>
@@ -615,17 +621,17 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                   <div className="flex-1 grid grid-cols-3 gap-8">
                     <div className="col-span-2">
                       <h4 className="text-sm font-semibold text-foreground mb-4">
-                        {displayedCategory.name}
+                      {displayedCategory.name}
                       </h4>
                       <div className="grid grid-cols-2 gap-x-8 gap-y-2 mb-6">
-                        {displayedCategory.subcategories?.map((sub) => (
+                      {displayedCategory.subcategories?.map((sub) => (
                           <Link
                             key={sub.id}
                             href={`/products?category=${displayedCategory.slug}&subcategory=${sub.slug}`}
                             className="text-sm text-foreground hover:text-primary transition-colors py-1.5"
                             onClick={handleMegaMenuLeave}
                           >
-                            {sub.name}
+                              {sub.name}
                           </Link>
                         ))}
                       </div>
@@ -668,35 +674,35 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                           </div>
                         )}
 
-                      <Link
-                        href={`/products?category=${displayedCategory.slug}`}
+                    <Link
+                      href={`/products?category=${displayedCategory.slug}`}
                         className="inline-flex items-center gap-1 mt-6 text-sm text-primary font-semibold hover:gap-2 transition-all"
-                        onClick={handleMegaMenuLeave}
-                      >
+                      onClick={handleMegaMenuLeave}
+                    >
                         View All {displayedCategory.name}
-                        <ChevronRight className="h-4 w-4" />
-                      </Link>
-                    </div>
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
+                  </div>
 
                     {/* Small Featured Image */}
                     <div className="col-span-1">
                       {displayedCategory.image && (
-                        <Link
-                          href={`/products?category=${displayedCategory.slug}`}
-                          className="block group"
-                          onClick={handleMegaMenuLeave}
-                        >
+                    <Link
+                      href={`/products?category=${displayedCategory.slug}`}
+                      className="block group"
+                      onClick={handleMegaMenuLeave}
+                    >
                           <div className="relative h-48 rounded-lg overflow-hidden bg-muted">
-                            <Image
-                              src={displayedCategory.image}
-                              alt={displayedCategory.name}
-                              fill
+                        <Image
+                          src={displayedCategory.image}
+                          alt={displayedCategory.name}
+                          fill
                               className="object-cover transition-transform duration-500 group-hover:scale-105"
                               sizes="300px"
-                            />
+                        />
                             <div className="absolute inset-0 bg-linear-to-t from-foreground/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                          </div>
-                        </Link>
+                      </div>
+                    </Link>
                       )}
                     </div>
                   </div>
@@ -727,7 +733,7 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                 </button>
               </div>
 
-              {isAuthenticated ? (
+              {!authLoading && isAuthenticated ? (
                 <div className="p-4 bg-primary rounded-lg mb-6">
                   <p className="text-sm font-semibold text-foreground truncate">
                     {user?.fullName || "User"}
@@ -736,7 +742,7 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                     {user?.email}
                   </p>
                 </div>
-              ) : (
+              ) : !authLoading ? (
                 <div className="space-y-3 mb-6">
                   <Link
                     href="/auth/login"
@@ -752,6 +758,12 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                   >
                     Create Account
                   </Link>
+                </div>
+              ) : (
+                <div className="p-4 bg-primary rounded-lg mb-6">
+                  <p className="text-sm font-semibold text-foreground truncate">
+                    Loading...
+                  </p>
                 </div>
               )}
 

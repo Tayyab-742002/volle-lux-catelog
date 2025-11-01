@@ -1,10 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, ShoppingCart, Package, Truck, MapPin } from "lucide-react";
 import { getOrderById } from "@/services/orders/order.service";
 import { getCurrentUserServer } from "@/services/auth/auth-server.service";
 import { notFound } from "next/navigation";
+
+// Force fresh data on every request - no caching
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // Placeholder image for missing product images
 const PLACEHOLDER_IMAGE = "/placeholder-image.png";
@@ -34,19 +39,34 @@ export default async function OrderDetailsPage({
     );
   }
 
+  return (
+    <Suspense fallback={<OrderDetailSkeleton />}>
+      <OrderDetailContent orderId={id} userId={authResult.user.id} />
+    </Suspense>
+  );
+}
+
+// Order Detail Content Component
+async function OrderDetailContent({
+  orderId,
+  userId,
+}: {
+  orderId: string;
+  userId: string;
+}) {
   // Fetch order from Supabase
-  const order = await getOrderById(id);
+  const order = await getOrderById(orderId);
 
   if (!order) {
     notFound();
   }
 
   // Verify user owns this order
-  if (order.userId !== authResult.user.id) {
+  if (order.userId !== userId) {
     return (
       <div className="rounded-lg border bg-card p-12 text-center">
         <p className="text-muted-foreground">
-          You don't have access to this order
+          You don&apos;t have access to this order
         </p>
         <Link href="/account/orders">
           <Button className="mt-4">Back to Orders</Button>
@@ -240,6 +260,81 @@ export default async function OrderDetailsPage({
               <span>${displayOrder.total.toFixed(2)}</span>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Order Detail Skeleton
+function OrderDetailSkeleton() {
+  return (
+    <div>
+      {/* Header Skeleton */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-2">
+          <div className="h-9 w-48 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-5 w-32 bg-neutral-400 rounded animate-pulse" />
+        </div>
+        <div className="flex gap-3">
+          <div className="h-11 w-40 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-11 w-32 bg-neutral-400 rounded animate-pulse" />
+        </div>
+      </div>
+
+      {/* Order Info Card Skeleton */}
+      <div className="mb-8 rounded-lg border bg-card p-6">
+        <div className="grid gap-6 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="space-y-2">
+              <div className="h-4 w-20 bg-neutral-400 rounded animate-pulse" />
+              <div className="h-6 w-32 bg-neutral-400 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Shipping Address Skeleton */}
+      <div className="mb-8 rounded-lg border bg-card p-6">
+        <div className="h-7 w-40 mb-4 bg-neutral-400 rounded animate-pulse" />
+        <div className="space-y-2">
+          <div className="h-5 w-48 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-4 w-64 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-4 w-40 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-4 w-32 bg-neutral-400 rounded animate-pulse" />
+        </div>
+      </div>
+
+      {/* Order Items Skeleton */}
+      <div className="mb-8 rounded-lg border bg-card">
+        <div className="border-b p-6">
+          <div className="h-7 w-32 bg-neutral-400 rounded animate-pulse" />
+        </div>
+        <div className="divide-y">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex gap-6 p-6">
+              <div className="h-24 w-24 bg-neutral-400 rounded-lg animate-pulse" />
+              <div className="flex-1 space-y-2">
+                <div className="h-5 w-48 bg-neutral-400 rounded animate-pulse" />
+                <div className="h-4 w-64 bg-neutral-400 rounded animate-pulse" />
+                <div className="h-4 w-32 bg-neutral-400 rounded animate-pulse" />
+              </div>
+              <div className="h-6 w-20 bg-neutral-400 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Order Summary Skeleton */}
+      <div className="rounded-lg border bg-card p-6">
+        <div className="h-7 w-40 mb-4 bg-neutral-400 rounded animate-pulse" />
+        <div className="space-y-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex justify-between">
+              <div className="h-4 w-24 bg-neutral-400 rounded animate-pulse" />
+              <div className="h-4 w-20 bg-neutral-400 rounded animate-pulse" />
+            </div>
+          ))}
         </div>
       </div>
     </div>

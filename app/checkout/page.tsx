@@ -62,9 +62,8 @@ export default function CheckoutPage() {
 
   const summary = getCartSummary();
 
-  // Reset address loading state on component mount (allows fresh loading on new checkout)
+  // Reset address loading state on component mount
   useEffect(() => {
-    console.log("Checkout page mounted - resetting address loading state");
     addressesLoadedRef.current = false;
     lastUserIdRef.current = null;
     currentLoadPromiseRef.current = null;
@@ -85,7 +84,7 @@ export default function CheckoutPage() {
     }
   }, [user?.id, router]);
 
-  // Load saved addresses for authenticated users (with infinite loop protection)
+  // Load saved addresses for authenticated users
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
     let isCancelled = false;
@@ -93,16 +92,8 @@ export default function CheckoutPage() {
     async function loadAddresses() {
       const userId = user?.id;
 
-      console.log("🔍 CHECKOUT: loadAddresses called, userId:", userId);
-      console.log(
-        "🔍 CHECKOUT: addressesLoadedRef:",
-        addressesLoadedRef.current
-      );
-      console.log("🔍 CHECKOUT: lastUserIdRef:", lastUserIdRef.current);
-
       // If no user, set loading to false and exit
       if (!userId) {
-        console.log("🔍 CHECKOUT: No user ID, setting loading to false");
         setIsLoadingAddresses(false);
         addressesLoadedRef.current = true;
         return;
@@ -110,61 +101,43 @@ export default function CheckoutPage() {
 
       // If already loaded for this exact user ID in this page load, skip
       if (addressesLoadedRef.current && lastUserIdRef.current === userId) {
-        console.log(
-          "🔍 CHECKOUT: Addresses already loaded for this page load, skipping..."
-        );
         return;
       }
 
       // Set timeout to force loading to false if it takes too long
       timeoutId = setTimeout(() => {
         if (!isCancelled) {
-          console.error(
-            "⏰ CHECKOUT: Address loading timeout (5s) - forcing loading to false"
-          );
           setIsLoadingAddresses(false);
           addressesLoadedRef.current = true;
         }
       }, 5000); // 5 second timeout
 
-      // Mark as loading
-      console.log("🔍 CHECKOUT: Starting address loading...");
       setIsLoadingAddresses(true);
       lastUserIdRef.current = userId;
 
       try {
-        console.log("🔍 CHECKOUT: Fetching saved addresses for user:", userId);
         const addresses = await getSavedAddresses(userId);
 
         if (isCancelled) return; // Don't update state if cancelled
-
-        console.log(
-          "✅ CHECKOUT: Loaded addresses:",
-          addresses.length,
-          addresses
-        );
         setSavedAddresses(addresses);
 
         // Auto-select default address
         const defaultAddr = addresses.find((a) => a.is_default);
         if (defaultAddr) {
           setSelectedAddressId(defaultAddr.id);
-          console.log(
-            "✅ CHECKOUT: Auto-selected default address:",
-            defaultAddr.id
-          );
-        } else {
-          console.log("🔍 CHECKOUT: No default address found");
+        } else if (addresses.length === 0) {
+          // If no saved addresses, show the form for new address
+          setUseNewAddress(true);
         }
-      } catch (err) {
-        console.error("❌ CHECKOUT: Failed to load addresses:", err);
+      } catch {
         if (!isCancelled) {
           // Set empty array on error to prevent retry loops
           setSavedAddresses([]);
+          // Show form for new address on error
+          setUseNewAddress(true);
         }
       } finally {
         if (!isCancelled) {
-          console.log("🔍 CHECKOUT: Setting isLoadingAddresses to false");
           setIsLoadingAddresses(false);
           addressesLoadedRef.current = true;
         }
@@ -264,7 +237,6 @@ export default function CheckoutPage() {
         throw new Error("No checkout URL received");
       }
     } catch (err) {
-      console.error("Checkout error:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
       setIsLoading(false);
     }
