@@ -33,7 +33,7 @@ export const stripe = new Proxy({} as Stripe, {
     if (!stripeInstance) {
       stripeInstance = getStripeInstance();
     }
-    return (stripeInstance as any)[prop];
+    return stripeInstance[prop as keyof Stripe];
   },
 });
 

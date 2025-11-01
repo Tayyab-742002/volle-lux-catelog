@@ -308,11 +308,6 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
     };
   }, []);
 
-  // Set mounted state after initial render to prevent hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const handleSignOut = useCallback(async () => {
     await signOut();
   }, [signOut]);

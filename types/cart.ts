@@ -30,7 +30,15 @@ export interface ShippingAddress {
   phone?: string;
 }
 
-export interface BillingAddress extends ShippingAddress {}
+export interface BillingAddress extends ShippingAddress {
+  fullName: string;
+  address: string;
+  address2?: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+}
 
 export interface Order {
   id: string;

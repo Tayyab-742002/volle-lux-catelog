@@ -1,5 +1,6 @@
 import { CartItem, Order } from "@/types/cart";
 import { createClient } from "@/lib/supabase/client";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 /**
  * Cart Service
@@ -17,7 +18,7 @@ export async function saveCartToSupabase(
   sessionId?: string
 ): Promise<void> {
   try {
-    const supabase = createClient() as any;
+    const supabase = createClient() as SupabaseClient;
 
     // Prepare cart data
     const cartData = {
@@ -70,14 +71,13 @@ export async function saveCartToSupabase(
             .eq("user_id", userId);
 
           if (error) {
-           
             throw error;
           }
-         
+
           return;
         }
         // Update existing cart
-       
+
         const { error } = await supabase
           .from("carts")
           .update({
@@ -90,7 +90,6 @@ export async function saveCartToSupabase(
           console.error("Error updating authenticated cart:", error);
           throw error;
         }
-       
       } else {
         // If no items, nothing to persist
         if (cartItems.length === 0) {
@@ -109,7 +108,6 @@ export async function saveCartToSupabase(
           console.error("Error creating authenticated cart:", error);
           throw error;
         }
-        
       }
     } else if (sessionId) {
       // Guest cart - check if cart exists
@@ -127,7 +125,6 @@ export async function saveCartToSupabase(
       if (existingCart) {
         // If no items, delete cart row instead of storing empty array
         if (cartItems.length === 0) {
-         
           const { error } = await supabase
             .from("carts")
             .delete()

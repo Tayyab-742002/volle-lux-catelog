@@ -5,7 +5,7 @@
 
 import Stripe from "stripe";
 import { stripe, STRIPE_CONFIG } from "@/lib/stripe/config";
-import { CartItem } from "@/types/cart";
+import { BillingAddress, CartItem, ShippingAddress } from "@/types/cart";
 
 /**
  * Convert cart items to Stripe line items
@@ -54,8 +54,8 @@ export async function createCheckoutSession(params: {
   items: CartItem[];
   userId?: string;
   userEmail?: string;
-  shippingAddress?: any;
-  billingAddress?: any;
+  shippingAddress?: ShippingAddress;
+  billingAddress?: BillingAddress;
 }): Promise<{ sessionId: string; url: string }> {
   try {
     const { items, userId, userEmail, shippingAddress, billingAddress } =
