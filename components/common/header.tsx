@@ -299,8 +299,11 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
   // Ref to store the timeout for closing mega menu
   const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Cleanup timeout on unmount
+  // Set mounted to true after initial render to prevent hydration mismatches
   useEffect(() => {
+    setMounted(true);
+
+    // Cleanup timeout on unmount
     return () => {
       if (megaMenuTimeoutRef.current) {
         clearTimeout(megaMenuTimeoutRef.current);
@@ -337,8 +340,8 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
   const handleMegaMenuLeave = useCallback(() => {
     // Set timeout to close menu after 300ms delay
     megaMenuTimeoutRef.current = setTimeout(() => {
-    setIsMegaMenuOpen(false);
-    setHoveredCategory(null);
+      setIsMegaMenuOpen(false);
+      setHoveredCategory(null);
     }, 300);
   }, []);
 
@@ -405,16 +408,16 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-1">
               <div
-                  onMouseEnter={handleMegaMenuEnter}
-                  onMouseLeave={handleMegaMenuLeave}
-                  className="relative"
-                >
-                  <button
+                onMouseEnter={handleMegaMenuEnter}
+                onMouseLeave={handleMegaMenuLeave}
+                className="relative"
+              >
+                <button
                   className="px-4 py-2 text-sm font-medium text-foreground hover:text-foreground transition-colors"
-                    aria-expanded={isMegaMenuOpen}
-                  >
-                    Products
-                  </button>
+                  aria-expanded={isMegaMenuOpen}
+                >
+                  Products
+                </button>
               </div>
 
               {/* <Link
@@ -424,12 +427,12 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                 Solutions
               </Link> */}
 
-                  <Link
-                    href="/sustainability"
+              <Link
+                href="/sustainability"
                 className="px-4 py-2 text-sm font-medium text-foreground hover:text-foreground transition-colors"
-                  >
-                    Sustainability
-                  </Link>
+              >
+                Sustainability
+              </Link>
 
               <Link
                 href="/about"
@@ -438,12 +441,12 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                 About
               </Link>
 
-                  <Link
-                    href="/contact"
+              <Link
+                href="/contact"
                 className="px-4 py-2 text-sm font-medium text-foreground hover:text-foreground transition-colors"
-                  >
-                    Contact
-                  </Link>
+              >
+                Contact
+              </Link>
 
               {isAuthenticated && user?.role === "admin" && (
                 <Link
@@ -472,12 +475,13 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
               </form>
 
               {/* Mobile Search */}
-              <Link
-                href="/search"
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
                 className="lg:hidden p-2.5 hover:bg-primary rounded-lg transition-colors"
+                aria-label="Open mobile menu"
               >
                 <Search className="h-5 w-5 text-foreground" strokeWidth={1.5} />
-              </Link>
+              </button>
 
               {/* Account */}
               {!authLoading && isAuthenticated ? (
@@ -595,18 +599,18 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                   </h3>
                   <nav className="space-y-0.5">
                     {categories.map((category) => (
-                        <button
+                      <button
                         key={category.id}
-                          onMouseEnter={() => handleCategoryHover(category)}
+                        onMouseEnter={() => handleCategoryHover(category)}
                         className={`w-full flex items-center justify-between px-3 py-2.5 text-left text-sm rounded-lg transition-colors ${
-                            hoveredCategory?.id === category.id
+                          hoveredCategory?.id === category.id
                             ? "bg-primary text-white"
                             : "text-foreground hover:bg-primary"
-                          }`}
-                        >
-                          <span className="font-medium">{category.name}</span>
+                        }`}
+                      >
+                        <span className="font-medium">{category.name}</span>
                         <ChevronRight className="h-4 w-4" />
-                        </button>
+                      </button>
                     ))}
                   </nav>
                 </div>
@@ -616,17 +620,17 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                   <div className="flex-1 grid grid-cols-3 gap-8">
                     <div className="col-span-2">
                       <h4 className="text-sm font-semibold text-foreground mb-4">
-                      {displayedCategory.name}
+                        {displayedCategory.name}
                       </h4>
                       <div className="grid grid-cols-2 gap-x-8 gap-y-2 mb-6">
-                      {displayedCategory.subcategories?.map((sub) => (
+                        {displayedCategory.subcategories?.map((sub) => (
                           <Link
                             key={sub.id}
                             href={`/products?category=${displayedCategory.slug}&subcategory=${sub.slug}`}
                             className="text-sm text-foreground hover:text-primary transition-colors py-1.5"
                             onClick={handleMegaMenuLeave}
                           >
-                              {sub.name}
+                            {sub.name}
                           </Link>
                         ))}
                       </div>
@@ -669,35 +673,35 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                           </div>
                         )}
 
-                    <Link
-                      href={`/products?category=${displayedCategory.slug}`}
+                      <Link
+                        href={`/products?category=${displayedCategory.slug}`}
                         className="inline-flex items-center gap-1 mt-6 text-sm text-primary font-semibold hover:gap-2 transition-all"
-                      onClick={handleMegaMenuLeave}
-                    >
+                        onClick={handleMegaMenuLeave}
+                      >
                         View All {displayedCategory.name}
-                      <ChevronRight className="h-4 w-4" />
-                    </Link>
-                  </div>
+                        <ChevronRight className="h-4 w-4" />
+                      </Link>
+                    </div>
 
                     {/* Small Featured Image */}
                     <div className="col-span-1">
                       {displayedCategory.image && (
-                    <Link
-                      href={`/products?category=${displayedCategory.slug}`}
-                      className="block group"
-                      onClick={handleMegaMenuLeave}
-                    >
+                        <Link
+                          href={`/products?category=${displayedCategory.slug}`}
+                          className="block group"
+                          onClick={handleMegaMenuLeave}
+                        >
                           <div className="relative h-48 rounded-lg overflow-hidden bg-muted">
-                        <Image
-                          src={displayedCategory.image}
-                          alt={displayedCategory.name}
-                          fill
+                            <Image
+                              src={displayedCategory.image}
+                              alt={displayedCategory.name}
+                              fill
                               className="object-cover transition-transform duration-500 group-hover:scale-105"
                               sizes="300px"
-                        />
+                            />
                             <div className="absolute inset-0 bg-linear-to-t from-foreground/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                    </Link>
+                          </div>
+                        </Link>
                       )}
                     </div>
                   </div>

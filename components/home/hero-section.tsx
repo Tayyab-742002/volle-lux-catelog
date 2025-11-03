@@ -33,7 +33,7 @@ export function HeroSection() {
       {/* Background Image/Video */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/Generated%20Image%20November%2001%2C%202025%20-%2012_51AM.png"
+          src="https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/hero-banner.png"
           alt="Professional packaging and boxes"
           fill
           priority

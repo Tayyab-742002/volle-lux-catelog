@@ -22,7 +22,12 @@ export default function ResponsiveSanityImage({
   className,
 }: Props) {
   const src = buildSanityImage(image, { width });
-  const blur = getBlurDataURL(image);
+  
+  // Only generate blur placeholder for priority images to reduce CDN requests
+  let blur: string | undefined;
+  if (priority) {
+    blur = getBlurDataURL(image);
+  }
 
   return (
     <Image
@@ -31,7 +36,7 @@ export default function ResponsiveSanityImage({
       width={width}
       height={height || Math.round((width * 3) / 4)}
       className={className}
-      placeholder="blur"
+      placeholder={priority && blur ? "blur" : "empty"}
       blurDataURL={blur}
       priority={priority}
       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

@@ -4,7 +4,6 @@
  * Reference: Architecture.md Section 4.3
  */
 
-
 import { createClient as createServerClient } from "@supabase/supabase-js";
 import { Order, CartItem } from "@/types/cart";
 
