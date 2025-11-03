@@ -10,25 +10,25 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   return (
-    <div className="group">
-      <Link href={`/products/${product.slug}`}>
-        <div className="overflow-hidden bg-background p-4 transition-shadow duration-300 hover:shadow-xl">
-          {/* Image Container - 90% of card */}
+    <div className="group flex flex-col">
+      <Link href={`/products/${product.slug}`} className="flex-1">
+        <div className="flex h-full flex-col overflow-hidden rounded-lg border bg-card transition-all duration-200 hover:border-foreground/20 hover:shadow-md">
+          {/* Image Container */}
           <div className="relative aspect-square w-full overflow-hidden bg-muted">
             <Image
               src={product.image}
               alt={product.name}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
               priority={false}
               placeholder="empty"
             />
 
-            {/* Badge - Accent color pill */}
+            {/* Badge */}
             {product.discount && (
-              <div className="absolute left-3 top-3">
-                <span className="inline-flex items-center rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-lg">
+              <div className="absolute left-1.5 top-1.5">
+                <span className="inline-flex items-center rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-semibold text-primary-foreground md:px-2 md:py-0.5 md:text-[10px]">
                   -{product.discount}%
                 </span>
               </div>
@@ -36,33 +36,35 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Info Section */}
-          <div className="pt-4">
+          <div className="flex flex-1 flex-col p-2">
             {/* Title */}
-            <h3 className="mb-2 line-clamp-2 text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+            <h3 className="mb-0.5 line-clamp-2 text-[10px] font-semibold leading-tight text-foreground transition-colors group-hover:text-primary md:text-xs">
               {product.name}
             </h3>
 
             {/* Price */}
-            <div className="mb-3 flex items-baseline gap-2">
-              <span className="text-lg font-bold text-foreground">
+            <div className="mt-auto flex items-baseline gap-1">
+              <span className="text-xs font-bold text-foreground md:text-sm">
                 ${product.basePrice.toFixed(2)}
               </span>
               {product.variants && product.variants.length > 1 && (
-                <span className="text-xs text-muted-foreground">From</span>
+                <span className="text-[9px] text-muted-foreground md:text-[10px]">
+                  From
+                </span>
               )}
             </div>
           </div>
         </div>
       </Link>
 
-      {/* Quick Variants - Separate from link to navigate to product page */}
+      {/* Quick Variants */}
       {product.variants && product.variants.length > 0 && (
-        <div className="flex gap-2 px-4 pb-4">
-          {product.variants.slice(0, 3).map((variant) => (
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          {product.variants.slice(0, 2).map((variant) => (
             <Link
               key={variant.id}
               href={`/products/${product.slug}`}
-              className="rounded border border-border bg-background px-3 py-1 text-xs font-medium text-foreground transition-all hover:border-primary hover:bg-primary hover:text-primary-foreground"
+              className="rounded border border-border bg-background px-1.5 py-0.5 text-[9px] font-medium text-foreground transition-all hover:border-primary hover:bg-primary hover:text-primary-foreground md:px-2 md:py-0.5 md:text-[10px]"
             >
               {variant.name}
             </Link>
