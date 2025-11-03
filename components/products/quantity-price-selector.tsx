@@ -74,12 +74,12 @@ export function QuantityPriceSelector({
           min="1"
           value={quantity}
           onChange={(e) => handleQuantityChange(e.target.value)}
-          className="w-32"
+          className="w-32 border border-neutral-300 focus:border-none"
         />
       </div>
 
       {/* Dynamic Price Display */}
-      <div className="space-y-2 rounded-lg border bg-muted/30 p-6">
+      <div className="space-y-2 rounded-lg border border-neutral-300 bg-neutral-50 p-6">
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold">${pricePerUnit.toFixed(2)}</span>
           <span className="text-sm text-muted-foreground">per unit</span>

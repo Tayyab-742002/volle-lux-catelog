@@ -14,45 +14,44 @@ interface ProductPageProps {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-
-  // Fetch product from Sanity CMS using slug
   const product = await getProductBySlug(slug);
 
-  // If product not found, show 404
   if (!product) {
     notFound();
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
-      {/* Product Header */}
-      <ProductHeader
-        productName={product.name}
-        productCode={product.product_code}
-        category={product.category}
-      />
+    <div className="bg-white">
+      <div className="container mx-auto px-6 py-12 md:py-16 lg:py-20">
+        {/* Product Header */}
+        <ProductHeader
+          productName={product.name}
+          productCode={product.product_code}
+          category={product.category}
+        />
 
-      {/* Main Content: 2-Column Layout (40/60 split) */}
-      <div className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-5">
-        {/* Left Column: Product Gallery (40%) */}
-        <div className="lg:col-span-2">
-          <ProductGallery
-            images={product.images || [product.image]}
-            productName={product.name}
-          />
-        </div>
+        {/* Main Content: 2-Column Layout */}
+        <div className="mt-12 grid grid-cols-1 gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Left Column: Product Gallery */}
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <ProductGallery
+              images={product.images || [product.image]}
+              productName={product.name}
+            />
+          </div>
 
-        {/* Right Column: Product Info & Purchase (60%) */}
-        <div className="lg:col-span-3 space-y-8">
-          {/* Purchase Section */}
-          <ProductPurchaseSection product={product} />
+          {/* Right Column: Product Info & Purchase */}
+          <div className="space-y-12">
+            {/* Purchase Section */}
+            <ProductPurchaseSection product={product} />
 
-          {/* Product Info Accordion */}
-          <ProductInfoAccordion
-            description={product.description}
-            specifications={product.specifications}
-            delivery={product.delivery}
-          />
+            {/* Product Info Accordion */}
+            <ProductInfoAccordion
+              description={product.description}
+              specifications={product.specifications}
+              delivery={product.delivery}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -63,6 +62,5 @@ export const revalidate = 300;
 
 export async function generateStaticParams() {
   const slugs = (await getProductSlugs()) || [];
-  // Prebuild a subset of pages; the rest will ISR on-demand
   return slugs.slice(0, 200).map((slug) => ({ slug }));
 }

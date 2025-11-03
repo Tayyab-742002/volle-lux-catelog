@@ -20,24 +20,29 @@ export function ProductPurchaseSection({
   const [quantity, setQuantity] = useState(1);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Variant Selector */}
       {product.variants && product.variants.length > 0 && (
-        <VariantSelector
-          variants={product.variants}
-          label="Size"
-          onVariantChange={(variantId) => {
-            const variant = product.variants?.find((v) => v.id === variantId);
-            setSelectedVariant(variant);
-          }}
-        />
+        <div className="space-y-4">
+          <h3 className="text-xs uppercase tracking-wider text-neutral-500">
+            Select Size
+          </h3>
+          <VariantSelector
+            variants={product.variants}
+            label="Size"
+            onVariantChange={(variantId) => {
+              const variant = product.variants?.find((v) => v.id === variantId);
+              setSelectedVariant(variant);
+            }}
+          />
+        </div>
       )}
 
       {/* Pricing Table */}
       {product.pricingTiers && product.pricingTiers.length > 0 && (
-        <div className="rounded-lg border bg-card p-6">
-          <h3 className="label-luxury mb-4 text-sm font-medium">
-            Pricing Tiers
+        <div className="space-y-4">
+          <h3 className="text-xs uppercase tracking-wider text-neutral-500">
+            Volume Pricing
           </h3>
           <PricingTable
             tiers={product.pricingTiers}
@@ -47,12 +52,17 @@ export function ProductPurchaseSection({
       )}
 
       {/* Quantity Selector & Price Display */}
-      <QuantityPriceSelector
-        pricingTiers={product.pricingTiers || []}
-        basePrice={product.basePrice}
-        variantPriceAdjustment={selectedVariant?.price_adjustment || 0}
-        onQuantityChange={setQuantity}
-      />
+      <div className="space-y-4">
+        <h3 className="text-xs uppercase tracking-wider text-neutral-500">
+          Quantity
+        </h3>
+        <QuantityPriceSelector
+          pricingTiers={product.pricingTiers || []}
+          basePrice={product.basePrice}
+          variantPriceAdjustment={selectedVariant?.price_adjustment || 0}
+          onQuantityChange={setQuantity}
+        />
+      </div>
 
       {/* Add to Cart Button */}
       <AddToCartButton
