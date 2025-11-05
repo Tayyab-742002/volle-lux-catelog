@@ -246,6 +246,15 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                       </p>
                     </div>
                     <div className="p-2">
+                      {user?.role === "admin" && (
+                        <Link
+                          href="/admin"
+                          className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-neutral-900 hover:bg-neutral-50 transition-colors"
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                          Admin Portal
+                        </Link>
+                      )}
                       <Link
                         href="/account"
                         className="flex items-center gap-3 px-3 py-2 text-sm text-neutral-900 hover:bg-neutral-50 transition-colors"
@@ -287,6 +296,32 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                   <User className="h-5 w-5" strokeWidth={1.5} />
                 </Link>
               ) : null}
+
+              {/* Account quick icon (mobile/tablet) */}
+              {!authLoading &&
+                (isAuthenticated ? (
+                  <Link
+                    href="/account"
+                    className="lg:hidden p-2 hover:bg-neutral-50 rounded-md transition-colors"
+                    aria-label="My account"
+                  >
+                    <User
+                      className="h-5 w-5 text-neutral-900"
+                      strokeWidth={1.5}
+                    />
+                  </Link>
+                ) : (
+                  <Link
+                    href="/auth/login"
+                    className="lg:hidden p-2 hover:bg-neutral-50 rounded-md transition-colors"
+                    aria-label="Sign in"
+                  >
+                    <User
+                      className="h-5 w-5 text-neutral-900"
+                      strokeWidth={1.5}
+                    />
+                  </Link>
+                ))}
 
               {/* Cart */}
               <MiniCart>
@@ -446,6 +481,16 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                   <p className="text-xs text-neutral-500 truncate mt-1">
                     {user?.email}
                   </p>
+                  {user?.role === "admin" && (
+                    <Link
+                      href="/admin"
+                      className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-neutral-900 hover:text-neutral-600 transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                      Admin Portal
+                    </Link>
+                  )}
                 </div>
               ) : !authLoading ? (
                 <div className="mb-8 pb-8 border-b border-neutral-400">
