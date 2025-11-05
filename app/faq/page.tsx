@@ -1,4 +1,6 @@
 import { Breadcrumbs } from "@/components/common";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -106,60 +108,73 @@ const faqData = [
 
 export default function FAQPage() {
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
+    <div className="bg-white">
       {/* Breadcrumbs */}
-      <Breadcrumbs items={[{ label: "FAQ", href: "/faq" }]} />
+      <div className="border-b border-neutral-400">
+        <div className="container mx-auto px-6 py-6">
+          <Breadcrumbs items={[{ label: "FAQ", href: "/faq" }]} />
+        </div>
+      </div>
 
       {/* Main Content */}
-      <div className="mx-auto max-w-4xl">
-        {/* Page Header */}
-        <div className="mb-12 text-center">
-          <h1 className="mb-4 text-4xl font-bold md:text-5xl">
-            Frequently Asked Questions
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Find answers to common questions about our products and services
-          </p>
-        </div>
+      <div className="container mx-auto px-6 py-16 md:py-20 lg:py-24">
+        <div className="mx-auto max-w-3xl">
+          {/* Page Header */}
+          <div className="mb-16 md:mb-20">
+            <h1 className="mb-6 text-4xl font-light text-neutral-900 md:text-5xl lg:text-6xl">
+              Frequently Asked Questions
+            </h1>
+            <p className="text-base text-neutral-600 md:text-lg">
+              Find answers to common questions about our products and services
+            </p>
+          </div>
 
-        {/* FAQ Accordion */}
-        <div className="space-y-8">
-          {faqData.map((category, categoryIndex) => (
-            <div key={categoryIndex}>
-              <h2 className="mb-4 text-2xl font-semibold">
-                {category.category}
-              </h2>
-              <Accordion type="single" collapsible className="w-full">
-                {category.questions.map((faq, faqIndex) => (
-                  <AccordionItem
-                    key={faqIndex}
-                    value={`${categoryIndex}-${faqIndex}`}
-                  >
-                    <AccordionTrigger className="text-left">
-                      {faq.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">
-                      {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </div>
-          ))}
-        </div>
+          {/* FAQ Accordion */}
+          <div className="space-y-16">
+            {faqData.map((category, categoryIndex) => (
+              <div key={categoryIndex}>
+                <h2 className="mb-8 text-xl font-normal text-neutral-900 md:text-2xl">
+                  {category.category}
+                </h2>
+                <Accordion type="single" collapsible className="w-full">
+                  {category.questions.map((faq, faqIndex) => (
+                    <AccordionItem
+                      key={faqIndex}
+                      value={`${categoryIndex}-${faqIndex}`}
+                      className="border-b border-neutral-400"
+                    >
+                      <AccordionTrigger className="py-6 text-left text-sm font-normal text-neutral-900 hover:text-neutral-600">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="pb-6 text-sm leading-relaxed text-neutral-600">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
+            ))}
+          </div>
 
-        {/* CTA Section */}
-        <div className="mt-12 rounded-lg border bg-muted/30 p-8 text-center">
-          <h2 className="mb-4 text-2xl font-semibold">Still have questions?</h2>
-          <p className="mb-6 text-muted-foreground">
-            Our support team is here to help
-          </p>
-          <a
-            href="/contact"
-            className="inline-block rounded-md bg-primary px-6 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Contact Us
-          </a>
+          {/* CTA Section */}
+          <div className="mt-20 border-t border-neutral-400 pt-16 text-center">
+            <h2 className="mb-6 text-2xl font-light text-neutral-900 md:text-3xl">
+              Still have questions?
+            </h2>
+            <p className="mb-10 text-base text-neutral-600">
+              Our support team is here to help
+            </p>
+            <Link
+              href="/contact"
+              className="group inline-flex items-center gap-2 border-b-2 border-neutral-900 pb-1 text-sm font-normal text-neutral-900 transition-colors hover:border-neutral-600 hover:text-neutral-600"
+            >
+              Contact Us
+              <ArrowRight
+                className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                strokeWidth={1.5}
+              />
+            </Link>
+          </div>
         </div>
       </div>
     </div>

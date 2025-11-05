@@ -97,10 +97,10 @@ export default function ContactPage() {
                 </div>
                 <h3 className="text-sm font-normal text-neutral-900">Email</h3>
                 <a
-                  href="mailto:support@volle.com"
+                  href="mailto:sales@bubblewrapshop.co.uk"
                   className="block text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
                 >
-                  support@volle.com
+                  sales@bubblewrapshop.co.uk
                 </a>
               </div>
 
@@ -113,13 +113,13 @@ export default function ContactPage() {
                 </div>
                 <h3 className="text-sm font-normal text-neutral-900">Phone</h3>
                 <a
-                  href="tel:+18008665563"
+                  href="tel:01254916167"
                   className="block text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
                 >
-                  1-800-VOLLE-PKG
+                  01254 916167
                 </a>
                 <p className="text-sm text-neutral-500">
-                  Mon - Fri, 9 AM - 6 PM EST
+                  Mon - Fri, 9 AM - 6 PM BST
                 </p>
               </div>
 
@@ -132,9 +132,13 @@ export default function ContactPage() {
                 </div>
                 <h3 className="text-sm font-normal text-neutral-900">Office</h3>
                 <p className="text-sm text-neutral-600">
-                  123 Packaging Street
+                  Bubble Wrap Shop (NW) Ltd
                   <br />
-                  New York, NY 10001
+                  Unit 3, GBL House
+                  <br />
+                  Cleaver Street, Blackburn
+                  <br />
+                  BB1 5DG, United Kingdom
                 </p>
               </div>
             </div>
@@ -211,7 +215,7 @@ export default function ContactPage() {
                         id="phone"
                         name="phone"
                         type="tel"
-                        placeholder="+1 (555) 123-4567"
+                        placeholder="01254 916167"
                         className="border-neutral-300 bg-transparent focus:border-neutral-900"
                       />
                     </div>

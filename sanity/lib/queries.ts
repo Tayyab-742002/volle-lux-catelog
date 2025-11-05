@@ -105,6 +105,19 @@ export const PRODUCT_LISTING_QUERY = `
     },
     alt
   },
+  galleryImages[] {
+    asset-> {
+      _id,
+      url,
+      metadata {
+        dimensions {
+          width,
+          height
+        }
+      }
+    },
+    alt
+  },
   variants[] {
     name,
     sku,

@@ -6,9 +6,10 @@ import { getFeaturedProductsList } from "@/services/products/product.service";
 
 export async function FeaturedProducts() {
   const featuredProducts = await getFeaturedProductsList();
+  console.log("Featured Products", featuredProducts);
 
   return (
-    <section className="border-t border-neutral-200 bg-white py-16 md:py-20 lg:py-24">
+    <section className="border-t border-neutral-300 bg-white py-16 md:py-20 lg:py-24">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="mb-12 flex flex-col justify-between gap-6 md:mb-16 md:flex-row md:items-end">

@@ -1,30 +1,29 @@
 import Link from "next/link";
-import { Package, HeadphonesIcon, Building2, Mail, Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="bg-foreground text-background">
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+    <footer className="border-t border-neutral-400 bg-white">
+      <div className="container mx-auto px-6 py-16 md:py-20">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-16">
           {/* Shop Column */}
           <div>
-            <h3 className="mb-4 flex items-center gap-2 text-sm font-medium uppercase tracking-wider">
-              <Package className="h-4 w-4" strokeWidth={1.5} />
+            <h3 className="mb-6 text-xs uppercase tracking-wider text-neutral-500">
               Shop
             </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/products"
-                  className="text-sm transition-colors hover:text-primary"
+                  className="text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
                   All Products
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/products/categories"
-                  className="text-sm transition-colors hover:text-primary"
+                  href="/categories"
+                  className="text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
                   Categories
                 </Link>
@@ -32,7 +31,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/products/featured"
-                  className="text-sm transition-colors hover:text-primary"
+                  className="text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
                   Featured Products
                 </Link>
@@ -40,7 +39,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/products/new-arrivals"
-                  className="text-sm transition-colors hover:text-primary"
+                  className="text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
                   New Arrivals
                 </Link>
@@ -50,15 +49,14 @@ export function Footer() {
 
           {/* Support Column */}
           <div>
-            <h3 className="mb-4 flex items-center gap-2 text-sm font-medium uppercase tracking-wider">
-              <HeadphonesIcon className="h-4 w-4" strokeWidth={1.5} />
+            <h3 className="mb-6 text-xs uppercase tracking-wider text-neutral-500">
               Support
             </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/faq"
-                  className="text-sm transition-colors hover:text-primary"
+                  className="text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
                   FAQ
                 </Link>
@@ -66,23 +64,23 @@ export function Footer() {
               <li>
                 <Link
                   href="/delivery"
-                  className="text-sm transition-colors hover:text-primary"
+                  className="text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
                   Delivery Information
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/returns"
-                  className="text-sm transition-colors hover:text-primary"
+                  href="/refund-policy"
+                  className="text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
-                  Returns Policy
+                  Refund Policy
                 </Link>
               </li>
               <li>
                 <Link
                   href="/contact"
-                  className="text-sm transition-colors hover:text-primary"
+                  className="text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
                   Contact Us
                 </Link>
@@ -92,15 +90,14 @@ export function Footer() {
 
           {/* Company Column */}
           <div>
-            <h3 className="mb-4 flex items-center gap-2 text-sm font-medium uppercase tracking-wider">
-              <Building2 className="h-4 w-4" strokeWidth={1.5} />
+            <h3 className="mb-6 text-xs uppercase tracking-wider text-neutral-500">
               Company
             </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/about"
-                  className="text-sm transition-colors hover:text-primary"
+                  className="text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
                   About Us
                 </Link>
@@ -108,7 +105,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/sustainability"
-                  className="text-sm transition-colors hover:text-primary"
+                  className="text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
                   Sustainability
                 </Link>
@@ -116,7 +113,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/privacy"
-                  className="text-sm transition-colors hover:text-primary"
+                  className="text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
                   Privacy Policy
                 </Link>
@@ -124,7 +121,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/terms"
-                  className="text-sm transition-colors hover:text-primary"
+                  className="text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
                   Terms & Conditions
                 </Link>
@@ -134,56 +131,64 @@ export function Footer() {
 
           {/* Contact Column */}
           <div>
-            <h3 className="mb-4 flex items-center gap-2 text-sm font-medium uppercase tracking-wider">
-              <Mail className="h-4 w-4" strokeWidth={1.5} />
+            <h3 className="mb-6 text-xs uppercase tracking-wider text-neutral-500">
               Contact
             </h3>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-2 text-sm">
-                <Phone className="h-4 w-4" strokeWidth={1.5} />
-                <span>+1 (555) 123-4567</span>
+            <ul className="space-y-4">
+              <li>
+                <a
+                  href="tel:+15551234567"
+                  className="flex items-center gap-3 text-sm text-neutral-900 transition-colors hover:text-neutral-600"
+                >
+                  <Phone className="h-4 w-4" strokeWidth={1.5} />
+                  <span>+1 (555) 123-4567</span>
+                </a>
               </li>
-              <li className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4" strokeWidth={1.5} />
+              <li>
                 <a
                   href="mailto:info@volle.com"
-                  className="transition-colors hover:text-primary"
+                  className="flex items-center gap-3 text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
-                  info@volle.com
+                  <Mail className="h-4 w-4" strokeWidth={1.5} />
+                  <span>info@volle.com</span>
                 </a>
               </li>
             </ul>
-            <div className="mt-6">
-              <p className="text-xs text-muted-foreground">
-                NEXT DAY DELIVERY • ECO-FRIENDLY OPTIONS • AUTOMATIC BULK
-                PRICING
+
+            <div className="mt-8">
+              <p className="text-xs leading-relaxed text-neutral-500">
+                Next day delivery
+                <br />
+                Eco-friendly options
+                <br />
+                Automatic bulk pricing
               </p>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 border-t border-border pt-8">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <p className="text-sm text-muted-foreground">
+        <div className="mt-16 border-t border-neutral-400 pt-8">
+          <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
+            <p className="text-xs text-neutral-500">
               © {new Date().getFullYear()} Volle. All rights reserved.
             </p>
-            <div className="flex gap-6 text-sm">
+            <div className="flex gap-6 text-xs">
               <Link
                 href="/privacy"
-                className="transition-colors hover:text-primary"
+                className="text-neutral-500 transition-colors hover:text-neutral-900"
               >
                 Privacy
               </Link>
               <Link
                 href="/terms"
-                className="transition-colors hover:text-primary"
+                className="text-neutral-500 transition-colors hover:text-neutral-900"
               >
                 Terms
               </Link>
               <Link
                 href="/sustainability"
-                className="transition-colors hover:text-primary"
+                className="text-neutral-500 transition-colors hover:text-neutral-900"
               >
                 Sustainability
               </Link>

@@ -1,33 +1,36 @@
 import { Breadcrumbs } from "@/components/common";
-import { Leaf, Recycle, Sprout, Earth } from "lucide-react";
+import { Leaf, Recycle, Sprout, Earth, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function SustainabilityPage() {
   return (
-    <div className="bg-background">
+    <div className="bg-white">
       {/* Breadcrumbs */}
-      <div className="container mx-auto px-4 py-8">
-        <Breadcrumbs
-          items={[{ label: "Sustainability", href: "/sustainability" }]}
-        />
+      <div className="border-b border-neutral-200">
+        <div className="container mx-auto px-6 py-6">
+          <Breadcrumbs
+            items={[{ label: "Sustainability", href: "/sustainability" }]}
+          />
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 pb-16">
+      <div className="container mx-auto px-6 py-16 md:py-20 lg:py-24">
         <div className="mx-auto max-w-4xl">
           {/* Page Header */}
-          <div className="mb-12 text-center">
-            <h1 className="mb-4 text-5xl font-bold md:text-6xl">
-              Our Commitment to Sustainability
+          <div className="mb-16 md:mb-20">
+            <h1 className="mb-6 text-4xl font-light text-neutral-900 md:text-5xl lg:text-6xl">
+              Our Commitment to
+              <span className="block font-normal">Sustainability</span>
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-lg text-neutral-600 md:text-xl">
               Protecting your products and our planet
             </p>
           </div>
 
           {/* Intro */}
-          <div className="mb-12 rounded-lg border bg-muted/30 p-8 text-center">
-            <p className="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground">
+          <div className="mb-20 border-l-2 border-neutral-900 pl-8">
+            <p className="text-base leading-relaxed text-neutral-600 md:text-lg">
               At Volle, we believe exceptional packaging doesn&apos;t have to
               come at the expense of the environment. We&apos;re committed to
               reducing our environmental impact through sustainable materials
@@ -36,89 +39,84 @@ export default function SustainabilityPage() {
           </div>
 
           {/* Practices */}
-          <div className="mb-12">
-            <h2 className="mb-8 text-3xl font-bold">
+          <div className="mb-20">
+            <h2 className="mb-12 text-2xl font-light text-neutral-900 md:text-3xl">
               Our Sustainable Practices
             </h2>
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="flex gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                  <Recycle className="h-6 w-6 text-primary" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <h3 className="mb-2 text-xl font-semibold">
-                    Recyclable Materials
-                  </h3>
-                  <p className="text-muted-foreground">
-                    All our standard packaging is fully recyclable through
-                    standard municipal programs.
-                  </p>
-                </div>
+            <div className="grid gap-12 md:grid-cols-2 md:gap-x-16 md:gap-y-12">
+              <div className="space-y-4">
+                <Recycle
+                  className="h-6 w-6 text-neutral-900"
+                  strokeWidth={1.5}
+                />
+                <h3 className="text-lg font-normal text-neutral-900">
+                  Recyclable Materials
+                </h3>
+                <p className="text-sm leading-relaxed text-neutral-600">
+                  All our standard packaging is fully recyclable through
+                  standard municipal programs.
+                </p>
               </div>
 
-              <div className="flex gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                  <Sprout className="h-6 w-6 text-primary" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <h3 className="mb-2 text-xl font-semibold">
-                    Biodegradable Options
-                  </h3>
-                  <p className="text-muted-foreground">
-                    We offer biodegradable packaging materials that break down
-                    naturally.
-                  </p>
-                </div>
+              <div className="space-y-4">
+                <Sprout
+                  className="h-6 w-6 text-neutral-900"
+                  strokeWidth={1.5}
+                />
+                <h3 className="text-lg font-normal text-neutral-900">
+                  Biodegradable Options
+                </h3>
+                <p className="text-sm leading-relaxed text-neutral-600">
+                  We offer biodegradable packaging materials that break down
+                  naturally.
+                </p>
               </div>
 
-              <div className="flex gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                  <Leaf className="h-6 w-6 text-primary" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <h3 className="mb-2 text-xl font-semibold">
-                    Eco-Friendly Products
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Recycled content and plant-based materials without
-                    compromising protection.
-                  </p>
-                </div>
+              <div className="space-y-4">
+                <Leaf className="h-6 w-6 text-neutral-900" strokeWidth={1.5} />
+                <h3 className="text-lg font-normal text-neutral-900">
+                  Eco-Friendly Products
+                </h3>
+                <p className="text-sm leading-relaxed text-neutral-600">
+                  Recycled content and plant-based materials without
+                  compromising protection.
+                </p>
               </div>
 
-              <div className="flex gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                  <Earth className="h-6 w-6 text-primary" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <h3 className="mb-2 text-xl font-semibold">
-                    Sustainable Manufacturing
-                  </h3>
-                  <p className="text-muted-foreground">
-                    We partner with FSC-certified facilities and carbon-neutral
-                    operations.
-                  </p>
-                </div>
+              <div className="space-y-4">
+                <Earth className="h-6 w-6 text-neutral-900" strokeWidth={1.5} />
+                <h3 className="text-lg font-normal text-neutral-900">
+                  Sustainable Manufacturing
+                </h3>
+                <p className="text-sm leading-relaxed text-neutral-600">
+                  We partner with FSC-certified facilities and carbon-neutral
+                  operations.
+                </p>
               </div>
             </div>
           </div>
 
           {/* Certifications */}
-          <div className="mb-12">
-            <h2 className="mb-6 text-3xl font-bold">
+          <div className="mb-20 border-t border-neutral-200 pt-16">
+            <h2 className="mb-12 text-2xl font-light text-neutral-900 md:text-3xl">
               Certifications & Standards
             </h2>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-lg border bg-card p-6">
-                <h3 className="mb-2 text-xl font-semibold">FSC Certified</h3>
-                <p className="text-muted-foreground">
+            <div className="grid gap-12 md:grid-cols-2">
+              <div className="space-y-3">
+                <h3 className="text-lg font-normal text-neutral-900">
+                  FSC Certified
+                </h3>
+                <p className="text-sm leading-relaxed text-neutral-600">
                   Forest Stewardship Council certification ensures our paper
                   products come from responsibly managed forests.
                 </p>
               </div>
-              <div className="rounded-lg border bg-card p-6">
-                <h3 className="mb-2 text-xl font-semibold">ASTM Standards</h3>
-                <p className="text-muted-foreground">
+
+              <div className="space-y-3">
+                <h3 className="text-lg font-normal text-neutral-900">
+                  ASTM Standards
+                </h3>
+                <p className="text-sm leading-relaxed text-neutral-600">
                   Our products meet ASTM International standards for quality,
                   performance, and environmental safety.
                 </p>
@@ -127,18 +125,22 @@ export default function SustainabilityPage() {
           </div>
 
           {/* CTA */}
-          <div className="rounded-lg border bg-muted/30 p-8 text-center">
-            <h2 className="mb-4 text-3xl font-bold">
+          <div className="border-t border-neutral-200 pt-16 text-center">
+            <h2 className="mb-6 text-2xl font-light text-neutral-900 md:text-3xl">
               Shop Our Eco-Friendly Products
             </h2>
-            <p className="mb-6 text-muted-foreground">
+            <p className="mb-10 text-base text-neutral-600">
               Discover our selection of sustainable packaging solutions
             </p>
             <Link
               href="/products?filter=eco-friendly"
-              className="inline-block rounded-md bg-primary px-8 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="group inline-flex items-center gap-2 border-b-2 border-neutral-900 pb-1 text-sm font-normal text-neutral-900 transition-colors hover:border-neutral-600 hover:text-neutral-600"
             >
               View Eco-Friendly Products
+              <ArrowRight
+                className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                strokeWidth={1.5}
+              />
             </Link>
           </div>
         </div>

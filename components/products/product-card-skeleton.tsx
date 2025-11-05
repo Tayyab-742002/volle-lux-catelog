@@ -1,22 +1,23 @@
 export function ProductCardSkeleton() {
   return (
-    <div className="flex flex-col">
-      <div className="flex h-full flex-col overflow-hidden rounded-lg border bg-card">
-        {/* Image skeleton */}
-        <div className="relative aspect-square w-full overflow-hidden bg-muted animate-pulse" />
+    <div className="block border border-neutral-300 p-2">
+      {/* Image Skeleton */}
+      <div className="relative mb-3 aspect-square w-full overflow-hidden bg-neutral-300">
+        <div className="h-full w-full animate-pulse bg-neutral-300" />
+      </div>
 
-        {/* Info skeleton */}
-        <div className="flex flex-1 flex-col p-2">
-          {/* Title skeleton */}
-          <div className="mb-0.5 space-y-0.5">
-            <div className="h-2.5 w-full bg-muted rounded animate-pulse md:h-3" />
-            <div className="h-2.5 w-2/3 bg-muted rounded animate-pulse md:h-3" />
-          </div>
+      {/* Product Info Skeleton */}
+      <div className="space-y-2">
+        {/* Title Skeleton - 2 lines */}
+        <div className="space-y-1.5">
+          <div className="h-3.5 w-full animate-pulse rounded bg-neutral-300" />
+          <div className="h-3.5 w-4/5 animate-pulse rounded bg-neutral-300" />
+        </div>
 
-          {/* Price skeleton */}
-          <div className="mt-auto">
-            <div className="h-3 w-12 bg-muted rounded animate-pulse md:h-3.5" />
-          </div>
+        {/* Price Row Skeleton */}
+        <div className="flex items-center justify-between">
+          <div className="h-4 w-16 animate-pulse rounded bg-neutral-300" />
+          <div className="h-3 w-14 animate-pulse rounded bg-neutral-300" />
         </div>
       </div>
     </div>

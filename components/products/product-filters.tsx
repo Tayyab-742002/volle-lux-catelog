@@ -11,7 +11,14 @@ import {
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { X } from "lucide-react";
+import { X, SlidersHorizontal } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   useMemo,
   useCallback,
@@ -32,7 +39,6 @@ interface FilterGroup {
   options: FilterOption[];
 }
 
-// Packaging industry filters baseline
 const baseFilters: FilterGroup[] = [
   {
     name: "Category",
@@ -80,10 +86,12 @@ const baseFilters: FilterGroup[] = [
 
 type CategoryOption = { value: string; label: string };
 
-export function ProductFilters({
+function FilterContent({
   categories,
+  onClose,
 }: {
   categories?: CategoryOption[];
+  onClose?: () => void;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -94,7 +102,6 @@ export function ProductFilters({
   >({});
   const priceDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Compose filters with dynamic categories from server if provided
   const filters: FilterGroup[] = useMemo(() => {
     if (categories && categories.length > 0) {
       return [
@@ -105,7 +112,6 @@ export function ProductFilters({
     return baseFilters;
   }, [categories]);
 
-  // Parse current filters from URL
   const activeFilters = useMemo(() => {
     const filters: Record<string, string[]> = {};
     searchParams.forEach((value, key) => {
@@ -121,7 +127,6 @@ export function ProductFilters({
     return filters;
   }, [searchParams]);
 
-  // Derive price range directly from URL params (avoid setState in effect)
   const priceRange = useMemo(() => {
     return {
       min: parseInt(searchParams.get("priceMin") || "0"),
@@ -129,7 +134,6 @@ export function ProductFilters({
     };
   }, [searchParams]);
 
-  // Initialize local price range from URL params only when they change
   useEffect(() => {
     const min = priceRange.min;
     const max = priceRange.max;
@@ -139,10 +143,8 @@ export function ProductFilters({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceRange.min, priceRange.max]);
 
-  // INSTANT filter updates with optimistic UI (non-blocking with startTransition)
   const updateFilters = useCallback(
     (key: string, value: string, checked: boolean) => {
-      // OPTIMISTIC: Update UI immediately
       setOptimisticFilters((prev) => {
         const newFilters = { ...prev };
         const currentValues = newFilters[key] || activeFilters[key] || [];
@@ -164,7 +166,6 @@ export function ProductFilters({
         return newFilters;
       });
 
-      // Update URL in background
       const params = new URLSearchParams(searchParams.toString());
       const currentValues = params.get(key)?.split(",").filter(Boolean) || [];
       const newValues = [...currentValues];
@@ -186,7 +187,6 @@ export function ProductFilters({
     [searchParams, pathname, router, activeFilters]
   );
 
-  // Debounced price range update
   const updatePriceRange = useCallback(
     (values: number[]) => {
       setLocalPriceRange(values);
@@ -210,13 +210,13 @@ export function ProductFilters({
     if (sort) params.set("sort", sort);
     if (search) params.set("search", search);
     setLocalPriceRange([0, 1000]);
-    setOptimisticFilters({}); // Clear optimistic state
+    setOptimisticFilters({});
     startTransition(() => {
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     });
-  }, [searchParams, pathname, router]);
+    onClose?.();
+  }, [searchParams, pathname, router, onClose]);
 
-  // Sync optimistic filters with URL params when they update
   useEffect(() => {
     setOptimisticFilters({});
   }, [searchParams]);
@@ -226,7 +226,6 @@ export function ProductFilters({
     priceRange.min > 0 ||
     priceRange.max < 1000;
 
-  // Get active category display name
   const activeCategoryParam = searchParams.get("category");
   const activeCategoryName = activeCategoryParam
     ? activeCategoryParam
@@ -236,132 +235,183 @@ export function ProductFilters({
     : null;
 
   return (
-    <aside className="sticky top-24 h-fit">
-      <div className="rounded-lg border bg-card p-6">
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Filters</h3>
-          {hasActiveFilters && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearFilters}
-              className="text-xs"
-            >
-              <X className="mr-1 h-3 w-3" />
-              Clear All
-            </Button>
-          )}
-        </div>
-
-        {/* Active Category Badge */}
-        {activeCategoryName && (
-          <div className="mb-6 rounded-lg bg-primary/10 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">
-                  Browsing
-                </p>
-                <p className="text-sm font-semibold text-primary">
-                  {activeCategoryName}
-                </p>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  const params = new URLSearchParams(searchParams.toString());
-                  params.delete("category");
-                  startTransition(() => {
-                    router.replace(`/products?${params.toString()}`, {
-                      scroll: false,
-                    });
-                  });
-                }}
-                className="h-8 w-8 p-0"
-                title="Clear category"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-normal uppercase tracking-wider text-neutral-900">
+          Filters
+        </h3>
+        {hasActiveFilters && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearFilters}
+            className="h-auto p-0 text-xs font-normal text-neutral-600 hover:bg-transparent hover:text-neutral-900"
+          >
+            Clear All
+          </Button>
         )}
+      </div>
 
-        {/* Price Range */}
-        <div className="mb-6 space-y-4 border-b pb-6">
-          <Label className="text-sm font-semibold">Price Range</Label>
-          <div className="space-y-4">
-            <Slider
-              value={localPriceRange}
-              min={0}
-              max={1000}
-              step={10}
-              onValueChange={updatePriceRange}
-              className="w-full"
-            />
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>${localPriceRange[0]}</span>
-              <span>${localPriceRange[1]}</span>
+      {/* Active Category Badge */}
+      {activeCategoryName && (
+        <div className="border border-neutral-300 bg-neutral-50 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="mb-1 text-xs text-neutral-500">Browsing</p>
+              <p className="text-sm font-normal text-neutral-900">
+                {activeCategoryName}
+              </p>
             </div>
+            <button
+              onClick={() => {
+                const params = new URLSearchParams(searchParams.toString());
+                params.delete("category");
+                startTransition(() => {
+                  router.replace(`/products?${params.toString()}`, {
+                    scroll: false,
+                  });
+                });
+              }}
+              className="text-neutral-600 transition-colors hover:text-neutral-900"
+              title="Clear category"
+            >
+              <X className="h-4 w-4" strokeWidth={1.5} />
+            </button>
           </div>
         </div>
+      )}
 
-        {/* Filter Accordions */}
-        <Accordion
-          type="multiple"
-          defaultValue={filters.map((f) => f.key)}
-          className="w-full"
-        >
-          {filters.map((filter) => (
-            <AccordionItem key={filter.key} value={filter.key}>
-              <AccordionTrigger className="py-4 text-sm font-semibold">
-                {filter.name}
+      {/* Price Range */}
+      <div className="space-y-6 border-t border-neutral-300 pt-8">
+        <Label className="text-xs uppercase tracking-wider text-neutral-500">
+          Price Range
+        </Label>
+        <div className="space-y-4">
+          <Slider
+            value={localPriceRange}
+            min={0}
+            max={1000}
+            step={10}
+            onValueChange={updatePriceRange}
+            className="w-full"
+          />
+          <div className="flex items-center justify-between text-sm text-neutral-600">
+            <span>${localPriceRange[0]}</span>
+            <span>${localPriceRange[1]}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter Accordions */}
+      <Accordion
+        type="multiple"
+        defaultValue={filters.map((f) => f.key)}
+        className="w-full"
+      >
+        {filters.map((filter) => (
+          <AccordionItem
+            key={filter.key}
+            value={filter.key}
+            className="border-t border-neutral-300"
+          >
+            <AccordionTrigger className="py-6 text-sm font-normal text-neutral-900 hover:text-neutral-600">
+              <div className="flex items-center gap-2">
+                <span>{filter.name}</span>
                 {activeFilters[filter.key] &&
                   activeFilters[filter.key].length > 0 && (
-                    <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-xs text-white">
                       {activeFilters[filter.key].length}
                     </span>
                   )}
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-3">
-                  {filter.options.map((option) => {
-                    // Use optimistic filters for instant UI feedback
-                    const isChecked =
-                      optimisticFilters[filter.key]?.includes(option.value) ||
-                      activeFilters[filter.key]?.includes(option.value) ||
-                      false;
-                    return (
-                      <div
-                        key={option.value}
-                        className="flex items-center space-x-2"
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="pb-6">
+              <div className="space-y-4">
+                {filter.options.map((option) => {
+                  const isChecked =
+                    optimisticFilters[filter.key]?.includes(option.value) ||
+                    activeFilters[filter.key]?.includes(option.value) ||
+                    false;
+                  return (
+                    <div
+                      key={option.value}
+                      className="flex items-center space-x-3"
+                    >
+                      <Checkbox
+                        id={`${filter.key}-${option.value}`}
+                        checked={isChecked}
+                        onCheckedChange={(checked) =>
+                          updateFilters(
+                            filter.key,
+                            option.value,
+                            checked as boolean
+                          )
+                        }
+                        className="border-neutral-300"
+                      />
+                      <Label
+                        htmlFor={`${filter.key}-${option.value}`}
+                        className="flex-1 cursor-pointer text-sm font-normal leading-none text-neutral-900"
                       >
-                        <Checkbox
-                          id={`${filter.key}-${option.value}`}
-                          checked={isChecked}
-                          onCheckedChange={(checked) =>
-                            updateFilters(
-                              filter.key,
-                              option.value,
-                              checked as boolean
-                            )
-                          }
-                          className="border-primary/30"
-                        />
-                        <Label
-                          htmlFor={`${filter.key}-${option.value}`}
-                          className="flex-1 cursor-pointer text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {option.label}
-                        </Label>
-                      </div>
-                    );
-                  })}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+                        {option.label}
+                      </Label>
+                    </div>
+                  );
+                })}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </div>
+  );
+}
+
+export function ProductFilters({
+  categories,
+}: {
+  categories?: CategoryOption[];
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      {/* Mobile Filter Button */}
+      <div className="lg:hidden">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full border-neutral-300 bg-white text-sm font-normal text-neutral-900 hover:bg-neutral-50"
+            >
+              <SlidersHorizontal className="mr-2 h-4 w-4" strokeWidth={1.5} />
+              Filters
+            </Button>
+          </SheetTrigger>
+          <SheetContent
+            side="left"
+            className="w-full overflow-y-auto sm:max-w-md"
+          >
+            <SheetHeader className="mb-6">
+              <SheetTitle className="text-left text-lg font-light text-neutral-900">
+                Filter Products
+              </SheetTitle>
+            </SheetHeader>
+            <FilterContent
+              categories={categories}
+              onClose={() => setOpen(false)}
+            />
+          </SheetContent>
+        </Sheet>
       </div>
-    </aside>
+
+      {/* Desktop Filters */}
+      <aside className="sticky top-24 hidden h-fit lg:block">
+        <div className="border border-neutral-300 bg-white p-6">
+          <FilterContent categories={categories} />
+        </div>
+      </aside>
+    </>
   );
 }

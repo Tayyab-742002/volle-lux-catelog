@@ -1,4 +1,3 @@
-import { Suspense } from "react"
 import { ProductFilters } from "@/components/products/product-filters";
 import { ProductSort } from "@/components/products/product-sort";
 import { Breadcrumbs } from "@/components/common/breadcrumbs";

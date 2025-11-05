@@ -36,13 +36,13 @@ export async function CategoryGrid() {
                     className="group flex flex-col items-center"
                   >
                     {/* Circular Image Container */}
-                    <div className="relative aspect-square w-full max-w-[140px] overflow-hidden rounded-full border border-neutral-300 transition-all duration-300 group-hover:bg-neutral-200">
+                    <div className="relative aspect-square w-full max-w-[140px] overflow-hidden rounded-full border border-neutral-300 transition-all duration-300 group-hover:border-neutral-400">
                       {category.image ? (
                         <Image
                           src={category.image}
                           alt={category.name}
                           fill
-                          className="object-cover transition-transform duration-200 group-hover:scale-105"
+                          className="object-contain transition-transform duration-200 group-hover:scale-105"
                           sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 16vw"
                           placeholder="empty"
                         />
