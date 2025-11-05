@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import Image from "next/image";
 
@@ -11,7 +10,6 @@ interface ProductGalleryProps {
 export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  // If no images provided, use placeholder
   const displayImages =
     images.length > 0
       ? images
@@ -20,15 +18,15 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
         ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Main Image */}
-      <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-muted">
+      <div className="relative aspect-square w-full overflow-hidden bg-neutral-900 rounded-sm border border-neutral-300">
         <Image
           src={displayImages[selectedImageIndex]}
           alt={`${productName} - Image ${selectedImageIndex + 1}`}
           fill
-          className="object-cover transition-opacity duration-300"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 50vw"
           priority={selectedImageIndex === 0}
           placeholder="empty"
         />
@@ -36,15 +34,15 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
       {/* Thumbnail Images */}
       {displayImages.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide">
           {displayImages.map((image, index) => (
             <button
               key={index}
               onClick={() => setSelectedImageIndex(index)}
-              className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
+              className={`relative h-20 w-20 shrink-0 overflow-hidden bg-neutral-900 transition-opacity ${
                 index === selectedImageIndex
-                  ? "border-primary scale-105"
-                  : "border-border hover:border-primary/50"
+                  ? "opacity-100 border border-primary rounded-sm"
+                  : "opacity-50 hover:opacity-70"
               }`}
               aria-label={`View image ${index + 1}`}
             >

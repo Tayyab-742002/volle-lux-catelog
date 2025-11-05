@@ -1,9 +1,15 @@
 // app/account/page.tsx
 import Link from "next/link";
+import { Suspense } from "react";
 import { Package, ShoppingBag, DollarSign, TrendingUp } from "lucide-react";
 import { getCurrentUserServer } from "@/services/auth/auth-server.service";
 import { getUserOrders } from "@/services/orders/order.service";
 import { Button } from "@/components/ui/button";
+import { ORDER_STATUS_CONFIG, DASHBOARD_COLORS } from "@/lib/constants";
+
+// Force fresh data on every request - no caching
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function AccountDashboard() {
   // Get current user
@@ -35,8 +41,17 @@ export default async function AccountDashboard() {
     );
   }
 
-  // Fetch real orders from Supabase
-  const orders = await getUserOrders(authResult.user.id);
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardContent userId={authResult.user.id} />
+    </Suspense>
+  );
+}
+
+// Dashboard Content Component with parallel fetching
+async function DashboardContent({ userId }: { userId: string }) {
+  // Fetch orders from Supabase
+  const orders = await getUserOrders(userId);
 
   // Calculate real stats from orders
   const totalOrders = orders.length;
@@ -76,33 +91,37 @@ export default async function AccountDashboard() {
   return (
     <div className="space-y-8">
       {/* Stats Grid - Fully Responsive */}
-      <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 border lg:grid-cols-4">
         <StatCard
           icon={<ShoppingBag className="h-5 w-5" strokeWidth={1.5} />}
           label="Total Orders"
           value={totalOrders.toString()}
+          color="primary"
         />
         <StatCard
           icon={<DollarSign className="h-5 w-5" strokeWidth={1.5} />}
           label="Total Spent"
           value={`$${totalSpent.toFixed(2)}`}
+          color="secondary"
         />
         <StatCard
           icon={<TrendingUp className="h-5 w-5" strokeWidth={1.5} />}
           label="Average Order"
           value={`$${averageOrder.toFixed(2)}`}
+          color="tertiary"
         />
         <StatCard
           icon={<Package className="h-5 w-5" strokeWidth={1.5} />}
           label="Last Order"
           value={lastOrderDate}
           small
+          color="quaternary"
         />
       </div>
 
       {/* Order Status Breakdown - Only show if there are orders */}
       {totalOrders > 0 && (
-        <div className="rounded-xl border border-neutral-400 bg-card p-6 sm:p-8 shadow-sm">
+        <div className="rounded-xl border border-neutral-200 bg-card p-6 sm:p-8 shadow-sm">
           <h3 className="text-lg font-semibold tracking-tight mb-6">
             Order Status
           </h3>
@@ -110,30 +129,30 @@ export default async function AccountDashboard() {
             <StatusCard
               label="Processing"
               value={ordersByStatus.processing}
-              color="yellow"
+              color="quinary"
             />
             <StatusCard
               label="Shipped"
               value={ordersByStatus.shipped}
-              color="blue"
+              color="senary"
             />
             <StatusCard
               label="Delivered"
               value={ordersByStatus.delivered}
-              color="green"
+              color="septenary"
             />
             <StatusCard
               label="Cancelled"
               value={ordersByStatus.cancelled}
-              color="gray"
+              color="octonary"
             />
           </div>
         </div>
       )}
 
       {/* Recent Orders */}
-      <div className="rounded-xl border border-neutral-400  bg-card shadow-sm overflow-hidden">
-        <div className="border-b border-neutral-400  p-4 sm:p-6">
+      <div className="rounded-xl border border-neutral-200  bg-card shadow-sm overflow-hidden">
+        <div className="border-b border-neutral-200  p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
               Recent Orders
@@ -172,12 +191,58 @@ export default async function AccountDashboard() {
             </div>
           </div>
         ) : (
-          <div className="divide-y divide-neutral-200 ">
+          <div>
             {recentOrders.map((order) => (
               <OrderCard key={order.id} order={order} />
             ))}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// Dashboard Skeleton Loader
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-8">
+      {/* Stats Grid Skeleton */}
+      <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="rounded-xl border border-neutral-300 bg-card p-4 sm:p-6 shadow-sm"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="h-4 w-24 bg-neutral-200 rounded-lg animate-[pulse_3s_ease-in-out_infinite]" />
+              <div className="h-10 w-10 bg-neutral-200 rounded-lg animate-[pulse_3s_ease-in-out_infinite]" />
+            </div>
+            <div className="h-9 w-32 bg-neutral-200 rounded-lg animate-[pulse_3s_ease-in-out_infinite]" />
+          </div>
+        ))}
+      </div>
+
+      {/* Orders Skeleton */}
+      <div className="rounded-xl border border-neutral-200 bg-card shadow-sm overflow-hidden">
+        <div className="border-b border-neutral-200 p-4 sm:p-6">
+          <div className="h-7 w-32 bg-neutral-200 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+        </div>
+        <div className="divide-y divide-neutral-200">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-40 bg-neutral-200 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+                  <div className="h-3 w-32 bg-neutral-200 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+                </div>
+                <div className="flex items-center gap-2 sm:flex-col sm:items-end">
+                  <div className="h-5 w-20 bg-neutral-200 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+                  <div className="h-3 w-24 bg-neutral-200 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -189,31 +254,53 @@ function StatCard({
   label,
   value,
   small = false,
+  color = "primary",
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   small?: boolean;
+  color?:
+    | "primary"
+    | "secondary"
+    | "tertiary"
+    | "quaternary"
+    | "quinary"
+    | "senary"
+    | "septenary"
+    | "octonary"
+    | "nonary"
+    | "denary";
 }) {
   return (
-    <div className="rounded-xl border border-neutral-400  bg-card p-4 sm:p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs sm:text-sm text-muted-foreground">
-          {label}
-        </span>
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+    <div
+      className={`group relative overflow-hidden rounded-xl border border-neutral-300 p-4 sm:p-6 shadow-sm transition-all duration-300 hover:shadow-md ${DASHBOARD_COLORS[color]}`}
+    >
+      <div className="flex items-start justify-between">
+        {/* Content */}
+        <div className="flex-1 space-y-3">
+          <p className="text-xs sm:text-sm font-medium text-foreground/50 tracking-wide">
+            {label}
+          </p>
+          <p
+            className={
+              small
+                ? "text-base sm:text-lg font-semibold text-foreground/70"
+                : "text-2xl sm:text-3xl font-bold tracking-tight text-foreground/70"
+            }
+          >
+            {value}
+          </p>
+        </div>
+
+        {/* Icon - Unified Brand Style */}
+        <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg  text-white transition-all duration-200 group-hover:bg-primary/20">
           {icon}
         </div>
       </div>
-      <div
-        className={
-          small
-            ? "text-base sm:text-lg font-semibold"
-            : "text-2xl sm:text-3xl font-bold tracking-tight"
-        }
-      >
-        {value}
-      </div>
+
+      {/* Subtle Hover Effect */}
+      <div className="absolute inset-0 -z-10 from-primary/0 to-primary/0 transition-all duration-300 group-hover:from-primary/5 group-hover:to-primary/0" />
     </div>
   );
 }
@@ -226,39 +313,50 @@ function StatusCard({
 }: {
   label: string;
   value: number;
-  color: "yellow" | "blue" | "green" | "gray";
+  color?:
+    | "primary"
+    | "secondary"
+    | "tertiary"
+    | "quaternary"
+    | "quinary"
+    | "senary"
+    | "septenary"
+    | "octonary"
+    | "nonary"
+    | "denary";
 }) {
-  const colors = {
-    yellow:
-      "bg-yellow-50  text-yellow-800 ",
-    blue: "bg-blue-50  text-blue-800 ",
-    green:
-      "bg-green-50  text-green-800 ",
-    gray: "bg-neutral-50  text-neutral-600 ",
-  };
-
   return (
-    <div className={`rounded-lg p-4 ${colors[color]}`}>
-      <div className="text-xs sm:text-sm font-medium mb-1">{label}</div>
-      <div className="text-xl sm:text-2xl font-bold">{value}</div>
+    <div
+      className={`group rounded-lg border border-neutral-300 p-4 ${DASHBOARD_COLORS[color || "primary"]} transition-all duration-200 hover:shadow-md`}
+    >
+      <div className="text-xs sm:text-sm font-medium mb-1 text-foreground/70">
+        {label}
+      </div>
+      <div className="text-xl sm:text-2xl font-bold text-foreground/70">
+        {value}
+      </div>
     </div>
   );
 }
 
 // Order Card Component
-function OrderCard({ order }: { order: any }) {
-  const statusColors: Record<string, string> = {
-    delivered:
-      "bg-green-100 text-green-800 ",
-    shipped: "bg-blue-100 text-blue-800 ",
-    processing:
-      "bg-yellow-100 text-yellow-800 ",
-    cancelled:
-      "bg-neutral-100 text-neutral-800 ",
+interface OrderCardProps {
+  order: {
+    id: string;
+    fullId: string;
+    date: string;
+    total: number;
+    status: string;
+    itemCount: number;
   };
+}
+
+function OrderCard({ order }: OrderCardProps) {
+  const statusConfig =
+    ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG];
 
   return (
-    <div className="p-4 sm:p-6 hover:bg-neutral-50  transition-colors">
+    <div className="p-4 sm:p-6 border border-neutral-400 transition-colors">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap mb-1">
@@ -267,11 +365,12 @@ function OrderCard({ order }: { order: any }) {
             </span>
             <span
               className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                statusColors[order.status.toLowerCase()] ||
-                statusColors.processing
+                statusConfig?.className ||
+                ORDER_STATUS_CONFIG.processing.className
               }`}
             >
-              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+              {statusConfig?.label ||
+                order.status.charAt(0).toUpperCase() + order.status.slice(1)}
             </span>
           </div>
           <div className="text-xs sm:text-sm text-muted-foreground">

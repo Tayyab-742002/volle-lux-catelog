@@ -220,18 +220,24 @@ export async function testConnection() {
 
 export async function getProductSlugs() {
   return safeQuery(async () => {
-    const slugs = await client.fetch<Array<{ slug: { current: string } }>>(
-      '*[_type == "product" && isActive == true].slug'
+    const slugs = await client.fetch<Array<{ slug?: { current?: string } }>>(
+      '*[_type == "product" && isActive == true]{ slug }'
     );
-    return slugs.map((item) => item.slug.current);
+    // Filter out any null/undefined slug values
+    return slugs
+      .filter((item) => item?.slug?.current)
+      .map((item) => item.slug!.current);
   });
 }
 
 export async function getCategorySlugs() {
   return safeQuery(async () => {
-    const slugs = await client.fetch<Array<{ slug: { current: string } }>>(
-      '*[_type == "category" && isActive == true].slug'
+    const slugs = await client.fetch<Array<{ slug?: { current?: string } }>>(
+      '*[_type == "category" && isActive == true]{ slug }'
     );
-    return slugs.map((item) => item.slug.current);
+    // Filter out any null/undefined slug values
+    return slugs
+      .filter((item) => item?.slug?.current)
+      .map((item) => item.slug!.current);
   });
 }

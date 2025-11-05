@@ -1,10 +1,4 @@
-/**
- * Reset Password Page
- * Password reset form for users who clicked the reset link
- */
-
 "use client";
-
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -12,15 +6,8 @@ import { useAuth } from "@/components/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Loader2, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle, ArrowRight } from "lucide-react";
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -55,7 +42,6 @@ function ResetPasswordForm() {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (error) setError("");
   };
 
@@ -112,83 +98,102 @@ function ResetPasswordForm() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          {/* Header */}
-          <div className="text-center">
-            <Link href="/" className="text-3xl font-bold text-gray-900">
-              VOLLE
-            </Link>
-            <h2 className="mt-6 text-2xl font-bold text-gray-900">
-              Password updated
-            </h2>
-          </div>
+      <div className="min-h-screen bg-white">
+        <div className="container mx-auto flex min-h-screen items-center justify-center px-6 py-16">
+          <div className="w-full max-w-md space-y-12">
+            {/* Header */}
+            <div className="space-y-6 text-center">
+              <Link
+                href="/"
+                className="inline-block text-xl font-light tracking-wider text-neutral-900"
+              >
+                VOLLE
+              </Link>
+              <div className="space-y-2">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                  <CheckCircle
+                    className="h-6 w-6 text-green-600"
+                    strokeWidth={1.5}
+                  />
+                </div>
+                <h1 className="text-3xl font-light text-neutral-900 md:text-4xl">
+                  Password updated
+                </h1>
+                <p className="text-sm text-neutral-600">
+                  Your password has been successfully changed
+                </p>
+              </div>
+            </div>
 
-          {/* Success Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-green-600 flex items-center gap-2">
-                <CheckCircle className="h-5 w-5" strokeWidth={1.5} />
-                Success!
-              </CardTitle>
-              <CardDescription>
-                Your password has been updated successfully
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Alert>
-                <AlertDescription>
+            {/* Success Content */}
+            <div className="border-t border-neutral-300 pt-12">
+              <Alert className="border-green-200 bg-green-50">
+                <AlertDescription className="text-sm leading-relaxed text-green-900">
                   Your password has been updated. You will be redirected to the
                   sign-in page shortly.
                 </AlertDescription>
               </Alert>
 
-              <Link href="/auth/login">
-                <Button className="w-full">Continue to sign in</Button>
-              </Link>
-            </CardContent>
-          </Card>
+              <div className="mt-8">
+                <Link href="/auth/login">
+                  <Button className="group h-12 w-full bg-neutral-900 text-sm font-normal text-white hover:bg-neutral-800">
+                    Continue to sign in
+                    <ArrowRight
+                      className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1"
+                      strokeWidth={1.5}
+                    />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <Link href="/" className="text-3xl font-bold text-gray-900">
-            VOLLE
-          </Link>
-          <h2 className="mt-6 text-2xl font-bold text-gray-900">
-            Set new password
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Enter your new password below
-          </p>
-        </div>
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto flex min-h-screen items-center justify-center px-6 py-16">
+        <div className="w-full max-w-md space-y-12">
+          {/* Header */}
+          <div className="space-y-6 text-center">
+            <Link
+              href="/"
+              className="inline-block text-xl font-light tracking-wider text-neutral-900"
+            >
+              VOLLE
+            </Link>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-light text-neutral-900 md:text-4xl">
+                Set new password
+              </h1>
+              <p className="text-sm text-neutral-600">
+                Choose a strong password for your account
+              </p>
+            </div>
+          </div>
 
-        {/* Reset Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Create new password</CardTitle>
-            <CardDescription>
-              Choose a strong password for your account
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Reset Form */}
+          <div className="border-t border-neutral-300 pt-12">
+            <form onSubmit={handleSubmit} className="space-y-8">
               {/* Error Alert */}
               {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
+                <Alert className="border-neutral-300 bg-red-300">
+                  <AlertDescription className="text-sm text-neutral-900">
+                    {error}
+                  </AlertDescription>
                 </Alert>
               )}
 
               {/* Password Field */}
-              <div className="space-y-2">
-                <Label htmlFor="password">New Password</Label>
+              <div className="space-y-3">
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-normal text-neutral-900"
+                >
+                  New Password
+                </Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -198,12 +203,13 @@ function ResetPasswordForm() {
                     required
                     value={formData.password}
                     onChange={handleInputChange}
-                    placeholder="Enter your new password"
+                    placeholder="Create a new password"
                     disabled={isSubmitting || loading}
+                    className="border-neutral-300 bg-transparent pr-10 focus:border-neutral-900"
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 transition-colors hover:text-neutral-900"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isSubmitting || loading}
                   >
@@ -214,14 +220,19 @@ function ResetPasswordForm() {
                     )}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-neutral-500">
                   Password must be at least 6 characters long
                 </p>
               </div>
 
               {/* Confirm Password Field */}
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+              <div className="space-y-3">
+                <Label
+                  htmlFor="confirmPassword"
+                  className="text-sm font-normal text-neutral-900"
+                >
+                  Confirm New Password
+                </Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
@@ -233,10 +244,11 @@ function ResetPasswordForm() {
                     onChange={handleInputChange}
                     placeholder="Confirm your new password"
                     disabled={isSubmitting || loading}
+                    className="border-neutral-300 bg-transparent pr-10 focus:border-neutral-900"
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 transition-colors hover:text-neutral-900"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     disabled={isSubmitting || loading}
                   >
@@ -252,7 +264,7 @@ function ResetPasswordForm() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full"
+                className="group h-12 w-full bg-neutral-900 text-sm font-normal text-white hover:bg-neutral-800"
                 disabled={isSubmitting || loading}
               >
                 {isSubmitting ? (
@@ -261,24 +273,30 @@ function ResetPasswordForm() {
                     Updating password...
                   </>
                 ) : (
-                  "Update password"
+                  <>
+                    Update password
+                    <ArrowRight
+                      className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1"
+                      strokeWidth={1.5}
+                    />
+                  </>
                 )}
               </Button>
             </form>
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Help Text */}
-        <div className="text-center text-sm text-gray-600">
-          <p>
-            Remember your password?{" "}
-            <Link
-              href="/auth/login"
-              className="font-medium text-primary hover:text-primary/80"
-            >
-              Sign in here
-            </Link>
-          </p>
+          {/* Help Text */}
+          <div className="border-t border-neutral-300 pt-8 text-center">
+            <p className="text-sm text-neutral-600">
+              Remember your password?{" "}
+              <Link
+                href="/auth/login"
+                className="border-b border-neutral-900 font-normal text-neutral-900 transition-colors hover:border-neutral-600 hover:text-neutral-600"
+              >
+                Sign in here
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

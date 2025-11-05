@@ -1,5 +1,6 @@
 import { CartItem, Order } from "@/types/cart";
 import { createClient } from "@/lib/supabase/client";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 /**
  * Cart Service
@@ -17,7 +18,7 @@ export async function saveCartToSupabase(
   sessionId?: string
 ): Promise<void> {
   try {
-    const supabase = createClient() as any;
+    const supabase = createClient() as SupabaseClient;
 
     // Prepare cart data
     const cartData = {
@@ -26,19 +27,35 @@ export async function saveCartToSupabase(
     };
 
     if (userId) {
+      // Authenticated user cart - verify session first
+
+      const {
+        data: { user: authUser },
+        error: sessionError,
+      } = await supabase.auth.getUser();
+
+      if (sessionError || !authUser) {
+        console.error("Session verification failed:", sessionError?.message);
+        throw new Error(`Authentication required: ${sessionError?.message}`);
+      }
+
+      if (authUser.id !== userId) {
+        console.error("User ID mismatch:", {
+          authUserId: authUser.id,
+          providedUserId: userId,
+        });
+        throw new Error("User ID mismatch - authentication error");
+      }
+
+      console.log("Session verified successfully");
+
       // Authenticated user cart - check if cart exists
-      console.log("Checking for existing cart for user:", userId);
 
       const { data: existingCart, error: checkError } = await supabase
         .from("carts")
         .select("id")
         .eq("user_id", userId)
         .maybeSingle();
-
-      console.log(
-        "Existing cart check result:",
-        existingCart ? "Found" : "Not found"
-      );
 
       if (checkError && checkError.code !== "PGRST116") {
         console.error("Error checking for existing cart:", checkError);
@@ -48,21 +65,19 @@ export async function saveCartToSupabase(
       if (existingCart) {
         // If no items, delete cart row instead of storing empty array
         if (cartItems.length === 0) {
-          console.log("Deleting cart row for user due to empty cart");
           const { error } = await supabase
             .from("carts")
             .delete()
             .eq("user_id", userId);
 
           if (error) {
-            console.error("Error deleting authenticated cart:", error);
             throw error;
           }
-          console.log("Cart row deleted for user:", userId);
+
           return;
         }
         // Update existing cart
-        console.log("Updating existing cart for user:", userId);
+
         const { error } = await supabase
           .from("carts")
           .update({
@@ -75,15 +90,13 @@ export async function saveCartToSupabase(
           console.error("Error updating authenticated cart:", error);
           throw error;
         }
-        console.log("Cart updated successfully for user:", userId);
       } else {
         // If no items, nothing to persist
         if (cartItems.length === 0) {
           console.log("Empty cart - skipping insert for user");
           return;
         }
-        // Insert new cart
-        console.log("Creating new cart for user:", userId);
+        // Insert new car
         const { error } = await supabase.from("carts").insert({
           user_id: userId,
           session_id: null,
@@ -95,7 +108,6 @@ export async function saveCartToSupabase(
           console.error("Error creating authenticated cart:", error);
           throw error;
         }
-        console.log("Cart created successfully for user:", userId);
       }
     } else if (sessionId) {
       // Guest cart - check if cart exists
@@ -113,7 +125,6 @@ export async function saveCartToSupabase(
       if (existingCart) {
         // If no items, delete cart row instead of storing empty array
         if (cartItems.length === 0) {
-          console.log("Deleting guest cart row due to empty cart");
           const { error } = await supabase
             .from("carts")
             .delete()
@@ -178,7 +189,28 @@ export async function loadCartFromSupabase(
     const supabase = createClient() as any;
 
     if (userId) {
-      // Load authenticated user cart
+      // Load authenticated user cart - verify session first
+      const {
+        data: { user: authUser },
+        error: sessionError,
+      } = await supabase.auth.getUser();
+
+      if (sessionError || !authUser) {
+        console.error(
+          "Session verification failed for loadCart:",
+          sessionError?.message
+        );
+        throw new Error(`Authentication required: ${sessionError?.message}`);
+      }
+
+      if (authUser.id !== userId) {
+        console.error("User ID mismatch for loadCart:", {
+          authUserId: authUser.id,
+          providedUserId: userId,
+        });
+        throw new Error("User ID mismatch - authentication error");
+      }
+
       const { data, error } = await supabase
         .from("carts")
         .select("items")
@@ -460,16 +492,4 @@ export async function mergeGuestCartWithUserCart(
     console.error("Failed to merge guest cart with user cart:", error);
     throw error;
   }
-}
-
-/**
- * Handle Stripe webhook
- * TODO: Process Stripe webhook events
- */
-export async function handleStripeWebhook(event: any): Promise<void> {
-  // TODO: Verify webhook signature
-  // TODO: Handle payment_intent.succeeded
-  // TODO: Handle checkout.session.completed
-  // TODO: Update order status based on payment
-  console.log("Handle Stripe webhook - TODO");
 }

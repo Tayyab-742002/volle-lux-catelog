@@ -3,114 +3,63 @@ import Link from "next/link";
 import { getAllCategories } from "@/sanity/lib";
 
 export async function CategoryGrid() {
-  // Fetch categories from Sanity CMS
   const categories = await getAllCategories();
 
   return (
-    <section className="py-16 md:py-24">
-      <div className="container mx-auto px-4">
+    <section className="bg-white py-16 md:py-20 lg:py-24">
+      <div className="container mx-auto px-6">
         {/* Section Header */}
-        <div className="mb-12 text-center">
-          <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
+        <div className="mb-12 md:mb-16">
+          <h2 className="text-3xl font-light text-neutral-900 md:text-4xl lg:text-5xl">
             Shop by Category
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <p className="mt-3 text-lg text-neutral-600">
             Browse our complete range of packaging solutions
           </p>
-          <div className="mt-6">
-            <Link
-              href="/categories"
-              className="inline-flex items-center text-sm font-medium text-primary transition-colors hover:text-primary/80"
-            >
-              View All Categories
-              <svg
-                className="ml-2 h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </Link>
-          </div>
         </div>
 
-        {/* Masonry Grid */}
+        {/* Category Grid */}
         {categories && categories.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-3 gap-6 sm:grid-cols-4 md:grid-cols-5 md:gap-8 lg:grid-cols-6 lg:gap-10">
             {categories.map(
-              (
-                category: {
-                  id: string;
-                  name: string;
-                  slug: string;
-                  image?: string;
-                  description?: string;
-                },
-                index: number
-              ) => {
-                // Create varied layouts for masonry effect
-                const isDouble = index === 1; // 2nd item spans 2 columns (on larger screens)
-
+              (category: {
+                id: string;
+                name: string;
+                slug: string;
+                image?: string;
+                description?: string;
+              }) => {
                 return (
                   <Link
                     key={category.id}
                     href={`/products?category=${category.slug}`}
-                    className={`group relative overflow-hidden rounded-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl ${
-                      isDouble ? "md:col-span-2" : ""
-                    }`}
+                    className="group flex flex-col items-center"
                   >
-                    <div className="relative h-[300px] md:h-[400px]">
+                    {/* Circular Image Container */}
+                    <div className="relative aspect-square w-full max-w-[140px] overflow-hidden rounded-full border border-neutral-300 transition-all duration-300 group-hover:border-neutral-400">
                       {category.image ? (
                         <Image
                           src={category.image}
                           alt={category.name}
                           fill
-                          className="object-cover transition-transform duration-300 group-hover:scale-105 group-hover:brightness-110"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          className="object-contain transition-transform duration-200 group-hover:scale-105"
+                          sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 16vw"
                           placeholder="empty"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center bg-muted">
-                          <span className="text-muted-foreground">
+                        <div className="flex h-full items-center justify-center">
+                          <span className="text-xs text-neutral-400">
                             No image
                           </span>
                         </div>
                       )}
-                      {/* Overlay Gradient */}
-                      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
-                      {/* Category Title & CTA */}
-                      <div className="absolute bottom-0 left-0 right-0 p-6">
-                        <h3 className="mb-2 text-3xl font-bold text-white md:text-4xl">
-                          {category.name}
-                        </h3>
-                        {category.description && (
-                          <p className="mb-3 line-clamp-2 text-sm text-white/90">
-                            {category.description}
-                          </p>
-                        )}
-                        <span className="inline-flex items-center text-sm font-medium text-white transition-transform group-hover:translate-x-1">
-                          Shop Now
-                          <svg
-                            className="ml-2 h-4 w-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5l7 7-7 7"
-                            />
-                          </svg>
-                        </span>
-                      </div>
+                    </div>
+
+                    {/* Category Name */}
+                    <div className="mt-4 text-center">
+                      <h3 className="text-sm font-normal text-neutral-900 transition-colors group-hover:text-neutral-600">
+                        {category.name}
+                      </h3>
                     </div>
                   </Link>
                 );
@@ -118,9 +67,11 @@ export async function CategoryGrid() {
             )}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <h3 className="mb-2 text-lg font-semibold">No categories found</h3>
-            <p className="text-muted-foreground">
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <h3 className="text-lg font-normal text-neutral-900">
+              No categories found
+            </h3>
+            <p className="mt-2 text-sm text-neutral-600">
               Check back later for product categories.
             </p>
           </div>

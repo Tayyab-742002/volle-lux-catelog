@@ -38,7 +38,7 @@ interface OrdersTableProps {
   onRefresh?: () => void;
 }
 
-export function OrdersTable({ orders, loading, onRefresh }: OrdersTableProps) {
+export function OrdersTable({ orders, loading }: OrdersTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("date");

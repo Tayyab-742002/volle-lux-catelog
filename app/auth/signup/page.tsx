@@ -2,9 +2,7 @@
  * Sign Up Page
  * User registration and account creation interface
  */
-
 "use client";
-
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,20 +10,12 @@ import { useAuth } from "@/components/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 
 export default function SignUpPage() {
   const router = useRouter();
   const { signUp, loading } = useAuth();
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -45,7 +35,6 @@ export default function SignUpPage() {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (error) setError("");
   };
 
@@ -54,23 +43,19 @@ export default function SignUpPage() {
       setError("Please fill in all required fields");
       return false;
     }
-
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       return false;
     }
-
     if (formData.password.length < 6) {
       setError("Password must be at least 6 characters long");
       return false;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setError("Please enter a valid email address");
       return false;
     }
-
     return true;
   };
 
@@ -94,9 +79,7 @@ export default function SignUpPage() {
       });
 
       if (result.success) {
-        // Show success message and redirect
-        setError(""); // Clear any errors
-        // Note: User might need to verify email before full access
+        setError("");
         router.push(
           "/auth/login?message=Account created successfully. Please check your email to verify your account."
         );
@@ -111,47 +94,53 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <Link href="/" className="text-3xl font-bold text-gray-900">
-            VOLLE
-          </Link>
-          <h2 className="mt-6 text-2xl font-bold text-gray-900">
-            Create your account
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Or{" "}
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto flex min-h-screen items-center justify-center px-6 py-16">
+        <div className="w-full max-w-md space-y-12">
+          {/* Header */}
+          <div className="space-y-6 text-center">
             <Link
-              href="/auth/login"
-              className="font-medium text-primary hover:text-primary/80"
+              href="/"
+              className="inline-block text-xl font-light tracking-wider text-neutral-900"
             >
-              sign in to your existing account
+              VOLLE
             </Link>
-          </p>
-        </div>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-light text-neutral-900 md:text-4xl">
+                Create your account
+              </h1>
+              <p className="text-sm text-neutral-600">
+                Already have an account?{" "}
+                <Link
+                  href="/auth/login"
+                  className="border-b border-neutral-900 font-normal text-neutral-900 transition-colors hover:border-neutral-600 hover:text-neutral-600"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </div>
+          </div>
 
-        {/* Sign Up Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Get started</CardTitle>
-            <CardDescription>
-              Create your account to access all features
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Sign Up Form */}
+          <div className="border-t border-neutral-300 pt-12">
+            <form onSubmit={handleSubmit} className="space-y-8">
               {/* Error Alert */}
               {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
+                <Alert className="border-neutral-300 bg-neutral-50">
+                  <AlertDescription className="text-sm text-neutral-900">
+                    {error}
+                  </AlertDescription>
                 </Alert>
               )}
 
               {/* Full Name Field */}
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name (Optional)</Label>
+              <div className="space-y-3">
+                <Label
+                  htmlFor="fullName"
+                  className="text-sm font-normal text-neutral-900"
+                >
+                  Full Name
+                </Label>
                 <Input
                   id="fullName"
                   name="fullName"
@@ -159,14 +148,20 @@ export default function SignUpPage() {
                   autoComplete="name"
                   value={formData.fullName}
                   onChange={handleInputChange}
-                  placeholder="Enter your full name"
+                  placeholder="Your full name"
                   disabled={isSubmitting || loading}
+                  className="border-neutral-300 bg-transparent focus:border-neutral-900"
                 />
               </div>
 
               {/* Email Field */}
-              <div className="space-y-2">
-                <Label htmlFor="email">Email address *</Label>
+              <div className="space-y-3">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-normal text-neutral-900"
+                >
+                  Email address <span className="text-neutral-400">*</span>
+                </Label>
                 <Input
                   id="email"
                   name="email"
@@ -175,14 +170,20 @@ export default function SignUpPage() {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="Enter your email"
+                  placeholder="your.email@example.com"
                   disabled={isSubmitting || loading}
+                  className="border-neutral-300 bg-transparent focus:border-neutral-900"
                 />
               </div>
 
               {/* Phone Field */}
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number (Optional)</Label>
+              <div className="space-y-3">
+                <Label
+                  htmlFor="phone"
+                  className="text-sm font-normal text-neutral-900"
+                >
+                  Phone Number
+                </Label>
                 <Input
                   id="phone"
                   name="phone"
@@ -190,14 +191,20 @@ export default function SignUpPage() {
                   autoComplete="tel"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  placeholder="Enter your phone number"
+                  placeholder="+1 (555) 123-4567"
                   disabled={isSubmitting || loading}
+                  className="border-neutral-300 bg-transparent focus:border-neutral-900"
                 />
               </div>
 
               {/* Company Field */}
-              <div className="space-y-2">
-                <Label htmlFor="company">Company (Optional)</Label>
+              <div className="space-y-3">
+                <Label
+                  htmlFor="company"
+                  className="text-sm font-normal text-neutral-900"
+                >
+                  Company
+                </Label>
                 <Input
                   id="company"
                   name="company"
@@ -205,14 +212,20 @@ export default function SignUpPage() {
                   autoComplete="organization"
                   value={formData.company}
                   onChange={handleInputChange}
-                  placeholder="Enter your company name"
+                  placeholder="Your company name"
                   disabled={isSubmitting || loading}
+                  className="border-neutral-300 bg-transparent focus:border-neutral-900"
                 />
               </div>
 
               {/* Password Field */}
-              <div className="space-y-2">
-                <Label htmlFor="password">Password *</Label>
+              <div className="space-y-3">
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-normal text-neutral-900"
+                >
+                  Password <span className="text-neutral-400">*</span>
+                </Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -224,10 +237,11 @@ export default function SignUpPage() {
                     onChange={handleInputChange}
                     placeholder="Create a password"
                     disabled={isSubmitting || loading}
+                    className="border-neutral-300 bg-transparent pr-10 focus:border-neutral-900"
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 transition-colors hover:text-neutral-900"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isSubmitting || loading}
                   >
@@ -238,14 +252,19 @@ export default function SignUpPage() {
                     )}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-neutral-500">
                   Password must be at least 6 characters long
                 </p>
               </div>
 
               {/* Confirm Password Field */}
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password *</Label>
+              <div className="space-y-3">
+                <Label
+                  htmlFor="confirmPassword"
+                  className="text-sm font-normal text-neutral-900"
+                >
+                  Confirm Password <span className="text-neutral-400">*</span>
+                </Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
@@ -257,10 +276,11 @@ export default function SignUpPage() {
                     onChange={handleInputChange}
                     placeholder="Confirm your password"
                     disabled={isSubmitting || loading}
+                    className="border-neutral-300 bg-transparent pr-10 focus:border-neutral-900"
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 transition-colors hover:text-neutral-900"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     disabled={isSubmitting || loading}
                   >
@@ -276,7 +296,7 @@ export default function SignUpPage() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full"
+                className="group h-12 w-full bg-neutral-900 text-sm font-normal text-white hover:bg-neutral-800"
                 disabled={isSubmitting || loading}
               >
                 {isSubmitting ? (
@@ -285,44 +305,52 @@ export default function SignUpPage() {
                     Creating account...
                   </>
                 ) : (
-                  "Create account"
+                  <>
+                    Create account
+                    <ArrowRight
+                      className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1"
+                      strokeWidth={1.5}
+                    />
+                  </>
                 )}
               </Button>
             </form>
 
             {/* Additional Links */}
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
+            <div className="mt-12 border-t border-neutral-300 pt-8 text-center">
+              <p className="text-sm text-neutral-600">
                 Already have an account?{" "}
                 <Link
                   href="/auth/login"
-                  className="font-medium text-primary hover:text-primary/80"
+                  className="border-b border-neutral-900 font-normal text-neutral-900 transition-colors hover:border-neutral-600 hover:text-neutral-600"
                 >
-                  Sign in here
+                  Sign in
                 </Link>
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Terms and Privacy */}
-        <div className="text-center text-xs text-gray-500">
-          <p>
-            By creating an account, you agree to our{" "}
-            <Link href="/terms" className="text-primary hover:text-primary/80">
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              href="/privacy"
-              className="text-primary hover:text-primary/80"
-            >
-              Privacy Policy
-            </Link>
-          </p>
+          {/* Terms and Privacy */}
+          <div className="border-t border-neutral-300 pt-8 text-center text-xs text-neutral-500">
+            <p>
+              By creating an account, you agree to our{" "}
+              <Link
+                href="/terms"
+                className="border-b border-neutral-500 text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+              >
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link
+                href="/privacy"
+                className="border-b border-neutral-500 text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+              >
+                Privacy Policy
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-

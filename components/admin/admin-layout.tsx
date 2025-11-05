@@ -8,16 +8,17 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Main Layout */}
-      <div className="flex flex-1">
-        {/* Sidebar */}
-        <AdminSidebar />
+    <div className="bg-background min-h-screen">
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-6 sm:py-8 lg:py-12">
+        {/* Desktop Layout */}
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-4">
+          {/* Desktop Sidebar - AdminSidebar handles its own positioning */}
+          <AdminSidebar />
 
-        {/* Content Area - Responsive Padding with Bottom Spacing for Mobile Nav */}
-        <main className="flex-1 px-4 py-8 pb-24 md:pb-8 sm:px-6 lg:px-8 xl:px-12">
-          <div className="mx-auto max-w-7xl">{children}</div>
-        </main>
+          {/* Content Area */}
+          <div className="lg:col-span-3">{children}</div>
+        </div>
       </div>
     </div>
   );

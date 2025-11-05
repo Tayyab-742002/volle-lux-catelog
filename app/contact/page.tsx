@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Breadcrumbs } from "@/components/common";
 import { Button } from "@/components/ui/button";
@@ -22,7 +21,6 @@ export default function ContactPage() {
     setErrorMessage("");
 
     try {
-      // Get form data
       const formData = new FormData(e.currentTarget);
       const data = {
         name: formData.get("name") as string,
@@ -33,7 +31,6 @@ export default function ContactPage() {
         phone: formData.get("phone") as string,
       };
 
-      // Send to API
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
@@ -47,8 +44,6 @@ export default function ContactPage() {
       if (response.ok && result.success) {
         setSubmitStatus("success");
         e.currentTarget.reset();
-
-        // Scroll to success message
         window.scrollTo({
           top: 0,
           behavior: "smooth",
@@ -69,81 +64,100 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-background">
+    <div className="bg-white">
       {/* Breadcrumbs */}
-      <div className="container mx-auto px-4 py-8">
-        <Breadcrumbs items={[{ label: "Contact", href: "/contact" }]} />
+      <div className="border-b border-neutral-400">
+        <div className="container mx-auto px-6 py-6">
+          <Breadcrumbs items={[{ label: "Contact", href: "/contact" }]} />
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 pb-16">
+      <div className="container mx-auto px-6 py-16 md:py-20 lg:py-24">
         <div className="mx-auto max-w-6xl">
           {/* Page Header */}
-          <div className="mb-12 text-center">
-            <h1 className="mb-4 text-5xl font-bold md:text-6xl">
+          <div className="mb-16 md:mb-20">
+            <h1 className="mb-4 text-4xl font-light text-neutral-900 md:text-5xl lg:text-6xl">
               Get in Touch
             </h1>
-            <p className="text-lg text-muted-foreground">
-              Have a question? We're here to help
+            <p className="text-lg text-neutral-600">
+              Have a question? We&apos;re here to help
             </p>
           </div>
 
-          <div className="grid gap-12 lg:grid-cols-3">
+          <div className="grid gap-16 lg:grid-cols-3 lg:gap-20">
             {/* Contact Info Sidebar */}
-            <div className="space-y-6">
-              <div className="rounded-lg border bg-card p-6">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <Mail className="h-6 w-6 text-primary" strokeWidth={1.5} />
+            <div className="space-y-12">
+              <div className="space-y-3">
+                <div className="mb-4">
+                  <Mail
+                    className="h-5 w-5 text-neutral-900"
+                    strokeWidth={1.5}
+                  />
                 </div>
-                <h3 className="mb-1 font-semibold">Email</h3>
+                <h3 className="text-sm font-normal text-neutral-900">Email</h3>
                 <a
-                  href="mailto:support@volle.com"
-                  className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                  href="mailto:sales@bubblewrapshop.co.uk"
+                  className="block text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
                 >
-                  support@volle.com
+                  sales@bubblewrapshop.co.uk
                 </a>
               </div>
 
-              <div className="rounded-lg border bg-card p-6">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <Phone className="h-6 w-6 text-primary" strokeWidth={1.5} />
+              <div className="space-y-3">
+                <div className="mb-4">
+                  <Phone
+                    className="h-5 w-5 text-neutral-900"
+                    strokeWidth={1.5}
+                  />
                 </div>
-                <h3 className="mb-1 font-semibold">Phone</h3>
+                <h3 className="text-sm font-normal text-neutral-900">Phone</h3>
                 <a
-                  href="tel:+18008665563"
-                  className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                  href="tel:01254916167"
+                  className="block text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
                 >
-                  1-800-VOLLE-PKG
+                  01254 916167
                 </a>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Mon - Fri, 9 AM - 6 PM EST
+                <p className="text-sm text-neutral-500">
+                  Mon - Fri, 9 AM - 6 PM BST
                 </p>
               </div>
 
-              <div className="rounded-lg border bg-card p-6">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <MapPin className="h-6 w-6 text-primary" strokeWidth={1.5} />
+              <div className="space-y-3">
+                <div className="mb-4">
+                  <MapPin
+                    className="h-5 w-5 text-neutral-900"
+                    strokeWidth={1.5}
+                  />
                 </div>
-                <h3 className="mb-1 font-semibold">Office</h3>
-                <p className="text-sm text-muted-foreground">
-                  123 Packaging Street
+                <h3 className="text-sm font-normal text-neutral-900">Office</h3>
+                <p className="text-sm text-neutral-600">
+                  Bubble Wrap Shop (NW) Ltd
                   <br />
-                  New York, NY 10001
+                  Unit 3, GBL House
+                  <br />
+                  Cleaver Street, Blackburn
+                  <br />
+                  BB1 5DG, United Kingdom
                 </p>
               </div>
             </div>
 
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <div className="rounded-lg border bg-card p-8">
-                <h2 className="mb-6 text-2xl font-semibold">
+              <div className="border-t border-neutral-400 pt-8 lg:pt-0 lg:border-t-0">
+                <h2 className="mb-8 text-2xl font-light text-neutral-900">
                   Send us a Message
                 </h2>
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="grid gap-5 md:grid-cols-2">
-                    <div>
-                      <Label htmlFor="name" className="mb-2">
-                        Name <span className="text-destructive">*</span>
+
+                <form onSubmit={handleSubmit} className="space-y-8">
+                  <div className="grid gap-8 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="name"
+                        className="text-sm font-normal text-neutral-900"
+                      >
+                        Name <span className="text-neutral-400">*</span>
                       </Label>
                       <Input
                         id="name"
@@ -151,12 +165,16 @@ export default function ContactPage() {
                         type="text"
                         required
                         placeholder="Your name"
+                        className="border-neutral-300 bg-transparent focus:border-neutral-900"
                       />
                     </div>
 
-                    <div>
-                      <Label htmlFor="email" className="mb-2">
-                        Email <span className="text-destructive">*</span>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="email"
+                        className="text-sm font-normal text-neutral-900"
+                      >
+                        Email <span className="text-neutral-400">*</span>
                       </Label>
                       <Input
                         id="email"
@@ -164,39 +182,51 @@ export default function ContactPage() {
                         type="email"
                         required
                         placeholder="your.email@example.com"
+                        className="border-neutral-300 bg-transparent focus:border-neutral-900"
                       />
                     </div>
                   </div>
 
-                  <div className="grid gap-5 md:grid-cols-2">
-                    <div>
-                      <Label htmlFor="company" className="mb-2">
-                        Company (Optional)
+                  <div className="grid gap-8 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="company"
+                        className="text-sm font-normal text-neutral-900"
+                      >
+                        Company
                       </Label>
                       <Input
                         id="company"
                         name="company"
                         type="text"
                         placeholder="Your company name"
+                        className="border-neutral-300 bg-transparent focus:border-neutral-900"
                       />
                     </div>
 
-                    <div>
-                      <Label htmlFor="phone" className="mb-2">
-                        Phone (Optional)
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="phone"
+                        className="text-sm font-normal text-neutral-900"
+                      >
+                        Phone
                       </Label>
                       <Input
                         id="phone"
                         name="phone"
                         type="tel"
-                        placeholder="+1 (555) 123-4567"
+                        placeholder="01254 916167"
+                        className="border-neutral-300 bg-transparent focus:border-neutral-900"
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <Label htmlFor="subject" className="mb-2">
-                      Subject <span className="text-destructive">*</span>
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="subject"
+                      className="text-sm font-normal text-neutral-900"
+                    >
+                      Subject <span className="text-neutral-400">*</span>
                     </Label>
                     <Input
                       id="subject"
@@ -204,12 +234,16 @@ export default function ContactPage() {
                       type="text"
                       required
                       placeholder="What's this about?"
+                      className="border-neutral-300 bg-transparent focus:border-neutral-900"
                     />
                   </div>
 
-                  <div>
-                    <Label htmlFor="message" className="mb-2">
-                      Message <span className="text-destructive">*</span>
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="message"
+                      className="text-sm font-normal text-neutral-900"
+                    >
+                      Message <span className="text-neutral-400">*</span>
                     </Label>
                     <Textarea
                       id="message"
@@ -217,30 +251,35 @@ export default function ContactPage() {
                       required
                       rows={8}
                       placeholder="Tell us how we can help..."
-                      className="resize-none"
+                      className="resize-none border border-neutral-300 bg-transparent focus:border-none"
                     />
                   </div>
 
                   {submitStatus === "success" && (
-                    <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+                    <div className="border border-neutral-400 bg-neutral-50 p-4 text-sm text-neutral-900">
                       Thank you! Your message has been sent successfully.
                     </div>
                   )}
 
                   {submitStatus === "error" && (
-                    <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200">
+                    <div className="border border-neutral-400 bg-neutral-50 p-4 text-sm text-neutral-900">
                       {errorMessage ||
                         "Something went wrong. Please try again later."}
                     </div>
                   )}
 
-                  <Button type="submit" size="lg" disabled={isSubmitting}>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    disabled={isSubmitting}
+                    className="h-12 bg-primary px-8 text-sm cursor-pointer font-normal text-white hover:bg-primary/70"
+                  >
                     {isSubmitting ? (
                       "Sending..."
                     ) : (
                       <>
-                        <Send className="mr-2 h-4 w-4" strokeWidth={1.5} />
                         Send Message
+                        <Send className="ml-2 h-4 w-4" strokeWidth={1.5} />
                       </>
                     )}
                   </Button>

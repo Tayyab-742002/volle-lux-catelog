@@ -5,8 +5,14 @@
 
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { User } from "@supabase/supabase-js";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
   AuthUser,
@@ -17,7 +23,6 @@ import {
   resetPassword,
   updatePassword,
   updateProfile,
-  getCurrentUser,
 } from "@/services/auth/auth.service";
 
 interface AuthContextType {
@@ -56,7 +61,65 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
+
+  // Load user profile from database
+  const loadUserProfile = useCallback(async () => {
+    try {
+      // Get current user from auth
+      const {
+        data: { user: authUser },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !authUser) {
+        console.error("Failed to get auth user:", userError?.message);
+        setUser(null);
+        return;
+      }
+
+      // Fetch user profile
+      const { data: profile, error: profileError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", authUser.id)
+        .single();
+
+      if (profileError || !profile) {
+        console.error("Failed to fetch user profile:", profileError?.message);
+        setUser(null);
+        return;
+      }
+
+      // Type assertion needed because Supabase types need explicit schema
+      const userProfile = profile as {
+        id: string;
+        email: string;
+        full_name: string | null;
+        phone: string | null;
+        company: string | null;
+        avatar_url: string | null;
+        role: "customer" | "admin";
+        created_at: string;
+        updated_at: string;
+      };
+
+      setUser({
+        id: userProfile.id,
+        email: userProfile.email,
+        fullName: userProfile.full_name || undefined,
+        phone: userProfile.phone || undefined,
+        company: userProfile.company || undefined,
+        avatarUrl: userProfile.avatar_url || undefined,
+        role: userProfile.role || "customer",
+        createdAt: userProfile.created_at,
+        updatedAt: userProfile.updated_at,
+      });
+    } catch (error) {
+      console.error("Error loading user profile:", error);
+      setUser(null);
+    }
+  }, [supabase]);
 
   // Initialize auth state
   useEffect(() => {
@@ -71,7 +134,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         if (mounted) {
           if (session?.user) {
-            await loadUserProfile(session.user);
+            await loadUserProfile();
           } else {
             setUser(null);
           }
@@ -94,7 +157,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (mounted) {
         if (session?.user) {
-          await loadUserProfile(session.user);
+          await loadUserProfile();
         } else {
           setUser(null);
         }
@@ -106,63 +169,50 @@ export function AuthProvider({ children }: AuthProviderProps) {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
-
-  // Load user profile from database
-  const loadUserProfile = async (authUser: User) => {
-    try {
-      const result = await getCurrentUser();
-      if (result.success && result.user) {
-        setUser(result.user);
-      } else {
-        console.error("Failed to load user profile:", result.error);
-        setUser(null);
-      }
-    } catch (error) {
-      console.error("Error loading user profile:", error);
-      setUser(null);
-    }
-  };
+  }, [supabase, loadUserProfile]);
 
   // Sign in method
-  const handleSignIn = async (
-    email: string,
-    password: string
-  ): Promise<AuthResult> => {
-    setLoading(true);
-    try {
-      const result = await signIn({ email, password });
-      if (result.success && result.user) {
-        setUser(result.user);
+  const handleSignIn = useCallback(
+    async (email: string, password: string): Promise<AuthResult> => {
+      setLoading(true);
+      try {
+        const result = await signIn({ email, password });
+        if (result.success && result.user) {
+          setUser(result.user);
+        }
+        return result;
+      } finally {
+        setLoading(false);
       }
-      return result;
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    []
+  );
 
   // Sign up method
-  const handleSignUp = async (data: {
-    email: string;
-    password: string;
-    fullName?: string;
-    phone?: string;
-    company?: string;
-  }): Promise<AuthResult> => {
-    setLoading(true);
-    try {
-      const result = await signUp(data);
-      if (result.success && result.user) {
-        setUser(result.user);
+  const handleSignUp = useCallback(
+    async (data: {
+      email: string;
+      password: string;
+      fullName?: string;
+      phone?: string;
+      company?: string;
+    }): Promise<AuthResult> => {
+      setLoading(true);
+      try {
+        const result = await signUp(data);
+        if (result.success && result.user) {
+          setUser(result.user);
+        }
+        return result;
+      } finally {
+        setLoading(false);
       }
-      return result;
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    []
+  );
 
   // Sign out method
-  const handleSignOut = async (): Promise<AuthResult> => {
+  const handleSignOut = useCallback(async (): Promise<AuthResult> => {
     setLoading(true);
     try {
       const result = await signOut();
@@ -173,69 +223,84 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Reset password method
-  const handleResetPassword = async (email: string): Promise<AuthResult> => {
-    return await resetPassword({ email });
-  };
-
-  // Update password method
-  const handleUpdatePassword = async (
-    newPassword: string
-  ): Promise<AuthResult> => {
-    const result = await updatePassword(newPassword);
-    if (result.success) {
-      // Refresh user data
-      await refreshUser();
-    }
-    return result;
-  };
-
-  // Update profile method
-  const handleUpdateProfile = async (data: {
-    fullName?: string;
-    phone?: string;
-    company?: string;
-    avatarUrl?: string;
-  }): Promise<AuthResult> => {
-    const result = await updateProfile(data);
-    if (result.success && result.user) {
-      setUser(result.user);
-    }
-    return result;
-  };
+  const handleResetPassword = useCallback(
+    async (email: string): Promise<AuthResult> => {
+      return await resetPassword({ email });
+    },
+    []
+  );
 
   // Refresh user data
-  const refreshUser = async (): Promise<void> => {
+  const refreshUser = useCallback(async (): Promise<void> => {
     try {
-      const result = await getCurrentUser();
-      if (result.success && result.user) {
-        setUser(result.user);
-      } else {
-        setUser(null);
-      }
+      await loadUserProfile();
     } catch (error) {
       console.error("Error refreshing user:", error);
       setUser(null);
     }
-  };
+  }, [loadUserProfile]);
 
-  const value: AuthContextType = {
-    // State
-    user,
-    loading,
-    isAuthenticated: !!user,
+  // Update password method
+  const handleUpdatePassword = useCallback(
+    async (newPassword: string): Promise<AuthResult> => {
+      const result = await updatePassword(newPassword);
+      if (result.success) {
+        // Refresh user data
+        await refreshUser();
+      }
+      return result;
+    },
+    [refreshUser]
+  );
 
-    // Methods
-    signIn: handleSignIn,
-    signUp: handleSignUp,
-    signOut: handleSignOut,
-    resetPassword: handleResetPassword,
-    updatePassword: handleUpdatePassword,
-    updateProfile: handleUpdateProfile,
-    refreshUser,
-  };
+  // Update profile method
+  const handleUpdateProfile = useCallback(
+    async (data: {
+      fullName?: string;
+      phone?: string;
+      company?: string;
+      avatarUrl?: string;
+    }): Promise<AuthResult> => {
+      const result = await updateProfile(data);
+      if (result.success && result.user) {
+        setUser(result.user);
+      }
+      return result;
+    },
+    []
+  );
+
+  const value = useMemo<AuthContextType>(
+    () => ({
+      // State
+      user,
+      loading,
+      isAuthenticated: !!user,
+
+      // Methods
+      signIn: handleSignIn,
+      signUp: handleSignUp,
+      signOut: handleSignOut,
+      resetPassword: handleResetPassword,
+      updatePassword: handleUpdatePassword,
+      updateProfile: handleUpdateProfile,
+      refreshUser,
+    }),
+    [
+      user,
+      loading,
+      handleSignIn,
+      handleSignUp,
+      handleSignOut,
+      handleResetPassword,
+      handleUpdatePassword,
+      handleUpdateProfile,
+      refreshUser,
+    ]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -278,4 +343,3 @@ export function useAuthLoading(): boolean {
   const { loading } = useAuth();
   return loading;
 }
-

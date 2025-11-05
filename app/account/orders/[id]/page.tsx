@@ -1,10 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, ShoppingCart, Package, Truck, MapPin } from "lucide-react";
 import { getOrderById } from "@/services/orders/order.service";
 import { getCurrentUserServer } from "@/services/auth/auth-server.service";
 import { notFound } from "next/navigation";
+import { ORDER_STATUS_CONFIG } from "@/lib/constants";
+
+// Force fresh data on every request - no caching
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // Placeholder image for missing product images
 const PLACEHOLDER_IMAGE = "/placeholder-image.png";
@@ -23,7 +29,7 @@ export default async function OrderDetailsPage({
 
   if (!authResult.success || !authResult.user) {
     return (
-      <div className="rounded-lg border bg-card p-12 text-center">
+      <div className="rounded-lg border border-neutral-400 bg-card p-12 text-center">
         <p className="text-muted-foreground">
           Please sign in to view order details
         </p>
@@ -34,19 +40,34 @@ export default async function OrderDetailsPage({
     );
   }
 
-  // Fetch order from Supabase
-  const order = await getOrderById(id);
+  return (
+    <Suspense fallback={<OrderDetailSkeleton />}>
+      <OrderDetailContent orderId={id} userId={authResult.user.id} />
+    </Suspense>
+  );
+}
 
+// Order Detail Content Component
+async function OrderDetailContent({
+  orderId,
+  userId,
+}: {
+  orderId: string;
+  userId: string;
+}) {
+  // Fetch order from Supabase
+  const order = await getOrderById(orderId);
+  console.log("ORDER : ", order);
   if (!order) {
     notFound();
   }
 
   // Verify user owns this order
-  if (order.userId !== authResult.user.id) {
+  if (order.userId !== userId) {
     return (
-      <div className="rounded-lg border bg-card p-12 text-center">
+      <div className="rounded-lg border border-neutral-500 bg-card p-12 text-center">
         <p className="text-muted-foreground">
-          You don't have access to this order
+          You don&apos;t have access to this order
         </p>
         <Link href="/account/orders">
           <Button className="mt-4">Back to Orders</Button>
@@ -83,23 +104,8 @@ export default async function OrderDetailsPage({
       quantity: item.quantity,
       pricePerUnit: item.pricePerUnit,
       total: item.totalPrice,
-      image: item.product?.image || "/placeholder-image.png",
+      image: item.product.image || "/placeholder-image.png",
     })),
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Delivered":
-        return "bg-green-100 text-green-800";
-      case "Shipped":
-        return "bg-blue-100 text-blue-800";
-      case "Processing":
-        return "bg-yellow-100 text-yellow-800";
-      case "Cancelled":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
   };
 
   return (
@@ -123,7 +129,7 @@ export default async function OrderDetailsPage({
       </div>
 
       {/* Order Info Card */}
-      <div className="mb-8 rounded-lg border bg-card p-6">
+      <div className="mb-8 rounded-lg  border border-neutral-400 bg-card p-6">
         <div className="grid gap-6 md:grid-cols-3">
           <div>
             <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
@@ -138,9 +144,17 @@ export default async function OrderDetailsPage({
               Status
             </div>
             <span
-              className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(displayOrder.status)}`}
+              className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${
+                ORDER_STATUS_CONFIG[
+                  displayOrder.status as keyof typeof ORDER_STATUS_CONFIG
+                ]?.className || ORDER_STATUS_CONFIG.pending.className
+              }`}
             >
-              {displayOrder.status}
+              {ORDER_STATUS_CONFIG[
+                displayOrder.status as keyof typeof ORDER_STATUS_CONFIG
+              ]?.label ||
+                displayOrder.status.charAt(0).toUpperCase() +
+                  displayOrder.status.slice(1)}
             </span>
           </div>
           <div>
@@ -156,7 +170,7 @@ export default async function OrderDetailsPage({
       </div>
 
       {/* Shipping Address */}
-      <div className="mb-8 rounded-lg border bg-card p-6">
+      <div className="mb-8 rounded-lg border border-neutral-400 bg-card p-6">
         <h3 className="mb-4 text-xl font-semibold">Shipping Address</h3>
         <div className="text-muted-foreground">
           <p className="font-medium text-foreground">
@@ -173,7 +187,7 @@ export default async function OrderDetailsPage({
       </div>
 
       {/* Order Items */}
-      <div className="mb-8 rounded-lg border bg-card">
+      <div className="mb-8 rounded-lg border border-neutral-400 bg-card">
         <div className="border-b p-6">
           <h3 className="text-xl font-semibold">Order Items</h3>
         </div>
@@ -217,7 +231,7 @@ export default async function OrderDetailsPage({
       </div>
 
       {/* Order Summary */}
-      <div className="rounded-lg border bg-card p-6">
+      <div className="rounded-lg border border-neutral-400 bg-card p-6">
         <h3 className="mb-4 text-xl font-semibold">Order Summary</h3>
         <div className="space-y-3">
           <div className="flex justify-between text-muted-foreground">
@@ -234,12 +248,89 @@ export default async function OrderDetailsPage({
             <span>Shipping</span>
             <span>${displayOrder.shipping.toFixed(2)}</span>
           </div>
-          <div className="border-t pt-3">
+          <div className="border-t border-primary pt-3">
             <div className="flex justify-between text-lg font-bold">
-              <span>Total</span>
-              <span>${displayOrder.total.toFixed(2)}</span>
+              <span className="text-primary">Total</span>
+              <span className="text-primary">
+                ${displayOrder.total.toFixed(2)}
+              </span>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Order Detail Skeleton
+function OrderDetailSkeleton() {
+  return (
+    <div>
+      {/* Header Skeleton */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-2">
+          <div className="h-9 w-48 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-5 w-32 bg-neutral-400 rounded animate-pulse" />
+        </div>
+        <div className="flex gap-3">
+          <div className="h-11 w-40 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-11 w-32 bg-neutral-400 rounded animate-pulse" />
+        </div>
+      </div>
+
+      {/* Order Info Card Skeleton */}
+      <div className="mb-8 rounded-lg border border-neutral-400 bg-card p-6">
+        <div className="grid gap-6 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="space-y-2">
+              <div className="h-4 w-20 bg-neutral-400 rounded animate-pulse" />
+              <div className="h-6 w-32 bg-neutral-400 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Shipping Address Skeleton */}
+      <div className="mb-8 rounded-lg border border-neutral-400 bg-card p-6">
+        <div className="h-7 w-40 mb-4 bg-neutral-400 rounded animate-pulse" />
+        <div className="space-y-2">
+          <div className="h-5 w-48 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-4 w-64 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-4 w-40 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-4 w-32 bg-neutral-400 rounded animate-pulse" />
+        </div>
+      </div>
+
+      {/* Order Items Skeleton */}
+      <div className="mb-8 rounded-lg border border-neutral-400 bg-card">
+        <div className="border-b p-6">
+          <div className="h-7 w-32 bg-neutral-400 rounded animate-pulse" />
+        </div>
+        <div className="divide-y">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex gap-6 p-6">
+              <div className="h-24 w-24 bg-neutral-400 rounded-lg animate-pulse" />
+              <div className="flex-1 space-y-2">
+                <div className="h-5 w-48 bg-neutral-400 rounded animate-pulse" />
+                <div className="h-4 w-64 bg-neutral-400 rounded animate-pulse" />
+                <div className="h-4 w-32 bg-neutral-400 rounded animate-pulse" />
+              </div>
+              <div className="h-6 w-20 bg-neutral-400 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Order Summary Skeleton */}
+      <div className="rounded-lg border border-neutral-400 bg-card p-6">
+        <div className="h-7 w-40 mb-4 bg-neutral-400 rounded animate-pulse" />
+        <div className="space-y-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex justify-between">
+              <div className="h-4 w-24 bg-neutral-400 rounded animate-pulse" />
+              <div className="h-4 w-20 bg-neutral-400 rounded animate-pulse" />
+            </div>
+          ))}
         </div>
       </div>
     </div>

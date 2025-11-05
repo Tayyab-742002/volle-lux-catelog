@@ -5,16 +5,15 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { User, Bell, Lock, Loader2, CheckCircle } from "lucide-react";
+import { User, Lock, Loader2, CheckCircle } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
+import { cn } from "@/lib/utils";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
   const { user, loading, updateProfile, updatePassword } = useAuth();
-
+  const [activeTab, setActiveTab] = useState<"profile" | "password">("profile");
   const [profile, setProfile] = useState({
     fullName: "",
     email: "",
@@ -26,13 +25,6 @@ export default function AccountSettingsPage() {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-  });
-
-  const [preferences, setPreferences] = useState({
-    emailNotifications: true,
-    smsNotifications: false,
-    marketingEmails: true,
-    orderUpdates: true,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +39,7 @@ export default function AccountSettingsPage() {
 
   // Load user profile on mount
   useEffect(() => {
-    if (user) {
+    if (!loading && user) {
       setProfile({
         fullName: user.fullName || "",
         email: user.email || "",
@@ -55,7 +47,7 @@ export default function AccountSettingsPage() {
         company: user.company || "",
       });
     }
-  }, [user]);
+  }, [loading, user]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -161,363 +153,270 @@ export default function AccountSettingsPage() {
   }
 
   return (
-    <div>
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold">Account Settings</h2>
-        <p className="mt-2 text-muted-foreground">
-          Manage your profile and preferences
-        </p>
+    <div className="space-y-8">
+      {/* Custom Tabs Navigation */}
+      <div className="border border-neutral-300 bg-card shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <nav className="flex min-w-max">
+            <button
+              onClick={() => setActiveTab("profile")}
+              className={cn(
+                "flex flex-1 items-center justify-center gap-2 px-6 py-3 text-sm font-medium transition-all whitespace-nowrap border-b-2",
+                activeTab === "profile"
+                  ? "border-primary bg-primary/5 text-primary"
+                  : "border-transparent text-muted-foreground hover:bg-neutral-50 hover:text-foreground"
+              )}
+            >
+              <User className="h-4 w-4" strokeWidth={1.5} />
+              Profile
+            </button>
+            <button
+              onClick={() => setActiveTab("password")}
+              className={cn(
+                "flex flex-1 items-center justify-center gap-2 px-6 py-3 text-sm font-medium transition-all whitespace-nowrap border-b-2",
+                activeTab === "password"
+                  ? "border-primary bg-primary/5 text-primary"
+                  : "border-transparent text-muted-foreground hover:bg-neutral-50 hover:text-foreground"
+              )}
+            >
+              <Lock className="h-4 w-4" strokeWidth={1.5} />
+              Password
+            </button>
+          </nav>
+        </div>
       </div>
 
-      <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="mb-8 grid w-full grid-cols-3">
-          <TabsTrigger value="profile" className="flex items-center gap-2">
-            <User className="h-4 w-4" />
-            Profile
-          </TabsTrigger>
-          <TabsTrigger
-            value="notifications"
-            className="flex items-center gap-2"
-          >
-            <Bell className="h-4 w-4" />
-            Notifications
-          </TabsTrigger>
-          <TabsTrigger value="password" className="flex items-center gap-2">
-            <Lock className="h-4 w-4" />
-            Password
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Profile Tab */}
-        <TabsContent value="profile">
-          <div className="rounded-lg border bg-card">
-            <div className="border-b p-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <User className="h-6 w-6 text-primary" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold">Profile Information</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Update your personal details
-                  </p>
-                </div>
+      {/* Profile Tab */}
+      {activeTab === "profile" && (
+        <div className="border border-neutral-400 bg-card shadow-sm overflow-hidden">
+          <div className="border-b border-neutral-400 p-4 sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                <User className="h-5 w-5 text-primary" strokeWidth={1.5} />
               </div>
-            </div>
-
-            <form onSubmit={handleProfileSubmit} className="p-6">
-              {profileMessage && (
-                <Alert
-                  className={`mb-6 ${profileMessage.type === "success" ? "bg-green-50 text-green-900 border-green-200" : "bg-red-50 text-red-900 border-red-200"}`}
-                >
-                  <CheckCircle className="h-4 w-4" />
-                  <AlertDescription>{profileMessage.text}</AlertDescription>
-                </Alert>
-              )}
-
-              <div className="space-y-6">
-                <div>
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    value={profile.fullName}
-                    onChange={(e) =>
-                      setProfile({ ...profile, fullName: e.target.value })
-                    }
-                    className="mt-2"
-                    disabled={isSubmitting}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={profile.email}
-                    disabled
-                    className="mt-2 opacity-60"
-                  />
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Email cannot be changed. Contact support if needed.
-                  </p>
-                </div>
-
-                <div>
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={profile.phone}
-                    onChange={(e) =>
-                      setProfile({ ...profile, phone: e.target.value })
-                    }
-                    className="mt-2"
-                    disabled={isSubmitting}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="company">Company Name</Label>
-                  <Input
-                    id="company"
-                    value={profile.company}
-                    onChange={(e) =>
-                      setProfile({ ...profile, company: e.target.value })
-                    }
-                    className="mt-2"
-                    disabled={isSubmitting}
-                  />
-                </div>
-
-                <div className="flex gap-3">
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Save Changes
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={isSubmitting}
-                    onClick={() => {
-                      if (user) {
-                        setProfile({
-                          fullName: user.fullName || "",
-                          email: user.email || "",
-                          phone: user.phone || "",
-                          company: user.company || "",
-                        });
-                      }
-                      setProfileMessage(null);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </TabsContent>
-
-        {/* Notifications Tab */}
-        <TabsContent value="notifications">
-          <div className="rounded-lg border bg-card">
-            <div className="border-b p-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <Bell className="h-6 w-6 text-primary" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold">
-                    Notification Preferences
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Choose how you want to be notified
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id="emailNotifications"
-                    checked={preferences.emailNotifications}
-                    onCheckedChange={(checked) =>
-                      setPreferences({
-                        ...preferences,
-                        emailNotifications: checked as boolean,
-                      })
-                    }
-                  />
-                  <Label
-                    htmlFor="emailNotifications"
-                    className="cursor-pointer font-normal"
-                  >
-                    Email Notifications
-                  </Label>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id="smsNotifications"
-                    checked={preferences.smsNotifications}
-                    onCheckedChange={(checked) =>
-                      setPreferences({
-                        ...preferences,
-                        smsNotifications: checked as boolean,
-                      })
-                    }
-                  />
-                  <Label
-                    htmlFor="smsNotifications"
-                    className="cursor-pointer font-normal"
-                  >
-                    SMS Notifications
-                  </Label>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id="marketingEmails"
-                    checked={preferences.marketingEmails}
-                    onCheckedChange={(checked) =>
-                      setPreferences({
-                        ...preferences,
-                        marketingEmails: checked as boolean,
-                      })
-                    }
-                  />
-                  <Label
-                    htmlFor="marketingEmails"
-                    className="cursor-pointer font-normal"
-                  >
-                    Marketing Emails
-                  </Label>
-                  <div className="flex items-center space-x-3">
-                    <Checkbox
-                      id="orderUpdates"
-                      checked={preferences.orderUpdates}
-                      onCheckedChange={(checked) =>
-                        setPreferences({
-                          ...preferences,
-                          orderUpdates: checked as boolean,
-                        })
-                      }
-                    />
-                    <Label
-                      htmlFor="orderUpdates"
-                      className="cursor-pointer font-normal"
-                    >
-                      Order Updates
-                    </Label>
-                  </div>
-
-                  <div className="pt-4">
-                    <Button>Save Preferences</Button>
-                  </div>
-                </div>
+              <div>
+                <h3 className="text-lg font-semibold tracking-tight">
+                  Profile Information
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Update your personal details
+                </p>
               </div>
             </div>
           </div>
-        </TabsContent>
 
-        {/* Password Tab */}
-        <TabsContent value="password">
-          <div className="rounded-lg border bg-card">
-            <div className="border-b p-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <Lock className="h-6 w-6 text-primary" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold">Change Password</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Update your password to keep your account secure
-                  </p>
-                </div>
+          <form onSubmit={handleProfileSubmit} className="p-4 sm:p-6">
+            {profileMessage && (
+              <Alert
+                className={`mb-6 ${profileMessage.type === "success" ? "bg-green-50 text-green-900 border-green-200" : "bg-red-50 text-red-900 border-red-200"}`}
+              >
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>{profileMessage.text}</AlertDescription>
+              </Alert>
+            )}
+
+            <div className="space-y-6">
+              <div>
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  id="fullName"
+                  value={profile.fullName}
+                  onChange={(e) =>
+                    setProfile({ ...profile, fullName: e.target.value })
+                  }
+                  className="mt-2 border border-neutral-300"
+                  disabled={isSubmitting}
+                />
               </div>
-            </div>
 
-            <form onSubmit={handlePasswordSubmit} className="p-6">
-              {passwordMessage && (
-                <Alert
-                  className={`mb-6 ${passwordMessage.type === "success" ? "bg-green-50 text-green-900 border-green-200" : "bg-red-50 text-red-900 border-red-200"}`}
-                >
-                  <CheckCircle className="h-4 w-4" />
-                  <AlertDescription>{passwordMessage.text}</AlertDescription>
-                </Alert>
-              )}
+              <div>
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={profile.email}
+                  disabled
+                  className="mt-2 opacity-60 border border-neutral-300"
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Email cannot be changed. Contact support if needed.
+                </p>
+              </div>
 
-              <div className="space-y-6">
-                <div>
-                  <Label htmlFor="currentPassword">Current Password</Label>
-                  <Input
-                    id="currentPassword"
-                    type="password"
-                    value={passwordForm.currentPassword}
-                    onChange={(e) =>
-                      setPasswordForm({
-                        ...passwordForm,
-                        currentPassword: e.target.value,
-                      })
-                    }
-                    placeholder="Enter current password"
-                    className="mt-2"
-                    disabled={isSubmitting}
-                  />
-                </div>
+              <div>
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={profile.phone}
+                  onChange={(e) =>
+                    setProfile({ ...profile, phone: e.target.value })
+                  }
+                  className="mt-2 border border-neutral-300"
+                  disabled={isSubmitting}
+                  placeholder="Enter your phone number"
+                />
+              </div>
 
-                <div>
-                  <Label htmlFor="newPassword">New Password</Label>
-                  <Input
-                    id="newPassword"
-                    type="password"
-                    value={passwordForm.newPassword}
-                    onChange={(e) =>
-                      setPasswordForm({
-                        ...passwordForm,
-                        newPassword: e.target.value,
-                      })
-                    }
-                    placeholder="Enter new password"
-                    className="mt-2"
-                    disabled={isSubmitting}
-                  />
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Minimum 6 characters
-                  </p>
-                </div>
+              <div>
+                <Label htmlFor="company">Company Name</Label>
+                <Input
+                  id="company"
+                  value={profile.company}
+                  onChange={(e) =>
+                    setProfile({ ...profile, company: e.target.value })
+                  }
+                  className="mt-2 border border-neutral-300"
+                  disabled={isSubmitting}
+                  placeholder="Enter your company name"
+                />
+              </div>
 
-                <div>
-                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={passwordForm.confirmPassword}
-                    onChange={(e) =>
-                      setPasswordForm({
-                        ...passwordForm,
-                        confirmPassword: e.target.value,
-                      })
-                    }
-                    placeholder="Confirm new password"
-                    className="mt-2"
-                    disabled={isSubmitting}
-                  />
-                </div>
-
-                <div className="flex gap-3">
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Update Password
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={isSubmitting}
-                    onClick={() => {
-                      setPasswordForm({
-                        currentPassword: "",
-                        newPassword: "",
-                        confirmPassword: "",
+              <div className="flex gap-3">
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Save Changes
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isSubmitting}
+                  onClick={() => {
+                    if (user) {
+                      setProfile({
+                        fullName: user.fullName || "",
+                        email: user.email || "",
+                        phone: user.phone || "",
+                        company: user.company || "",
                       });
-                      setPasswordMessage(null);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                </div>
+                    }
+                    setProfileMessage(null);
+                  }}
+                >
+                  Cancel
+                </Button>
               </div>
-            </form>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Password Tab */}
+      {activeTab === "password" && (
+        <div className="border border-neutral-400 bg-card shadow-sm overflow-hidden">
+          <div className="border-b border-neutral-400 p-4 sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                <Lock className="h-5 w-5 text-primary" strokeWidth={1.5} />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold tracking-tight">
+                  Change Password
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Update your password to keep your account secure
+                </p>
+              </div>
+            </div>
           </div>
-        </TabsContent>
-      </Tabs>
+
+          <form onSubmit={handlePasswordSubmit} className="p-4 sm:p-6">
+            {passwordMessage && (
+              <Alert
+                className={`mb-6 ${passwordMessage.type === "success" ? "bg-green-50 text-green-900 border-green-200" : "bg-red-50 text-red-900 border-red-200"}`}
+              >
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>{passwordMessage.text}</AlertDescription>
+              </Alert>
+            )}
+
+            <div className="space-y-6">
+              <div>
+                <Label htmlFor="currentPassword">Current Password</Label>
+                <Input
+                  id="currentPassword"
+                  type="password"
+                  value={passwordForm.currentPassword}
+                  onChange={(e) =>
+                    setPasswordForm({
+                      ...passwordForm,
+                      currentPassword: e.target.value,
+                    })
+                  }
+                  placeholder="Enter current password"
+                  className="mt-2 border border-neutral-300"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={(e) =>
+                    setPasswordForm({
+                      ...passwordForm,
+                      newPassword: e.target.value,
+                    })
+                  }
+                  placeholder="Enter new password"
+                  className="mt-2 border border-neutral-300"
+                  disabled={isSubmitting}
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Minimum 6 characters
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={(e) =>
+                    setPasswordForm({
+                      ...passwordForm,
+                      confirmPassword: e.target.value,
+                    })
+                  }
+                  placeholder="Confirm new password"
+                  className="mt-2 border border-neutral-300"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Update Password
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isSubmitting}
+                  onClick={() => {
+                    setPasswordForm({
+                      currentPassword: "",
+                      newPassword: "",
+                      confirmPassword: "",
+                    });
+                    setPasswordMessage(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

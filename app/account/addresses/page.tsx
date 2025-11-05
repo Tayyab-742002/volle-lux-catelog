@@ -1,4 +1,3 @@
-// app/account/addresses/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -15,12 +14,12 @@ import {
   updateSavedAddress,
   type SavedAddress,
 } from "@/services/users/user.service";
+import Loading from "./loading";
 
 export default function SavedAddressesPage() {
   const { user } = useAuth();
   const [addresses, setAddresses] = useState<SavedAddress[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -31,25 +30,21 @@ export default function SavedAddressesPage() {
     }
 
     let cancelled = false;
-    let timeoutId: NodeJS.Timeout;
-
-    timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       if (!cancelled) {
         setLoading(false);
-        setError("Loading timeout - please refresh the page");
       }
     }, 5000);
 
     (async () => {
       try {
         setLoading(true);
-        setError(null);
         const result = await getSavedAddresses(user.id);
         if (!cancelled) {
           setAddresses(result);
         }
-      } catch (e) {
-        if (!cancelled) setError("Failed to load addresses");
+      } catch {
+        // Handle error silently, will show empty state
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -81,7 +76,7 @@ export default function SavedAddressesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loading />
       </div>
     );
   }
@@ -130,15 +125,49 @@ export default function SavedAddressesPage() {
         </div>
       ) : (
         <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
-          {addresses.map((address) => (
-            <AddressCard
-              key={address.id}
-              address={address}
-              onEdit={() => setEditingId(address.id)}
-              onDelete={() => handleDelete(address.id)}
-              onSetDefault={() => handleSetDefault(address.id)}
-            />
-          ))}
+          {addresses.map((address) =>
+            editingId === address.id ? (
+              <div
+                key={address.id}
+                className="rounded-xl border-2 border-dashed border-primary/30 bg-card p-4 sm:p-6"
+              >
+                <h3 className="mb-4 text-lg font-semibold">Edit Address</h3>
+                <AddressForm
+                  initial={address}
+                  onCancel={() => setEditingId(null)}
+                  onSubmit={async (payload) => {
+                    if (!user?.id) return;
+                    const updated = await updateSavedAddress(
+                      user.id,
+                      address.id,
+                      payload
+                    );
+                    setAddresses((prev) =>
+                      prev.map((a) =>
+                        a.id === address.id
+                          ? updated
+                          : {
+                              ...a,
+                              is_default: updated.is_default
+                                ? false
+                                : a.is_default,
+                            }
+                      )
+                    );
+                    setEditingId(null);
+                  }}
+                />
+              </div>
+            ) : (
+              <AddressCard
+                key={address.id}
+                address={address}
+                onEdit={() => setEditingId(address.id)}
+                onDelete={() => handleDelete(address.id)}
+                onSetDefault={() => handleSetDefault(address.id)}
+              />
+            )
+          )}
 
           {/* Add New Address Form */}
           {isAdding && (

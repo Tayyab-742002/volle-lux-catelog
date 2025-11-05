@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { startTransition } from "react";
 import {
   Select,
   SelectContent,
@@ -21,8 +22,10 @@ export function ProductSort({ currentSort }: ProductSortProps) {
   const handleSortChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("sort", value);
-    // INSTANT update - no transition
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    // INSTANT update with startTransition
+    startTransition(() => {
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    });
   };
 
   return (

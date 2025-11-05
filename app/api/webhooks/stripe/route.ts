@@ -52,7 +52,10 @@ async function verifyWebhookSignature(
 async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session
 ) {
-  console.log("Processing checkout.session.completed:", session.id);
+  console.log(
+    "2222222🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣22222222Processing checkout.session.completed:",
+    session.id
+  );
 
   try {
     // Retrieve full session details with line items and customer details
@@ -63,12 +66,25 @@ async function handleCheckoutSessionCompleted(
       {
         expand: [
           "line_items",
-          "line_items.data.price.product",
+          "line_items.data.price",
           "customer_details",
           "payment_intent",
           "total_details",
         ],
       }
+    );
+
+    console.log(
+      "✅ Retrieved full session, line items:",
+      fullSession.line_items?.data.length || 0
+    );
+    console.log(
+      "✅ Session metadata:",
+      JSON.stringify(fullSession.metadata || {})
+    );
+    console.log(
+      "🔍 First line item structure:",
+      JSON.stringify(fullSession.line_items?.data[0] || {}, null, 2)
     );
 
     // Extract metadata from session
@@ -113,12 +129,6 @@ async function handleCheckoutSessionCompleted(
     let billingAddress = null;
 
     // Log what we have for debugging
-    console.log("Stripe session billing data:", {
-      hasCustomerDetails: !!fullSession.customer_details,
-      hasCustomerAddress: !!fullSession.customer_details?.address,
-      customerDetailsAddress: fullSession.customer_details?.address,
-      hasPaymentIntent: !!fullSession.payment_intent,
-    });
 
     if (fullSession.customer_details?.address) {
       // Stripe collected billing address - this is the main path
@@ -133,10 +143,6 @@ async function handleCheckoutSessionCompleted(
         country: billingAddr.country || "",
         phone: fullSession.customer_details?.phone || "",
       };
-      console.log(
-        "✅ Billing address captured from Stripe customer_details:",
-        billingAddress
-      );
     } else if (fullSession.metadata?.billing_address) {
       // Fallback: billing address was passed in metadata (legacy)
       try {
@@ -157,42 +163,158 @@ async function handleCheckoutSessionCompleted(
       cartItems = fullSession.metadata?.cart_items
         ? JSON.parse(fullSession.metadata.cart_items)
         : [];
+      console.log("✅ Parsed cart items from metadata:", cartItems.length);
+      console.log("🔍 Parsed cartItems:", JSON.stringify(cartItems, null, 2));
     } catch (e) {
       console.error("Failed to parse cart items from metadata:", e);
+      console.error(
+        "Metadata cart_items value:",
+        fullSession.metadata?.cart_items
+      );
+      // Continue without cart items - we'll use Stripe line item data instead
+      cartItems = [];
     }
 
     // Transform line items to order items format (matching CartItem structure)
+    // Match by price/product instead of index to handle Stripe merging
     const orderItems =
       fullSession.line_items?.data.map(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (item: any, index: number) => {
-          const cartItem = cartItems[index] || {};
+        (item: any) => {
           const quantity = item.quantity || 1;
           const pricePerUnit = item.amount_total
             ? item.amount_total / 100 / quantity
             : 0;
 
+          // Try to match cart item by variant SKU from description (format: "Product Name - Variant (SKU)")
+          // Or try by product ID from line item metadata
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          let cartItem: any = null;
+
+          // Extract SKU from description if it follows the pattern
+          const skuMatch = item.description?.match(/\(([^)]+)\)/);
+          const extractedSku = skuMatch ? skuMatch[1] : null;
+
+          if (extractedSku) {
+            cartItem =
+              cartItems.find(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (ci: any) => ci.variantSku === extractedSku
+              ) || null;
+          }
+
+          // If not found by SKU, try to match by product ID from line item
+          if (!cartItem && item.price?.metadata?.product_id) {
+            cartItem =
+              cartItems.find(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (ci: any) => ci.id === item.price.metadata.product_id
+              ) || null;
+          }
+
+          // Last resort: If we still can't match, use the first unmatched cart item
+          // This handles edge cases where Stripe merged items or metadata is incomplete
+          if (!cartItem && cartItems.length > 0) {
+            console.warn(
+              "⚠️ Could not match line item to cart item, using first available"
+            );
+            cartItem = cartItems[0];
+          }
+
           // Build proper nested structure matching CartItem interface
+          const productId =
+            cartItem?.id ||
+            item.price?.metadata?.product_id ||
+            item.price?.product_data?.metadata?.product_id ||
+            null;
+
+          if (!productId) {
+            console.error("❌ Missing product ID for line item:", item);
+            throw new Error("Cannot create order item without product ID");
+          }
+
+          const productCode =
+            cartItem?.code ||
+            item.price?.metadata?.product_code ||
+            item.price?.product_data?.metadata?.product_code ||
+            "";
+
+          // Only create variant if we have valid variant data
+          const hasVariant =
+            cartItem &&
+            cartItem.variantId &&
+            cartItem.variantId !== "" &&
+            cartItem.variantName &&
+            cartItem.variantName !== "";
+
+          // Extract slug from metadata or derive from product name
+          const productSlug =
+            cartItem?.product?.slug ||
+            item.price?.metadata?.product_slug ||
+            item.price?.product_data?.metadata?.product_slug ||
+            (item.description || cartItem?.name || "Product")
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/(^-|-$)/g, "");
+
+          // Get product image with fallback
+          const productImage =
+            cartItem?.image ||
+            cartItem?.product?.image ||
+            item.price?.product_data?.images?.[0] ||
+            "/placeholder-image.png";
+
           return {
-            id: cartItem.id || item.price?.product || "",
-            code: cartItem.code || "",
+            id: productId,
+            code: productCode,
             product: {
-              id: cartItem.id || item.price?.product || "",
-              name: item.description || cartItem.name || "Product",
-              image: cartItem.image || "",
+              id: productId,
+              product_code: productCode,
+              name:
+                item.description ||
+                cartItem?.name ||
+                cartItem?.product?.name ||
+                "Product",
+              slug: productSlug,
+              image: productImage,
             },
-            variant: cartItem.variant
-              ? {
-                  id: cartItem.variant,
-                  name: cartItem.variantName || "Standard",
-                }
-              : null,
+            variant:
+              hasVariant && cartItem
+                ? {
+                    id: cartItem.variantId || "",
+                    name: cartItem.variantName || "Standard",
+                    sku: cartItem.variantSku || "",
+                    price_adjustment: cartItem.variantPriceAdjustment || 0,
+                  }
+                : null,
             quantity,
             pricePerUnit,
             totalPrice: pricePerUnit * quantity,
           };
         }
       ) || [];
+
+    console.log(
+      `✅ Transformed ${orderItems.length} order items from ${fullSession.line_items?.data.length || 0} line items`
+    );
+
+    // Validate order items before creating order
+    if (orderItems.length === 0) {
+      console.error("❌ No order items to create order");
+      throw new Error("Cannot create order with no items");
+    }
+
+    // Check for any invalid items
+    const invalidItems = orderItems.filter(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (item: any) => !item.id || item.id === "unknown"
+    );
+    if (invalidItems.length > 0) {
+      console.warn(
+        `⚠️ Found ${invalidItems.length} items with invalid IDs:`,
+        invalidItems
+      );
+    }
 
     // Calculate order totals
     const totalAmount = (fullSession.amount_total || 0) / 100; // Convert from cents
@@ -214,15 +336,6 @@ async function handleCheckoutSessionCompleted(
 
     // Calculate subtotal (before tax, shipping, and discounts)
     const subtotal = totalAmount - shippingCost - taxAmount + discountAmount;
-
-    console.log("Order calculation:", {
-      totalAmount,
-      subtotal,
-      discount: discountAmount,
-      shipping: shippingCost,
-      tax: taxAmount,
-      itemCount: orderItems.length,
-    });
 
     // Create order in Supabase with full details
     // Note: orderItems structure is compatible with CartItem but TypeScript needs explicit cast
@@ -257,22 +370,27 @@ async function handleCheckoutSessionCompleted(
       paymentIntentId: fullSession.payment_intent as string,
     };
 
-    console.log("Creating order with data:", {
-      userId: orderData.userId,
+    console.log("📦 Creating order with data:", {
+      userId: orderData.userId || "guest",
       email: orderData.email,
       itemCount: orderData.items.length,
+      subtotal: orderData.subtotal,
       total: orderData.total,
-      shipping: orderData.shipping,
-      discount: orderData.discount,
-      hasShippingAddress: !!shippingAddress,
-      hasBillingAddress: !!billingAddress,
-      shippingAddressDetails: shippingAddress,
-      billingAddressDetails: billingAddress,
+      sessionId: orderData.stripeSessionId,
     });
 
-    const orderId = await createOrder(orderData);
-
-    console.log("Order created successfully:", orderId);
+    let orderId: string;
+    try {
+      orderId = await createOrder(orderData);
+      console.log("✅ Order created successfully with ID:", orderId);
+    } catch (orderError) {
+      console.error("❌ Failed to create order:", orderError);
+      if (orderError instanceof Error) {
+        console.error("Error message:", orderError.message);
+        console.error("Error stack:", orderError.stack);
+      }
+      throw orderError;
+    }
 
     // Clear the cart after successful order creation
     try {
@@ -292,7 +410,6 @@ async function handleCheckoutSessionCompleted(
 
       // Delete cart by user_id or session_id
       if (userId) {
-        console.log("Deleting cart for user:", userId);
         const { error: deleteError } = await supabase
           .from("carts")
           .delete()
@@ -403,6 +520,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
 
+    console.log(
+      `11111111🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣111111 Received webhook event: ${event.type}, ID: ${event.id}`
+    );
+
     // Handle different event types
     switch (event.type) {
       case "checkout.session.completed": {
@@ -428,9 +549,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Return 200 to acknowledge receipt
+    console.log("✅ Webhook processed successfully");
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error("Webhook error:", error);
+    console.error("❌ Webhook error:", error);
+    if (error instanceof Error) {
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
     return NextResponse.json(
       { error: "Webhook handler failed" },
       { status: 500 }
