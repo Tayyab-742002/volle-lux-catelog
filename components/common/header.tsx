@@ -105,7 +105,9 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
   const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    setMounted(true);
+    setTimeout(() => {
+      setMounted(true);
+    }, 100);
     return () => {
       if (megaMenuTimeoutRef.current) {
         clearTimeout(megaMenuTimeoutRef.current);
