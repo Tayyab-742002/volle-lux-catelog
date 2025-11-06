@@ -330,7 +330,7 @@ export function Header({
                           </div>
                           <Link
                             href={`/products?category=${activeCategory.slug}`}
-                            className="inline-block mt-4 text-sm font-medium cursor-pointer text-neutral-900 hover:text-neutral-600 transition-colors"
+                            className="inline-block mt-4 text-md font-medium cursor-pointer text-neutral-900 hover:text-neutral-600 transition-colors hover:border-b hover:border-neutral-900"
                             onClick={handleMegaMenuLeave}
                           >
                             View all →
