@@ -121,7 +121,7 @@ async function DashboardContent({ userId }: { userId: string }) {
 
       {/* Order Status Breakdown - Only show if there are orders */}
       {totalOrders > 0 && (
-        <div className="rounded-xl border border-neutral-200 bg-card p-6 sm:p-8 shadow-sm">
+        <div className="rounded-xl border border-neutral-400 bg-card p-6 sm:p-8 shadow-sm">
           <h3 className="text-lg font-semibold tracking-tight mb-6">
             Order Status
           </h3>
@@ -151,8 +151,8 @@ async function DashboardContent({ userId }: { userId: string }) {
       )}
 
       {/* Recent Orders */}
-      <div className="rounded-xl border border-neutral-200  bg-card shadow-sm overflow-hidden">
-        <div className="border-b border-neutral-200  p-4 sm:p-6">
+      <div className="rounded-xl border border-neutral-400  bg-card shadow-sm overflow-hidden">
+        <div className="border-b border-neutral-400  p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
               Recent Orders
@@ -214,30 +214,30 @@ function DashboardSkeleton() {
             className="rounded-xl border border-neutral-300 bg-card p-4 sm:p-6 shadow-sm"
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="h-4 w-24 bg-neutral-200 rounded-lg animate-[pulse_3s_ease-in-out_infinite]" />
-              <div className="h-10 w-10 bg-neutral-200 rounded-lg animate-[pulse_3s_ease-in-out_infinite]" />
+              <div className="h-4 w-24 bg-neutral-400 rounded-lg animate-[pulse_3s_ease-in-out_infinite]" />
+              <div className="h-10 w-10 bg-neutral-400 rounded-lg animate-[pulse_3s_ease-in-out_infinite]" />
             </div>
-            <div className="h-9 w-32 bg-neutral-200 rounded-lg animate-[pulse_3s_ease-in-out_infinite]" />
+            <div className="h-9 w-32 bg-neutral-400 rounded-lg animate-[pulse_3s_ease-in-out_infinite]" />
           </div>
         ))}
       </div>
 
       {/* Orders Skeleton */}
-      <div className="rounded-xl border border-neutral-200 bg-card shadow-sm overflow-hidden">
-        <div className="border-b border-neutral-200 p-4 sm:p-6">
-          <div className="h-7 w-32 bg-neutral-200 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+      <div className="rounded-xl border border-neutral-400 bg-card shadow-sm overflow-hidden">
+        <div className="border-b border-neutral-400 p-4 sm:p-6">
+          <div className="h-7 w-32 bg-neutral-400 rounded animate-[pulse_3s_ease-in-out_infinite]" />
         </div>
-        <div className="divide-y divide-neutral-200">
+        <div className="divide-y divide-neutral-400">
           {[1, 2, 3].map((i) => (
             <div key={i} className="p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 w-40 bg-neutral-200 rounded animate-[pulse_3s_ease-in-out_infinite]" />
-                  <div className="h-3 w-32 bg-neutral-200 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+                  <div className="h-4 w-40 bg-neutral-400 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+                  <div className="h-3 w-32 bg-neutral-400 rounded animate-[pulse_3s_ease-in-out_infinite]" />
                 </div>
                 <div className="flex items-center gap-2 sm:flex-col sm:items-end">
-                  <div className="h-5 w-20 bg-neutral-200 rounded animate-[pulse_3s_ease-in-out_infinite]" />
-                  <div className="h-3 w-24 bg-neutral-200 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+                  <div className="h-5 w-20 bg-neutral-400 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+                  <div className="h-3 w-24 bg-neutral-400 rounded animate-[pulse_3s_ease-in-out_infinite]" />
                 </div>
               </div>
             </div>

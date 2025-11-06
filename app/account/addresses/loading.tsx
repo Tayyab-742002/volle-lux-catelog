@@ -15,7 +15,7 @@ export default function Loading() {
         {[1, 2].map((i) => (
           <div
             key={i}
-            className="rounded-xl border border-neutral-200 bg-card p-4 sm:p-6"
+            className="rounded-xl border border-neutral-400 bg-card p-4 sm:p-6"
           >
             <div className="flex items-start justify-between gap-3 mb-4">
               <div className="flex-1 space-y-2">
