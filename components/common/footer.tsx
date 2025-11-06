@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 
 export function Footer() {
   return (
@@ -137,21 +137,41 @@ export function Footer() {
             <ul className="space-y-4">
               <li>
                 <a
-                  href="tel:+15551234567"
-                  className="flex items-center gap-3 text-sm text-neutral-900 transition-colors hover:text-neutral-600"
+                  href="tel:+441254916167"
+                  className="flex items-start gap-3 text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
-                  <Phone className="h-4 w-4" strokeWidth={1.5} />
-                  <span>+1 (555) 123-4567</span>
+                  <Phone
+                    className="h-4 w-4 mt-0.5 shrink-0"
+                    strokeWidth={1.5}
+                  />
+                  <span>01254 916167</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:info@volle.com"
-                  className="flex items-center gap-3 text-sm text-neutral-900 transition-colors hover:text-neutral-600"
+                  href="mailto:sales@bubblewrapshop.co.uk"
+                  className="flex items-start gap-3 text-sm text-neutral-900 transition-colors hover:text-neutral-600"
                 >
-                  <Mail className="h-4 w-4" strokeWidth={1.5} />
-                  <span>info@volle.com</span>
+                  <Mail className="h-4 w-4 mt-0.5 shrink-0" strokeWidth={1.5} />
+                  <span>sales@bubblewrapshop.co.uk</span>
                 </a>
+              </li>
+              <li>
+                <div className="flex items-start gap-3 text-sm text-neutral-900">
+                  <MapPin
+                    className="h-4 w-4 mt-0.5 shrink-0"
+                    strokeWidth={1.5}
+                  />
+                  <address className="not-italic leading-relaxed">
+                    Unit 3, GBL House
+                    <br />
+                    Cleaver Street
+                    <br />
+                    Blackburn BB1 5DG
+                    <br />
+                    United Kingdom
+                  </address>
+                </div>
               </li>
             </ul>
 
@@ -160,8 +180,8 @@ export function Footer() {
                 Next day delivery
                 <br />
                 Eco-friendly options
-                <br />
-                Automatic bulk pricing
+                {/* <br />
+                Automatic bulk pricing */}
               </p>
             </div>
           </div>
@@ -171,7 +191,8 @@ export function Footer() {
         <div className="mt-16 border-t border-neutral-400 pt-8">
           <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
             <p className="text-xs text-neutral-500">
-              © {new Date().getFullYear()} Volle. All rights reserved.
+              © {new Date().getFullYear()} Bubble Wrap Shop (NW) Ltd. All
+              rights reserved.
             </p>
             <div className="flex gap-6 text-xs">
               <Link
