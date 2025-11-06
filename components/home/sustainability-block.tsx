@@ -11,7 +11,7 @@ export function SustainabilityBlock() {
           {/* Image Section - Full Bleed on Left */}
           <div className="relative -mx-6 h-[400px] md:h-[500px] lg:mx-0 lg:h-[600px]">
             <Image
-              src="https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/sustainibility-new.png"
+              src="https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/sustainability.png"
               alt="Sustainable Packaging"
               fill
               className="object-cover"

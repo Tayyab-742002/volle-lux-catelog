@@ -6,7 +6,11 @@ import { Header, Footer } from "@/components/common";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { SanityLive } from "@/sanity/lib";
-import { getCategoriesWithFeaturedProducts } from "@/sanity/lib";
+import {
+  getCategoriesWithFeaturedProducts,
+  getAllProducts,
+} from "@/sanity/lib";
+import { Product } from "@/types/product";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -28,6 +32,7 @@ export default async function RootLayout({
 }>) {
   // Fetch categories with featured products for header mega menu
   const categories = await getCategoriesWithFeaturedProducts();
+  const products = await getAllProducts();
 
   return (
     <html lang="en" className={roboto.variable} suppressHydrationWarning>
@@ -75,7 +80,7 @@ export default async function RootLayout({
         </Script>
         <AuthProvider>
           <CartProvider>
-            <Header categories={categories || []} />
+            <Header categories={categories || []} products={products || null} />
             <main className="flex-1">{children}</main>
             <Footer />
 

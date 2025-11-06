@@ -97,7 +97,7 @@ export default function SustainabilityPage() {
           </div>
 
           {/* Certifications */}
-          <div className="mb-20 border-t border-neutral-200 pt-16">
+          <div className="mb-20 border-t border-neutral-400 pt-16">
             <h2 className="mb-12 text-2xl font-light text-neutral-900 md:text-3xl">
               Certifications & Standards
             </h2>
@@ -125,7 +125,7 @@ export default function SustainabilityPage() {
           </div>
 
           {/* CTA */}
-          <div className="border-t border-neutral-200 pt-16 text-center">
+          <div className="border-t border-neutral-400 pt-16 text-center">
             <h2 className="mb-6 text-2xl font-light text-neutral-900 md:text-3xl">
               Shop Our Eco-Friendly Products
             </h2>

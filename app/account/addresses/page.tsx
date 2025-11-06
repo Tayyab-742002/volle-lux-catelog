@@ -104,7 +104,7 @@ export default function SavedAddressesPage() {
 
       {/* Address List */}
       {addresses.length === 0 && !isAdding ? (
-        <div className="flex items-center justify-center py-12 sm:py-16 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-card">
+        <div className="flex items-center justify-center py-12 sm:py-16 rounded-xl border border-neutral-400 dark:border-neutral-800 bg-card">
           <div className="text-center space-y-4 max-w-md px-4">
             <div className="flex justify-center">
               <div className="rounded-full bg-primary/10 p-4">
@@ -213,7 +213,7 @@ function AddressCard({
   onSetDefault: () => void;
 }) {
   return (
-    <div className="group rounded-xl border border-neutral-200 dark:border-neutral-800 bg-card p-4 sm:p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
+    <div className="group rounded-xl border border-neutral-400 dark:border-neutral-800 bg-card p-4 sm:p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="mb-1 flex items-center gap-2 flex-wrap">

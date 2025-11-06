@@ -3,7 +3,7 @@ import { Package, Leaf, TrendingUp } from "lucide-react";
 
 export function TrustBar() {
   return (
-    <div className="border-b border-neutral-200 bg-white py-6">
+    <div className="border-b border-neutral-400 bg-white py-6">
       <div className="container mx-auto px-6">
         <div className="flex flex-wrap items-center justify-center gap-12 text-center md:gap-16 lg:gap-20">
           <div className="flex items-center gap-3">

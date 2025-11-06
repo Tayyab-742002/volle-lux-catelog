@@ -283,7 +283,7 @@ function OrderCard({ order }: { order: Order }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-neutral-200 text-xs text-muted-foreground">
+      <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-neutral-400 text-xs text-muted-foreground">
         <Calendar className="h-3 w-3 shrink-0" />
         <span>{formatDate(order.createdAt)}</span>
       </div>
