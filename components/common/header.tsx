@@ -111,7 +111,7 @@ export function Header({
   return (
     <>
       {/* Eco-Friendly Header with Gradient */}
-      <header className="sticky top-0 z-50 w-full border-b border-emerald-200 bg-gradient-to-r from-emerald-700 via-teal-700 to-cyan-700 shadow-lg backdrop-blur-sm">
+      <header className="sticky top-0 z-50 w-full bg-linear-to-r from-emerald-600  to-teal-600 shadow-lg backdrop-blur-sm">
         <div className="container mx-auto px-6">
           <div className="flex h-16 items-center justify-between gap-8">
             {/* Logo */}
@@ -132,25 +132,25 @@ export function Header({
                 onMouseLeave={handleMegaMenuLeave}
                 className="relative"
               >
-                <button className="px-4 py-2 text-sm font-semibold text-white cursor-pointer hover:bg-white/10 rounded-lg transition-all duration-300">
+                <button className="px-4 py-2 text-sm font-normal text-white cursor-pointer hover:bg-white/10 rounded-lg transition-all duration-300">
                   Products
                 </button>
               </div>
               <Link
                 href="/sustainability"
-                className="px-4 py-2 text-sm font-semibold cursor-pointer text-white hover:bg-white/10 rounded-lg transition-all duration-300"
+                className="px-4 py-2 text-sm font-normal cursor-pointer text-white hover:bg-white/10 rounded-lg transition-all duration-300"
               >
                 Sustainability
               </Link>
               <Link
                 href="/about"
-                className="px-4 py-2 text-sm font-semibold cursor-pointer text-white hover:bg-white/10 rounded-lg transition-all duration-300"
+                className="px-4 py-2 text-sm font-normal cursor-pointer text-white hover:bg-white/10 rounded-lg transition-all duration-300"
               >
                 About
               </Link>
               <Link
                 href="/contact"
-                className="px-4 py-2 text-sm font-semibold cursor-pointer text-white hover:bg-white/10 rounded-lg transition-all duration-300"
+                className="px-4 py-2 text-sm font-normal cursor-pointer text-white hover:bg-white/10 rounded-lg transition-all duration-300"
               >
                 Contact
               </Link>
@@ -170,7 +170,7 @@ export function Header({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search..."
-                    className="w-48 rounded-lg border-2 border-white/20 bg-white/95 py-1.5 pl-9 pr-3 text-sm text-gray-900 placeholder:text-gray-500 focus:w-64 focus:border-white focus:outline-none focus:ring-2 focus:ring-white/20 transition-all duration-300"
+                    className="w-48 rounded-lg border-2 border-white/20 bg-white/95 py-1.5 pl-9 pr-3 text-sm text-gray-900 placeholder:text-gray-500 focus:w-64 focus:border-white focus:outline-none focus:ring-0 transition-all duration-300"
                   />
                 </div>
               </form>
@@ -182,7 +182,7 @@ export function Header({
                     <User className="h-5 w-5" strokeWidth={2} />
                   </button>
                   <div className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-white border border-emerald-100 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                    <div className="p-3 border-b border-emerald-100 bg-gradient-to-r from-emerald-50 to-teal-50">
+                    <div className="p-3 border-b border-emerald-100 bg-linear-to-r from-emerald-50 to-teal-50">
                       <p className="text-sm font-semibold text-gray-900 truncate">
                         {user?.fullName || "User"}
                       </p>
@@ -241,7 +241,7 @@ export function Header({
                     strokeWidth={2}
                   />
                   {mounted && cartItemCount > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-[10px] font-bold text-white shadow-lg animate-pulse">
+                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-linear-to-r from-orange-500 to-red-500 text-[10px] font-bold text-white shadow-lg animate-pulse">
                       {cartItemCount > 9 ? "9+" : cartItemCount}
                     </span>
                   )}
@@ -280,7 +280,7 @@ export function Header({
                       onMouseEnter={() => setActiveCategory(category)}
                       className={`w-full text-left px-3 py-2 cursor-pointer text-sm rounded-lg transition-all duration-300 ${
                         activeCategory?.id === category.id
-                          ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg"
+                          ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg"
                           : "text-gray-900 hover:bg-emerald-50"
                       }`}
                     >
@@ -313,7 +313,7 @@ export function Header({
                                   className="group block cursor-pointer border-2 border-emerald-100 hover:border-emerald-300 p-3 rounded-xl transition-all duration-300 hover:shadow-lg"
                                   onClick={handleMegaMenuLeave}
                                 >
-                                  <div className="relative aspect-square overflow-hidden rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50">
+                                  <div className="relative aspect-square overflow-hidden rounded-lg bg-linear-to-br from-emerald-50 to-teal-50">
                                     <Image
                                       src={product.image}
                                       alt={product.name}
@@ -330,7 +330,7 @@ export function Header({
                           </div>
                           <Link
                             href={`/products?category=${activeCategory.slug}`}
-                            className="inline-flex items-center gap-2 mt-4 px-4 py-2 text-sm font-semibold cursor-pointer text-white bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
+                            className="inline-flex items-center gap-2 mt-4 px-4 py-2 text-sm font-semibold cursor-pointer text-white bg-linear-to-r from-emerald-600 to-teal-600 rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
                             onClick={handleMegaMenuLeave}
                           >
                             View all →
@@ -362,7 +362,7 @@ export function Header({
                       className="block group cursor-pointer border-2 border-emerald-100 hover:border-emerald-300 p-3 rounded-xl transition-all duration-300 hover:shadow-lg"
                       onClick={handleMegaMenuLeave}
                     >
-                      <div className="relative aspect-square overflow-hidden rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50">
+                      <div className="relative aspect-square overflow-hidden rounded-lg bg-linear-to-br from-emerald-50 to-teal-50">
                         <Image
                           src={activeCategory.image}
                           alt={activeCategory.name}
@@ -390,7 +390,7 @@ export function Header({
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className="absolute right-0 top-0 bottom-0 w-80 bg-gradient-to-b from-white to-emerald-50 overflow-y-auto shadow-2xl">
+          <div className="absolute right-0 top-0 bottom-0 w-80 bg-linear-to-b from-white to-emerald-50 overflow-y-auto shadow-2xl">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <span className="text-sm font-bold text-gray-900">Menu</span>
@@ -416,7 +416,7 @@ export function Header({
               </form>
 
               {!authLoading && isAuthenticated ? (
-                <div className="mb-6 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 p-4 border border-emerald-200">
+                <div className="mb-6 rounded-xl bg-linear-to-r from-emerald-50 to-teal-50 p-4 border border-emerald-200">
                   <p className="text-sm font-semibold text-gray-900 truncate">
                     {user?.fullName || "User"}
                   </p>
@@ -427,7 +427,7 @@ export function Header({
               ) : !authLoading ? (
                 <Link
                   href="/auth/login"
-                  className="mb-6 flex h-10 items-center justify-center rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-sm font-semibold text-white hover:shadow-lg transition-all"
+                  className="mb-6 flex h-10 items-center justify-center rounded-lg bg-linear-to-r from-emerald-600 to-teal-600 text-sm font-semibold text-white hover:shadow-lg transition-all"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Sign In

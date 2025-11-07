@@ -9,13 +9,7 @@ export async function FeaturedProducts() {
   console.log("Featured Products", featuredProducts);
 
   return (
-    <section className="relative border-t border-emerald-100 bg-linear-to-br from-emerald-50 via-white to-teal-50 py-16 md:py-20 lg:py-24 overflow-hidden">
-      {/* Decorative Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 -right-20 w-64 h-64 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-        <div className="absolute bottom-20 -left-20 w-64 h-64 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-      </div>
-
+    <section className="relativepy-16 md:py-20 lg:py-24 overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px]">
         {/* Section Header */}
         <div className="mb-12 flex flex-col justify-between gap-6 md:mb-16 md:flex-row md:items-end">

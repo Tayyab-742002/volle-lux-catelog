@@ -19,19 +19,19 @@ export function ProductCard({ product }: ProductCardProps) {
     <div className="group flex flex-col h-full">
       <Link
         href={`/products/${product.slug}`}
-        className="flex-1 relative overflow-hidden rounded-xl bg-white border-2 border-emerald-100 hover:border-emerald-300 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105"
+        className="flex-1 relative overflow-hidden rounded-xl bg-white border border-gray-300 hover:border-emerald-300 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Gradient Ring Effect on Hover */}
         <div
-          className="absolute inset-0 rounded-xl bg-linear-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
+          className="absolute inset-0 rounded-xl bg-linear-to-br from-emerald-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
           style={{ padding: "2px" }}
         ></div>
 
         <div className="flex h-full flex-col p-3">
           {/* Image Container */}
-          <div className="relative aspect-square w-full overflow-hidden bg-linear-to-br from-emerald-50 to-teal-50 rounded-lg mb-3">
+          <div className="relative aspect-square w-full overflow-hidden rounded-lg mb-3">
             {/* Primary Image */}
             <Image
               src={primaryImage}
@@ -59,7 +59,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {/* Discount Badge */}
             {Number(product.discount) !== 0 && (
               <div className="absolute right-2 top-2 z-10">
-                <span className="bg-linear-to-r from-orange-500 to-red-500 px-3 py-1.5 rounded-full text-xs font-bold tracking-wide text-white shadow-lg">
+                <span className="bg-linear-to-r from-orange-600 to-red-600 px-3 py-1.5 rounded-full text-xs font-bold tracking-wide text-white shadow-lg">
                   -{product.discount}% OFF
                 </span>
               </div>
@@ -79,7 +79,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {/* Info Section */}
           <div className="flex flex-1 flex-col">
             {/* Title */}
-            <h3 className="mb-2 line-clamp-2 text-sm font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors">
+            <h3 className="mb-2 line-clamp-2 text-sm font-semibold text-gray-900 group-hover:text-white transition-colors">
               {product.name}
             </h3>
 
@@ -91,7 +91,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   ${product.basePrice.toFixed(2)}
                 </span>
                 {hasVariants && (
-                  <span className="text-xs font-medium text-emerald-600">
+                  <span className="text-xs font-medium text-emerald-600 group-hover:text-white">
                     +
                   </span>
                 )}
@@ -108,7 +108,7 @@ export function ProductCard({ product }: ProductCardProps) {
                       />
                     ))}
                   </div>
-                  <span className="text-xs font-medium text-gray-600">
+                  <span className="text-xs font-medium text-gray-600 group-hover:text-white/70">
                     {product.variants.length} options
                   </span>
                 </div>
@@ -116,7 +116,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
               {/* Quick View Indicator */}
               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                <span className="text-xs font-normal  group-hover:text-white flex items-center gap-1">
                   View Details →
                 </span>
               </div>

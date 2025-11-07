@@ -6,7 +6,7 @@ export async function CategoryGrid() {
   const categories = await getAllCategories();
 
   return (
-    <section className="relative bg-gradient-to-br from-emerald-50 via-white to-teal-50 py-16 md:py-20 lg:py-24 overflow-hidden">
+    <section className="relative bg-linear-to-br from-emerald-600 to-teal-600 py-16 md:py-20 lg:py-24 overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 right-10 w-72 h-72 bg-emerald-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
@@ -18,11 +18,9 @@ export async function CategoryGrid() {
         <div className="text-center mb-12 md:mb-16 lg:mb-20">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-4">
             Shop by
-            <span className="block bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent mt-2">
-              Category
-            </span>
+            <span className="block text-white mt-2">Category</span>
           </h2>
-          <p className="mt-4 text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="mt-4 text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto">
             Browse our complete range of eco-friendly packaging solutions
           </p>
         </div>
@@ -46,10 +44,7 @@ export async function CategoryGrid() {
                   >
                     {/* Circular Image Container */}
                     <div className="relative w-full aspect-square max-w-[180px]">
-                      {/* Gradient Ring */}
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 p-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="w-full h-full rounded-full bg-white"></div>
-                      </div>
+         
 
                       {/* Image Container */}
                       <div className="relative w-full h-full rounded-full overflow-hidden bg-white shadow-lg group-hover:shadow-2xl transition-all duration-300 border-2 border-emerald-100 group-hover:border-transparent group-hover:scale-105">
@@ -63,9 +58,9 @@ export async function CategoryGrid() {
                             placeholder="empty"
                           />
                         ) : (
-                          <div className="flex h-full items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50">
+                          <div className="flex h-full items-center justify-center bg-linear-to-br from-emerald-50 to-teal-50">
                             <div className="text-center p-4">
-                              <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-emerald-200 to-teal-200 flex items-center justify-center">
+                              <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-linear-to-br from-emerald-200 to-teal-200 flex items-center justify-center">
                                 <svg
                                   className="w-6 h-6 text-emerald-600"
                                   fill="none"
@@ -91,11 +86,11 @@ export async function CategoryGrid() {
 
                     {/* Category Name */}
                     <div className="mt-5 text-center w-full">
-                      <h3 className="text-sm sm:text-base font-semibold text-gray-900 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-emerald-600 group-hover:to-teal-600 group-hover:bg-clip-text transition-all duration-300 px-2">
+                      <h3 className="text-sm sm:text-base font-semibold text-gray-900  group-hover:bg-linear-to-r group-hover:text-white  transition-all duration-300 px-2">
                         {category.name}
                       </h3>
                       {category.description && (
-                        <p className="text-xs text-gray-500 mt-1 line-clamp-2 px-2">
+                        <p className="text-xs text-white/80 mt-1 line-clamp-2 px-2 group-hover:text-teal-200">
                           {category.description}
                         </p>
                       )}

@@ -2,21 +2,24 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
+  BicepsFlexed,
   ChevronLeft,
   ChevronRight,
   Search,
   Sparkles,
+  Sprout,
+  Truck,
   Zap,
-  ShieldCheck,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 // Sample banner data - replace with your actual banners
 const BANNERS = [
   {
     id: 1,
     image:
-      "https://images.unsplash.com/photo-1543463573-35e4afd0ab43?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740",
+      "https://images.unsplash.com/photo-1583496597549-0fd8b25e34e2?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1742",
     title: "Premium Packaging",
     subtitle: "Elevate your brand with luxury solutions",
     alt: "Premium packaging solutions",
@@ -25,7 +28,7 @@ const BANNERS = [
   {
     id: 2,
     image:
-      "https://images.unsplash.com/photo-1617909517054-64d4958be1c9?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740",
+      "https://images.unsplash.com/photo-1585432959381-cd73eeed6e3d?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1742",
     title: "50% OFF",
     subtitle: "Limited time offer on bulk orders",
     alt: "50% discount banner",
@@ -34,7 +37,7 @@ const BANNERS = [
   {
     id: 3,
     image:
-      "https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=1920&q=80",
+      "https://images.unsplash.com/photo-1586957960362-65815d739527?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1742",
     title: "New Arrivals",
     subtitle: "Discover our latest eco-friendly collection",
     alt: "New products banner",
@@ -80,21 +83,14 @@ export default function HeroSection() {
   );
 
   return (
-    <div className="relative w-full overflow-hidden bg-linear-to-br from-emerald-50 via-white to-teal-50">
-      {/* Decorative Background Elements - Eco-friendly colors */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-      </div>
-
+    <div className="relative w-full overflow-hidden ">
       {/* Main Carousel */}
       <div
-        className="relative z-10 mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 lg:pt-12"
+        className="relative z-10 mx-auto max-w-[1600px] px-3 sm:px-4 md:px-6 lg:px-8 pt-4 sm:pt-6 md:pt-8 lg:pt-12"
         onMouseEnter={() => setIsAutoPlaying(false)}
         onMouseLeave={() => setIsAutoPlaying(true)}
       >
-        <div className="relative h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden rounded-3xl shadow-2xl">
+        <div className="relative h-[280px] sm:h-[380px] md:h-[500px] lg:h-[600px] xl:h-[700px] overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl">
           {/* Slides */}
           {BANNERS.map((banner, index) => (
             <div
@@ -120,8 +116,8 @@ export default function HeroSection() {
               />
 
               {/* Content */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center px-4 sm:px-6 max-w-4xl">
+              <div className="absolute inset-0 flex items-center justify-center px-3 sm:px-4 md:px-6">
+                <div className="text-center w-full max-w-4xl">
                   <div
                     className={`transform transition-all duration-1000 delay-300 ${
                       index === currentSlide
@@ -129,49 +125,52 @@ export default function HeroSection() {
                         : "translate-y-10 opacity-0"
                     }`}
                   >
-                    <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white mb-4 sm:mb-6 drop-shadow-2xl tracking-tight">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2 sm:mb-3 md:mb-4 lg:mb-6 drop-shadow-2xl tracking-tight leading-tight sm:leading-none">
                       {banner.title}
                     </h2>
-                    <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/95 font-light drop-shadow-lg">
+                    <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-white font-light drop-shadow-lg px-2 sm:px-0 mb-4 sm:mb-5 md:mb-6 lg:mb-8">
                       {banner.subtitle}
                     </p>
 
-                    <button className="mt-8 sm:mt-10 px-8 sm:px-12 py-3 sm:py-4 bg-white text-emerald-800 rounded-full font-semibold text-base sm:text-lg hover:bg-emerald-50 transform hover:scale-105 transition-all shadow-2xl border-2 border-emerald-200">
+                    <Link
+                      href={"/products"}
+                      className="mt-4 sm:mt-5 md:mt-6 lg:mt-8 xl:mt-10 px-6 sm:px-7 md:px-8 lg:px-10 xl:px-12 py-2.5 sm:py-3 md:py-3.5 lg:py-4  cursor-pointer bg-white text-emerald-700 rounded-full font-semibold text-sm sm:text-base md:text-lg hover:bg-emerald-50 active:bg-emerald-100 transform hover:scale-105 active:scale-95 transition-all shadow-xl sm:shadow-2xl border-2 border-emerald-700/50 min-h-[44px] min-w-[120px] touch-manipulation"
+                    >
                       Shop Now
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
             </div>
           ))}
 
-          {/* Navigation Arrows */}
+          {/* Navigation Arrows - Touch-friendly on mobile (min 44x44px) */}
           <button
             onClick={prevSlide}
-            className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 shadow-xl flex items-center justify-center transition-all hover:scale-110 z-10 group"
+            className="absolute left-2 sm:left-3 md:left-4 lg:left-8 top-1/2 -translate-y-1/2 h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 active:bg-white/40 shadow-xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-10 group touch-manipulation min-h-[44px] min-w-[44px]"
             aria-label="Previous slide"
           >
-            <ChevronLeft className="h-6 w-6 sm:h-7 sm:w-7 text-white group-hover:scale-110 transition-transform" />
+            <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white group-active:scale-90 transition-transform" />
           </button>
 
           <button
             onClick={nextSlide}
-            className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 shadow-xl flex items-center justify-center transition-all hover:scale-110 z-10 group"
+            className="absolute right-2 sm:right-3 md:right-4 lg:right-8 top-1/2 -translate-y-1/2 h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 active:bg-white/40 shadow-xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-10 group touch-manipulation min-h-[44px] min-w-[44px]"
             aria-label="Next slide"
           >
-            <ChevronRight className="h-6 w-6 sm:h-7 sm:w-7 text-white group-hover:scale-110 transition-transform" />
+            <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white group-active:scale-90 transition-transform" />
           </button>
 
-          {/* Dots Indicator */}
-          <div className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-10">
+          {/* Dots Indicator - Touch-friendly */}
+          <div className="absolute bottom-4 sm:bottom-5 md:bottom-6 lg:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-2.5 md:gap-3 z-10">
             {BANNERS.map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`transition-all rounded-full ${
+                className={`transition-all rounded-full touch-manipulation ${
                   index === currentSlide
-                    ? "w-12 sm:w-16 h-2 sm:h-2.5 bg-white shadow-lg"
-                    : "w-2 sm:w-2.5 h-2 sm:h-2.5 bg-white/40 hover:bg-white/60"
+                    ? "w-10 sm:w-12 md:w-14 lg:w-16 h-2.5 sm:h-2.5 md:h-2.5 lg:h-2.5 bg-white shadow-lg"
+                    : "w-2.5 sm:w-2.5 md:w-2.5 lg:w-2.5 h-2.5 sm:h-2.5 md:h-2.5 lg:h-2.5 bg-white/40 hover:bg-white/60 active:bg-white/70 min-h-[10px] min-w-[10px]"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
@@ -181,92 +180,98 @@ export default function HeroSection() {
       </div>
 
       {/* Search & Info Section */}
-      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+      <div className="relative z-10 mx-auto max-w-6xl px-3 sm:px-4 md:px-6 lg:px-8 py-8 sm:py-10 md:py-12 lg:py-16 xl:py-20">
         {/* Heading */}
-        <div className="text-center mb-10 sm:mb-12">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4 sm:mb-6">
+        <div className="text-center mb-8 sm:mb-10 md:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-3 sm:mb-4 md:mb-5 lg:mb-6 leading-tight">
             Professional
-            <span className="block bg-linear-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent mt-2">
+            <span className="block bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mt-1 sm:mt-2">
               Packaging Solutions
             </span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto font-light">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto font-light px-2 sm:px-0">
             Premium eco-friendly quality for businesses that demand excellence
           </p>
         </div>
 
-        {/* Search Bar */}
-        <div className="max-w-3xl mx-auto mb-12 sm:mb-16">
+        {/* Search Bar - Responsive layout: stacks on mobile, horizontal on tablet+ */}
+        <div className="max-w-3xl mx-auto mb-10 sm:mb-12 md:mb-14 lg:mb-16">
           <div className="relative group">
-            <div className="absolute inset-0 bg-linear-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
-            <div className="relative flex items-center bg-white rounded-2xl shadow-xl border border-emerald-200 overflow-hidden">
-              <div className="pl-5 sm:pl-6">
-                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
-              </div>
-              <form
-                onSubmit={handleSearch}
-                className="flex-1 flex items-center"
-              >
-                <input
-                  type="search"
-                  placeholder="Search for products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 py-4 sm:py-5 px-4 sm:px-6 text-base sm:text-lg text-gray-900 placeholder:text-gray-400 focus:outline-none bg-transparent"
-                />
-                <button
-                  type="submit"
-                  className="m-2 px-6 sm:px-8 py-3 sm:py-3.5 bg-linear-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all"
+            <div className="absolute inset-0 bg-linear-to-r from-emerald-600 to-teal-600 rounded-xl sm:rounded-2xl blur-xl opacity-15 sm:opacity-20 group-hover:opacity-25 sm:group-hover:opacity-30 transition-opacity"></div>
+            <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center bg-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl border border-emerald-600 overflow-hidden">
+              <div className="relative flex items-center flex-1">
+                <div className="pl-4 sm:pl-5 md:pl-6 shrink-0">
+                  <Search className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-gray-400" />
+                </div>
+                <form
+                  onSubmit={handleSearch}
+                  className="flex-1 flex items-center min-w-0"
                 >
-                  Search
-                </button>
-              </form>
+                  <input
+                    type="search"
+                    placeholder="Search for products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 py-3.5 sm:py-4 md:py-5 px-3 sm:px-4 md:px-6 text-sm sm:text-base md:text-lg text-gray-900 placeholder:text-gray-400 focus:outline-none bg-transparent min-w-0"
+                  />
+                </form>
+              </div>
+
+              <button
+                type="submit"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const formEvent =
+                    e as unknown as React.FormEvent<HTMLFormElement>;
+                  handleSearch(formEvent);
+                }}
+                className="cursor-pointer m-2 px-6 sm:px-8 py-3 sm:py-3.5 bg-linear-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all"
+              >
+                Search
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
-          <div className="group relative bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-            <div className="absolute inset-0 bg-linear-to-br from-emerald-50 to-teal-50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        {/* Features Grid - Responsive stacking */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8">
+          <div className="group relative bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-7 lg:p-8 shadow-md sm:shadow-lg hover:shadow-xl md:hover:shadow-2xl transition-all duration-300 border border-gray-300">
             <div className="relative">
-              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-linear-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-4 sm:mb-5 group-hover:scale-110 transition-transform shadow-lg">
-                <Zap className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
+              <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-xl sm:rounded-2xl bg-linear-to-br from-emerald-600 to-teal-600 flex items-center justify-center mb-3 sm:mb-4 md:mb-5 group-hover:scale-110 group-active:scale-95 transition-transform shadow-lg">
+                <Truck className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-1.5 sm:mb-2">
                 Fast Delivery
               </h3>
-              <p className="text-gray-600 text-sm sm:text-base">
+              <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">
                 Express shipping in 2-3 business days
               </p>
             </div>
           </div>
 
-          <div className="group relative bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-            <div className="absolute inset-0 bg-linear-to-br from-teal-50 to-cyan-50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div className="group relative bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-7 lg:p-8  shadow-2xl  transition-all duration-300 border border-gray-300">
             <div className="relative">
-              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-linear-to-br from-teal-500 to-cyan-600 flex items-center justify-center mb-4 sm:mb-5 group-hover:scale-110 transition-transform shadow-lg">
-                <ShieldCheck className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
+              <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-xl sm:rounded-2xl bg-linear-to-br from-emerald-600 to-teal-600 flex items-center justify-center mb-3 sm:mb-4 md:mb-5 group-hover:scale-110 group-active:scale-95 transition-transform shadow-lg">
+                <BicepsFlexed className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-1.5 sm:mb-2">
                 Quality Assured
               </h3>
-              <p className="text-gray-600 text-sm sm:text-base">
+              <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">
                 100% satisfaction guarantee
               </p>
             </div>
           </div>
 
-          <div className="group relative bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-            <div className="absolute inset-0 bg-linear-to-br from-cyan-50 to-emerald-50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div className="group relative bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-7 lg:p-8 shadow-md sm:shadow-lg hover:shadow-xl md:hover:shadow-2xl transition-all duration-300 border border-gray-300">
             <div className="relative">
-              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-linear-to-br from-cyan-500 to-emerald-600 flex items-center justify-center mb-4 sm:mb-5 group-hover:scale-110 transition-transform shadow-lg">
-                <Sparkles className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
+              <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-xl sm:rounded-2xl bg-linear-to-br from-emerald-600 to-teal-600 flex items-center justify-center mb-3 sm:mb-4 md:mb-5 group-hover:scale-110 group-active:scale-95 transition-transform shadow-lg">
+                <Sprout className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-1.5 sm:mb-2">
                 Eco-Friendly
               </h3>
-              <p className="text-gray-600 text-sm sm:text-base">
+              <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">
                 Sustainable materials and practices
               </p>
             </div>

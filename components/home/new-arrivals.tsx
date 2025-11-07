@@ -8,20 +8,14 @@ export async function NewArrivals() {
   const newArrivals = await getNewArrivalsList();
 
   return (
-    <section className="relative border-t border-emerald-100 bg-linear-to-br from-emerald-50 via-white to-teal-50 py-16 md:py-20 lg:py-24 overflow-hidden">
-      {/* Decorative Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 -right-20 w-64 h-64 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-        <div className="absolute bottom-20 -left-20 w-64 h-64 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-      </div>
-
+    <section className="relativ py-16 md:py-20 lg:py-24 overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px]">
         {/* Section Header */}
         <div className="mb-12 flex flex-col justify-between gap-6 md:mb-16 md:flex-row md:items-end">
           <div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3">
               New
-              <span className="block bg-linear-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent mt-1">
+              <span className="block bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mt-1">
                 Arrivals
               </span>
             </h2>
