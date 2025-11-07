@@ -1,4 +1,4 @@
-export { HeroSection } from "./hero-section";
+export { default as HeroSection } from "./hero-section";
 export { TrustBar } from "./trust-bar";
 export { CategoryGrid } from "./category-grid";
 export { FeaturedProducts } from "./featured-products";

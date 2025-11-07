@@ -22,20 +22,22 @@ export function ProductHeader({
   ];
 
   return (
-    <div className="space-y-6 pb-8 border-b border-neutral-200">
+    <div className="space-y-6 pb-8 border-b-2 border-emerald-200">
       {/* Breadcrumbs */}
       <Breadcrumbs items={breadcrumbItems} />
 
       {/* Product Title */}
-      <div className="space-y-3">
-        <h1 className="text-3xl font-light text-neutral-900 md:text-4xl lg:text-5xl">
+      <div className="space-y-4">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">
           {productName}
         </h1>
 
         {/* Product Code / SKU */}
-        <div className="flex items-center gap-2 text-sm text-neutral-500">
-          <span>SKU:</span>
-          <span className="font-normal text-neutral-900">{productCode}</span>
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-gray-600">SKU:</span>
+          <span className="px-3 py-1.5 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-lg text-sm font-semibold text-emerald-800 border border-emerald-200">
+            {productCode}
+          </span>
         </div>
       </div>
     </div>

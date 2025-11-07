@@ -21,8 +21,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <div className="bg-white">
-      <div className="container mx-auto px-6 py-12 md:py-16 lg:py-20">
+    <div className="bg-gradient-to-br from-emerald-50 via-white to-teal-50 min-h-screen">
+      {/* Decorative Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-40 -right-20 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        <div className="absolute bottom-40 -left-20 w-96 h-96 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-8 md:py-12 lg:py-16">
         {/* Product Header */}
         <ProductHeader
           productName={product.name}
@@ -31,7 +37,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         />
 
         {/* Main Content: 2-Column Layout */}
-        <div className="mt-12 grid grid-cols-1 gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
+        <div className="mt-8 md:mt-12 grid grid-cols-1 gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Left Column: Product Gallery */}
           <div className="lg:sticky lg:top-24 lg:self-start">
             <ProductGallery
@@ -41,7 +47,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
 
           {/* Right Column: Product Info & Purchase */}
-          <div className="space-y-12">
+          <div className="space-y-8 md:space-y-12">
             {/* Purchase Section */}
             <ProductPurchaseSection product={product} />
 
