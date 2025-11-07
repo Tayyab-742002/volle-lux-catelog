@@ -9,27 +9,36 @@ export async function FeaturedProducts() {
   console.log("Featured Products", featuredProducts);
 
   return (
-    <section className="border-t border-neutral-300 bg-white py-16 md:py-20 lg:py-24">
-      <div className="container mx-auto px-6">
+    <section className="relative border-t border-emerald-100 bg-linear-to-br from-emerald-50 via-white to-teal-50 py-16 md:py-20 lg:py-24 overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 -right-20 w-64 h-64 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        <div className="absolute bottom-20 -left-20 w-64 h-64 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px]">
         {/* Section Header */}
         <div className="mb-12 flex flex-col justify-between gap-6 md:mb-16 md:flex-row md:items-end">
           <div>
-            <h2 className="text-3xl font-light text-neutral-900 md:text-4xl lg:text-5xl">
-              Featured Products
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+              Featured
+              <span className="block bg-linear-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent mt-1">
+                Products
+              </span>
             </h2>
-            <p className="mt-3 text-lg text-neutral-600">
-              Our best-selling packaging solutions
+            <p className="text-base sm:text-lg text-gray-600">
+              Our best-selling eco-friendly packaging solutions
             </p>
           </div>
-          <Button asChild variant="ghost" className="w-fit">
+          <Button asChild variant="ghost" className="w-fit group">
             <Link
               href="/products"
-              className="group flex items-center gap-2 text-sm font-normal text-neutral-900 hover:text-neutral-600"
+              className="flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-linear-to-r from-emerald-600 to-teal-600 rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
             >
-              View All
+              View All Products
               <ArrowRight
                 className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                strokeWidth={1.5}
+                strokeWidth={2}
               />
             </Link>
           </Button>
@@ -37,18 +46,33 @@ export async function FeaturedProducts() {
 
         {/* Grid Layout */}
         {featuredProducts.length > 0 ? (
-          <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 md:gap-8 lg:grid-cols-5 lg:gap-10 xl:grid-cols-6">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 md:gap-6 lg:grid-cols-5 lg:gap-8 xl:grid-cols-6">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <h3 className="text-lg font-normal text-neutral-900">
-              No featured products
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-20 h-20 rounded-full bg-linear-to-br from-emerald-100 to-teal-100 flex items-center justify-center mb-6">
+              <svg
+                className="w-10 h-10 text-emerald-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No featured products yet
             </h3>
-            <p className="mt-2 text-sm text-neutral-600">
-              Check back later for featured products.
+            <p className="text-base text-gray-600">
+              Check back soon for our curated selection.
             </p>
           </div>
         )}

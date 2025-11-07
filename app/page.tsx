@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <>
       <HeroSection />
-      <TrustBar />
+      {/* <TrustBar /> */}
       <CategoryGrid />
       <FeaturedProducts />
       <SustainabilityBlock />
