@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowRight, Leaf } from "lucide-react";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -52,26 +53,29 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto flex min-h-screen items-center justify-center px-6 py-16">
-        <div className="w-full max-w-md space-y-12">
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="relative z-10 container mx-auto flex min-h-screen items-center justify-center px-6 py-16">
+        <div className="w-full max-w-md">
           {/* Header */}
-          <div className="space-y-6 text-center">
-            <Link
-              href="/"
-              className="inline-block text-xl font-light tracking-wider text-neutral-900"
-            >
-              VOLLE
+          <div className="mb-10 space-y-6 text-center">
+            <Link href="/" className="inline-block group">
+              <Image
+                src="/bubble-wrap-shop.png"
+                alt="Logo"
+                width={120}
+                height={40}
+                className="h-10 w-auto transition-transform group-hover:scale-105 brightness-0 "
+              />
             </Link>
-            <div className="space-y-2">
-              <h1 className="text-3xl font-light text-neutral-900 md:text-4xl">
-                Sign in to your account
+            <div className="space-y-3">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                Welcome Back
               </h1>
-              <p className="text-sm text-neutral-600">
-                New to Volle?{" "}
+              <p className="text-sm text-gray-600">
+                New here?{" "}
                 <Link
                   href="/auth/signup"
-                  className="border-b border-neutral-900 font-normal text-neutral-900 transition-colors hover:border-neutral-600 hover:text-neutral-600"
+                  className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
                 >
                   Create an account
                 </Link>
@@ -80,22 +84,22 @@ export default function LoginPage() {
           </div>
 
           {/* Login Form */}
-          <div className="border-t border-neutral-300 pt-12">
-            <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-gray-300 hover:shadow-2xl transition-all duration-300">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Error Alert */}
               {error && (
-                <Alert className="border-neutral-300 bg-neutral-50">
-                  <AlertDescription className="text-sm text-neutral-900">
+                <Alert className="border-red-200 bg-red-50">
+                  <AlertDescription className="text-sm text-red-800">
                     {error}
                   </AlertDescription>
                 </Alert>
               )}
 
               {/* Email Field */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <Label
                   htmlFor="email"
-                  className="text-sm font-normal text-neutral-900"
+                  className="text-sm font-semibold text-gray-900"
                 >
                   Email address
                 </Label>
@@ -109,15 +113,15 @@ export default function LoginPage() {
                   onChange={handleInputChange}
                   placeholder="your.email@example.com"
                   disabled={isSubmitting || loading}
-                  className="border-neutral-300 bg-transparent focus:border-neutral-900"
+                  className="h-11 border border-gray-300 focus:border-border-300 bg-transparent focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
                 />
               </div>
 
               {/* Password Field */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <Label
                   htmlFor="password"
-                  className="text-sm font-normal text-neutral-900"
+                  className="text-sm font-semibold text-gray-900"
                 >
                   Password
                 </Label>
@@ -132,18 +136,18 @@ export default function LoginPage() {
                     onChange={handleInputChange}
                     placeholder="Enter your password"
                     disabled={isSubmitting || loading}
-                    className="border-neutral-300 bg-transparent pr-10 focus:border-neutral-900"
+                    className="h-11 border border-gray-300 focus:border-border-300 bg-transparent focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 transition-colors hover:text-neutral-900"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-600 transition-colors"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isSubmitting || loading}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4" strokeWidth={1.5} />
+                      <EyeOff className="h-5 w-5" strokeWidth={2} />
                     ) : (
-                      <Eye className="h-4 w-4" strokeWidth={1.5} />
+                      <Eye className="h-5 w-5" strokeWidth={2} />
                     )}
                   </button>
                 </div>
@@ -153,29 +157,29 @@ export default function LoginPage() {
               <div className="text-right">
                 <Link
                   href="/auth/forgot-password"
-                  className="text-sm text-neutral-600 transition-colors hover:text-neutral-900"
+                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
                 >
-                  Forgot your password?
+                  Forgot password?
                 </Link>
               </div>
 
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="group h-12 w-full bg-neutral-900 text-sm font-normal text-white hover:bg-neutral-800"
+                className="group h-12 w-full bg-linear-to-r from-emerald-600 to-teal-600 text-base cursor-pointer font-semibold text-white hover:shadow-lg transition-all duration-300 hover:scale-105"
                 disabled={isSubmitting || loading}
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     Signing in...
                   </>
                 ) : (
                   <>
                     Sign in
                     <ArrowRight
-                      className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1"
-                      strokeWidth={1.5}
+                      className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1"
+                      strokeWidth={2}
                     />
                   </>
                 )}
@@ -183,14 +187,14 @@ export default function LoginPage() {
             </form>
 
             {/* Additional Links */}
-            <div className="mt-12 border-t border-neutral-300 pt-8 text-center">
-              <p className="text-sm text-neutral-600">
-                Don&apos;t have an account?{" "}
+            <div className="mt-6 pt-6 border-t-2 border-emerald-100 text-center">
+              <p className="text-sm text-gray-600">
+                Don&apos;t have an account?
                 <Link
                   href="/auth/signup"
-                  className="border-b border-neutral-900 font-normal text-neutral-900 transition-colors hover:border-neutral-600 hover:text-neutral-600"
+                  className="font-semibold ml-1 text-emerald-600 hover:text-emerald-700 transition-colors"
                 >
-                  Sign up
+                  Sign up now
                 </Link>
               </p>
             </div>
