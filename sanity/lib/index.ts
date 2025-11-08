@@ -28,6 +28,7 @@ export {
   getCategoryBySlug,
   getProductCountByCategory,
   getAllBanners,
+  getActiveAnnouncement,
   getHomepageData,
   testConnection,
   getProductSlugs,
@@ -39,6 +40,7 @@ export {
   transformSanityProduct,
   transformSanityCategory,
   transformSanityBanner,
+  transformSanityAnnouncement,
   getImageUrl,
   buildFilterString,
   buildOrderString,
@@ -46,7 +48,12 @@ export {
 } from "./helpers";
 
 // Types
-export type { SanityProduct, SanityCategory, SanityBanner } from "./helpers";
+export type {
+  SanityProduct,
+  SanityCategory,
+  SanityBanner,
+  SanityAnnouncement,
+} from "./helpers";
 
 // Test function
 export { runTests } from "./test";

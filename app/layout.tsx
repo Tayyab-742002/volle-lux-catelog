@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import { Header, Footer } from "@/components/common";
+import { Header, Footer, AnnouncementBannerWrapper } from "@/components/common";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { SanityLive } from "@/sanity/lib";
@@ -10,7 +10,7 @@ import {
   getCategoriesWithFeaturedProducts,
   getAllProducts,
 } from "@/sanity/lib";
-
+import Chatbot from "@/components/common/Chatbot";
 const roboto = Roboto({
   subsets: ["latin"],
   variable: "--font-roboto", // 3. Set the CSS variable
@@ -79,11 +79,14 @@ export default async function RootLayout({
         </Script>
         <AuthProvider>
           <CartProvider>
+            {/* Announcement Banner - Above Header */}
+            <AnnouncementBannerWrapper />
             <Header categories={categories || []} products={products || null} />
             <main className="flex-1">{children}</main>
             <Footer />
 
             {/* Enable real-time Sanity content updates */}
+            <Chatbot />
             <SanityLive />
           </CartProvider>
         </AuthProvider>

@@ -130,6 +130,16 @@ export interface SanityBanner {
   };
 }
 
+export interface SanityAnnouncement {
+  _id: string;
+  _type: string;
+  message: string;
+  link?: string;
+  linkText?: string;
+  isActive: boolean;
+  dismissible: boolean;
+}
+
 // Transform Sanity product to our Product type
 export function transformSanityProduct(sanityProduct: SanityProduct) {
   return {
@@ -193,6 +203,19 @@ export function transformSanityBanner(sanityBanner: SanityBanner) {
     index: sanityBanner.index,
     image: sanityBanner.backgroundImage?.asset?.url || "",
     alt: sanityBanner.backgroundImage?.alt || sanityBanner.title,
+  };
+}
+
+// Transform Sanity announcement to our Announcement type
+export function transformSanityAnnouncement(
+  sanityAnnouncement: SanityAnnouncement
+) {
+  return {
+    id: sanityAnnouncement._id,
+    message: sanityAnnouncement.message,
+    link: sanityAnnouncement.link || null,
+    linkText: sanityAnnouncement.linkText || null,
+    dismissible: sanityAnnouncement.dismissible,
   };
 }
 

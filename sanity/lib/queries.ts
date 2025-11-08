@@ -244,6 +244,22 @@ export const ALL_BANNERS_QUERY = `*[_type == "banner" && isActive == true] | ord
   ${BANNER_QUERY}
 }`;
 
+// Announcement query
+export const ANNOUNCEMENT_QUERY = `
+  _id,
+  _type,
+  message,
+  link,
+  linkText,
+  isActive,
+  dismissible
+`;
+
+// Active announcement query (get the first active one)
+export const ACTIVE_ANNOUNCEMENT_QUERY = `*[_type == "announcement" && isActive == true] | order(_createdAt desc) [0] {
+  ${ANNOUNCEMENT_QUERY}
+}`;
+
 // Homepage data query (categories + featured products)
 export const HOMEPAGE_DATA_QUERY = `{
   "categories": *[_type == "category" && isActive == true] | order(sortOrder asc, name asc) [0...6] {
