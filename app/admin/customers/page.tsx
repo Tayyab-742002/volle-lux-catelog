@@ -27,14 +27,16 @@ export default function CustomersPage() {
 
       const data = await response.json();
       // Convert dates from strings to Date objects
-      const customersWithDates = data.customers.map((customer: any) => ({
-        ...customer,
-        createdAt: new Date(customer.createdAt),
-        updatedAt: new Date(customer.updatedAt),
-        lastOrderDate: customer.lastOrderDate
-          ? new Date(customer.lastOrderDate)
-          : null,
-      }));
+      const customersWithDates = data.customers.map(
+        (customer: AdminCustomer) => ({
+          ...customer,
+          createdAt: new Date(customer.createdAt),
+          updatedAt: new Date(customer.updatedAt),
+          lastOrderDate: customer.lastOrderDate
+            ? new Date(customer.lastOrderDate)
+            : null,
+        })
+      );
       setCustomers(customersWithDates);
       setError(null);
     } catch (err) {
@@ -62,10 +64,11 @@ export default function CustomersPage() {
         {/* Header Section - Fully Responsive */}
         <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1 min-w-0">
-            <h1 className="text-2xl font-bold tracking-tighter sm:text-3xl lg:text-4xl">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
               Customers
             </h1>
-            <p className="text-xs text-muted-foreground leading-relaxed sm:text-sm lg:text-base">
+            <p className="text-xs text-gray-600 leading-relaxed sm:text-sm lg:text-base">
               View and manage customer accounts
             </p>
           </div>
@@ -77,10 +80,11 @@ export default function CustomersPage() {
               size="sm"
               onClick={fetchCustomers}
               disabled={loading}
-              className="gap-2 self-start sm:self-auto shrink-0"
+              className="gap-2 self-start sm:self-auto shrink-0 border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
             >
               <RefreshCw
                 className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+                strokeWidth={2}
               />
               <span className="hidden sm:inline">Refresh</span>
             </Button>
@@ -90,36 +94,39 @@ export default function CustomersPage() {
         {/* Quick Stats Bar - Responsive Grid */}
         {!loading && !error && customers.length > 0 && (
           <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="flex items-center justify-between rounded-xl border border-neutral-400 bg-card px-4 py-3 sm:px-5 sm:py-4 shadow-sm min-w-0">
+            <div className="flex items-center justify-between rounded-2xl border border-gray-300 bg-white px-4 py-3 sm:px-5 sm:py-4 shadow-lg min-w-0">
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium text-muted-foreground sm:text-sm truncate">
+                <p className="text-xs font-medium text-gray-600 sm:text-sm truncate uppercase tracking-wide">
                   Total Customers
                 </p>
-                <p className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
+                <p className="mt-1 text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
                   {stats.total}
                 </p>
               </div>
-              <div className="rounded-lg bg-primary/10 p-2 sm:p-3 shrink-0 ml-3">
-                <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              <div className="rounded-lg bg-linear-to-br from-emerald-100 to-teal-100 p-2 sm:p-3 shrink-0 ml-3">
+                <Users
+                  className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600"
+                  strokeWidth={2}
+                />
               </div>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-neutral-400 bg-card px-4 py-3 sm:px-5 sm:py-4 shadow-sm min-w-0">
+            <div className="flex items-center justify-between rounded-2xl border border-gray-300 bg-white px-4 py-3 sm:px-5 sm:py-4 shadow-lg min-w-0">
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium text-muted-foreground sm:text-sm truncate">
+                <p className="text-xs font-medium text-gray-600 sm:text-sm truncate uppercase tracking-wide">
                   Active Customers
                 </p>
-                <p className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
+                <p className="mt-1 text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
                   {stats.active}
                 </p>
               </div>
-              <div className="rounded-lg bg-primary/10 p-2 sm:p-3 shrink-0 ml-3">
+              <div className="rounded-lg bg-linear-to-br from-emerald-100 to-teal-100 p-2 sm:p-3 shrink-0 ml-3">
                 <svg
-                  className="h-4 w-4 sm:h-5 sm:w-5 text-primary"
+                  className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                  strokeWidth={1.5}
+                  strokeWidth={2}
                 >
                   <path
                     strokeLinecap="round"
@@ -130,22 +137,22 @@ export default function CustomersPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-neutral-400 bg-card px-4 py-3 sm:px-5 sm:py-4 shadow-sm min-w-0 sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center justify-between rounded-2xl border border-gray-300 bg-white px-4 py-3 sm:px-5 sm:py-4 shadow-lg min-w-0 sm:col-span-2 lg:col-span-1">
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium text-muted-foreground sm:text-sm truncate">
+                <p className="text-xs font-medium text-gray-600 sm:text-sm truncate uppercase tracking-wide">
                   New (30 days)
                 </p>
-                <p className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
+                <p className="mt-1 text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
                   {stats.new}
                 </p>
               </div>
-              <div className="rounded-lg bg-primary/10 p-2 sm:p-3 shrink-0 ml-3">
+              <div className="rounded-lg bg-linear-to-br from-emerald-100 to-teal-100 p-2 sm:p-3 shrink-0 ml-3">
                 <svg
-                  className="h-4 w-4 sm:h-5 sm:w-5 text-primary"
+                  className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                  strokeWidth={1.5}
+                  strokeWidth={2}
                 >
                   <path
                     strokeLinecap="round"
@@ -163,18 +170,18 @@ export default function CustomersPage() {
           <div className="flex items-center justify-center py-12 sm:py-16 lg:py-20">
             <div className="text-center space-y-4 max-w-md px-4 w-full">
               <div className="flex justify-center">
-                <div className="rounded-full bg-neutral-100 p-3 sm:p-4">
+                <div className="rounded-full bg-linear-to-br from-red-100 to-orange-100 p-3 sm:p-4 border border-red-200">
                   <AlertTriangle
-                    className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground"
-                    strokeWidth={1.5}
+                    className="h-6 w-6 sm:h-8 sm:w-8 text-red-600"
+                    strokeWidth={2}
                   />
                 </div>
               </div>
-              <div>
-                <p className="text-base font-semibold text-foreground sm:text-lg">
+              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-300">
+                <p className="text-base font-semibold text-gray-900 sm:text-lg">
                   {error}
                 </p>
-                <p className="mt-2 text-xs text-muted-foreground sm:text-sm">
+                <p className="mt-2 text-xs text-gray-600 sm:text-sm">
                   Unable to load customers. Please check your connection and try
                   again.
                 </p>
@@ -182,16 +189,16 @@ export default function CustomersPage() {
               <Button
                 onClick={fetchCustomers}
                 variant="outline"
-                className="mt-4"
+                className="mt-4 border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
               >
-                <RefreshCw className="h-4 w-4 mr-2" />
+                <RefreshCw className="h-4 w-4 mr-2" strokeWidth={2} />
                 Try Again
               </Button>
             </div>
           </div>
         ) : (
           /* Customer Table - No Extra Wrapper Needed */
-          <div className="rounded-xl  bg-card shadow-sm overflow-hidden">
+          <div className="rounded-2xl border border-gray-300 bg-white shadow-lg overflow-hidden">
             <CustomerTable
               customers={customers}
               loading={loading}
@@ -205,18 +212,18 @@ export default function CustomersPage() {
           <div className="flex items-center justify-center py-12 sm:py-16 lg:py-20">
             <div className="text-center space-y-4 max-w-md px-4 w-full">
               <div className="flex justify-center">
-                <div className="rounded-full bg-neutral-100  p-3 sm:p-4">
+                <div className="rounded-full bg-linear-to-br from-emerald-100 to-teal-100 p-3 sm:p-4 border border-emerald-200">
                   <Users
-                    className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground"
-                    strokeWidth={1.5}
+                    className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-600"
+                    strokeWidth={2}
                   />
                 </div>
               </div>
-              <div>
-                <p className="text-base font-semibold text-foreground sm:text-lg">
+              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-300">
+                <p className="text-base font-semibold text-gray-900 sm:text-lg">
                   No customers yet
                 </p>
-                <p className="mt-2 text-xs text-muted-foreground sm:text-sm">
+                <p className="mt-2 text-xs text-gray-600 sm:text-sm">
                   Customer accounts will appear here once they register or place
                   orders.
                 </p>

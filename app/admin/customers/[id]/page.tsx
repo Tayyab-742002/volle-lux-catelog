@@ -82,9 +82,9 @@ export default function CustomerDetailPage() {
 
   if (loading) {
     return (
-      <div className="rounded-lg border bg-card p-12 text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent" />
-        <p className="mt-4 text-sm text-muted-foreground">
+      <div className="rounded-2xl border border-gray-300 bg-white p-12 text-center shadow-lg">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-emerald-600 border-r-transparent" />
+        <p className="mt-4 text-sm text-gray-600">
           Loading customer details...
         </p>
       </div>
@@ -93,14 +93,19 @@ export default function CustomerDetailPage() {
 
   if (error || !customer) {
     return (
-      <div className="rounded-lg border border-destructive bg-destructive/10 p-12 text-center">
-        <p className="text-lg font-medium text-destructive">
+      <div className="rounded-2xl border border-red-300 bg-linear-to-br from-red-50 to-orange-50 p-12 text-center shadow-lg">
+        <div className="flex justify-center mb-4">
+          <div className="rounded-full bg-linear-to-br from-red-100 to-orange-100 p-4 border border-red-200">
+            <Users className="h-8 w-8 text-red-600" strokeWidth={2} />
+          </div>
+        </div>
+        <p className="text-lg font-medium text-red-700">
           {error || "Customer not found"}
         </p>
         <div className="mt-4 flex justify-center gap-3">
           <Link href="/admin/customers">
-            <Button variant="outline">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+            <Button variant="outline" className="border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700">
+              <ArrowLeft className="mr-2 h-4 w-4" strokeWidth={2} />
               Back to Customers
             </Button>
           </Link>
@@ -115,14 +120,17 @@ export default function CustomerDetailPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link href="/admin/customers">
-            <Button variant="ghost" size="sm" className="mb-2">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+            <Button variant="ghost" size="sm" className="mb-2 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700">
+              <ArrowLeft className="mr-2 h-4 w-4" strokeWidth={2} />
               Back to Customers
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold">Customer Details</h1>
-            <p className="mt-2 text-muted-foreground">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+              Customer Details
+            </h1>
+            <p className="mt-2 text-gray-600">
               {customer.email}
             </p>
           </div>
@@ -134,12 +142,15 @@ export default function CustomerDetailPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
           {/* Customer Info */}
-          <div className="rounded-lg border bg-card p-6">
-            <h3 className="mb-6 text-xl font-semibold">Customer Information</h3>
+          <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-lg">
+            <h3 className="mb-6 text-xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+              Customer Information
+            </h3>
             <div className="space-y-6">
               <div className="flex items-center gap-4">
                 {customer.avatarUrl ? (
-                  <div className="relative h-16 w-16 overflow-hidden rounded-full">
+                  <div className="relative h-16 w-16 overflow-hidden rounded-full border border-gray-300">
                     <Image
                       src={customer.avatarUrl}
                       alt={customer.fullName || customer.email}
@@ -148,52 +159,52 @@ export default function CustomerDetailPage() {
                     />
                   </div>
                 ) : (
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-                    <Mail className="h-8 w-8 text-muted-foreground" />
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-emerald-100 to-teal-100 border border-emerald-200">
+                    <Mail className="h-8 w-8 text-emerald-600" strokeWidth={2} />
                   </div>
                 )}
                 <div>
-                  <h4 className="text-2xl font-bold">
+                  <h4 className="text-2xl font-bold text-gray-900">
                     {customer.fullName || "No name provided"}
                   </h4>
-                  <p className="text-muted-foreground">{customer.email}</p>
+                  <p className="text-gray-600">{customer.email}</p>
                 </div>
               </div>
 
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-muted-foreground" />
+                  <Mail className="h-5 w-5 text-emerald-600" strokeWidth={2} />
                   <div>
-                    <div className="text-sm text-muted-foreground">Email</div>
-                    <div className="font-medium">{customer.email}</div>
+                    <div className="text-sm text-gray-600">Email</div>
+                    <div className="font-medium text-gray-900">{customer.email}</div>
                   </div>
                 </div>
 
                 {customer.phone && (
                   <div className="flex items-center gap-3">
-                    <Phone className="h-5 w-5 text-muted-foreground" />
+                    <Phone className="h-5 w-5 text-emerald-600" strokeWidth={2} />
                     <div>
-                      <div className="text-sm text-muted-foreground">Phone</div>
-                      <div className="font-medium">{customer.phone}</div>
+                      <div className="text-sm text-gray-600">Phone</div>
+                      <div className="font-medium text-gray-900">{customer.phone}</div>
                     </div>
                   </div>
                 )}
 
                 {customer.company && (
                   <div className="flex items-center gap-3">
-                    <Building className="h-5 w-5 text-muted-foreground" />
+                    <Building className="h-5 w-5 text-emerald-600" strokeWidth={2} />
                     <div>
-                      <div className="text-sm text-muted-foreground">Company</div>
-                      <div className="font-medium">{customer.company}</div>
+                      <div className="text-sm text-gray-600">Company</div>
+                      <div className="font-medium text-gray-900">{customer.company}</div>
                     </div>
                   </div>
                 )}
 
                 <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
+                  <Calendar className="h-5 w-5 text-emerald-600" strokeWidth={2} />
                   <div>
-                    <div className="text-sm text-muted-foreground">Joined</div>
-                    <div className="font-medium">{formatDate(customer.createdAt)}</div>
+                    <div className="text-sm text-gray-600">Joined</div>
+                    <div className="font-medium text-gray-900">{formatDate(customer.createdAt)}</div>
                   </div>
                 </div>
               </div>
@@ -204,34 +215,37 @@ export default function CustomerDetailPage() {
         {/* Sidebar */}
         <div className="space-y-8">
           {/* Stats Summary */}
-          <div className="rounded-lg border bg-card p-6">
-            <h3 className="mb-6 text-xl font-semibold">Summary</h3>
+          <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-lg">
+            <h3 className="mb-6 text-xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+              Summary
+            </h3>
             <div className="space-y-6">
               <div>
-                <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-                  <ShoppingBag className="h-4 w-4" />
+                <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
+                  <ShoppingBag className="h-4 w-4" strokeWidth={2} />
                   Total Orders
                 </div>
-                <div className="text-3xl font-bold">{customer.totalOrders}</div>
+                <div className="text-3xl font-bold text-gray-900">{customer.totalOrders}</div>
               </div>
 
               <div>
-                <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-                  <DollarSign className="h-4 w-4" />
+                <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
+                  <DollarSign className="h-4 w-4" strokeWidth={2} />
                   Total Spent
                 </div>
-                <div className="text-3xl font-bold">
+                <div className="text-3xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                   {formatCurrency(customer.totalSpent)}
                 </div>
               </div>
 
               {customer.lastOrderDate && (
                 <div>
-                  <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-                    <Package className="h-4 w-4" />
+                  <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
+                    <Package className="h-4 w-4" strokeWidth={2} />
                     Last Order
                   </div>
-                  <div className="font-semibold">
+                  <div className="font-semibold text-gray-900">
                     {formatDate(customer.lastOrderDate)}
                   </div>
                 </div>
@@ -240,17 +254,20 @@ export default function CustomerDetailPage() {
           </div>
 
           {/* Quick Actions */}
-          <div className="rounded-lg border bg-card p-6">
-            <h3 className="mb-4 text-xl font-semibold">Quick Actions</h3>
+          <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-lg">
+            <h3 className="mb-4 text-xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+              Quick Actions
+            </h3>
             <div className="space-y-3">
               <Link href={`/admin/orders?search=${customer.email}`}>
-                <Button variant="outline" className="w-full" size="lg">
-                  <ShoppingBag className="mr-2 h-5 w-5" />
+                <Button variant="outline" className="w-full border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700" size="lg">
+                  <ShoppingBag className="mr-2 h-5 w-5" strokeWidth={2} />
                   View Orders
                 </Button>
               </Link>
-              <Button variant="outline" className="w-full" size="lg">
-                <Mail className="mr-2 h-5 w-5" />
+              <Button variant="outline" className="w-full border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700" size="lg">
+                <Mail className="mr-2 h-5 w-5" strokeWidth={2} />
                 Send Email
               </Button>
             </div>

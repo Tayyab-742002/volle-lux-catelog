@@ -29,12 +29,14 @@ export default async function OrderDetailsPage({
 
   if (!authResult.success || !authResult.user) {
     return (
-      <div className="rounded-lg border border-neutral-400 bg-card p-12 text-center">
-        <p className="text-muted-foreground">
+      <div className="rounded-2xl border border-gray-300 bg-white shadow-lg p-12 text-center">
+        <p className="text-gray-600">
           Please sign in to view order details
         </p>
         <Link href="/auth/login">
-          <Button className="mt-4">Sign In</Button>
+          <Button className="mt-4 bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700">
+            Sign In
+          </Button>
         </Link>
       </div>
     );
@@ -57,7 +59,6 @@ async function OrderDetailContent({
 }) {
   // Fetch order from Supabase
   const order = await getOrderById(orderId);
-  console.log("ORDER : ", order);
   if (!order) {
     notFound();
   }
@@ -65,12 +66,14 @@ async function OrderDetailContent({
   // Verify user owns this order
   if (order.userId !== userId) {
     return (
-      <div className="rounded-lg border border-neutral-500 bg-card p-12 text-center">
-        <p className="text-muted-foreground">
+      <div className="rounded-2xl border border-red-300 bg-white shadow-lg p-12 text-center">
+        <p className="text-gray-600">
           You don&apos;t have access to this order
         </p>
         <Link href="/account/orders">
-          <Button className="mt-4">Back to Orders</Button>
+          <Button className="mt-4 border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700">
+            Back to Orders
+          </Button>
         </Link>
       </div>
     );
@@ -113,34 +116,44 @@ async function OrderDetailContent({
       {/* Header */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Order Details</h2>
-          <p className="mt-2 text-muted-foreground">Order #{displayOrder.id}</p>
+          <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+            Order Details
+          </h2>
+          <p className="mt-2 text-gray-600">Order #{displayOrder.id}</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" size="lg">
-            <Download className="mr-2 h-5 w-5" />
+          <Button 
+            variant="outline" 
+            size="lg"
+            className="border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
+          >
+            <Download className="mr-2 h-5 w-5" strokeWidth={2} />
             Download Invoice
           </Button>
-          <Button size="lg">
-            <ShoppingCart className="mr-2 h-5 w-5" />
+          <Button 
+            size="lg"
+            className="bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+          >
+            <ShoppingCart className="mr-2 h-5 w-5" strokeWidth={2} />
             Reorder
           </Button>
         </div>
       </div>
 
       {/* Order Info Card */}
-      <div className="mb-8 rounded-lg  border border-neutral-400 bg-card p-6">
+      <div className="mb-8 rounded-2xl border border-gray-300 bg-white shadow-lg p-6">
         <div className="grid gap-6 md:grid-cols-3">
           <div>
-            <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-              <Package className="h-4 w-4" />
+            <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
+              <Package className="h-4 w-4" strokeWidth={2} />
               Order Date
             </div>
-            <div className="font-semibold">{displayOrder.date}</div>
+            <div className="font-semibold text-gray-900">{displayOrder.date}</div>
           </div>
           <div>
-            <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-              <Truck className="h-4 w-4" />
+            <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
+              <Truck className="h-4 w-4" strokeWidth={2} />
               Status
             </div>
             <span
@@ -158,11 +171,11 @@ async function OrderDetailContent({
             </span>
           </div>
           <div>
-            <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4" />
+            <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
+              <MapPin className="h-4 w-4" strokeWidth={2} />
               Total
             </div>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               ${displayOrder.total.toFixed(2)}
             </div>
           </div>
@@ -170,10 +183,13 @@ async function OrderDetailContent({
       </div>
 
       {/* Shipping Address */}
-      <div className="mb-8 rounded-lg border border-neutral-400 bg-card p-6">
-        <h3 className="mb-4 text-xl font-semibold">Shipping Address</h3>
-        <div className="text-muted-foreground">
-          <p className="font-medium text-foreground">
+      <div className="mb-8 rounded-2xl border border-gray-300 bg-white shadow-lg p-6">
+        <h3 className="mb-4 text-xl font-bold text-gray-900 flex items-center gap-3">
+          <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+          Shipping Address
+        </h3>
+        <div className="text-gray-600">
+          <p className="font-medium text-gray-900">
             {displayOrder.shippingAddress.name}
           </p>
           <p>{displayOrder.shippingAddress.street}</p>
@@ -187,17 +203,20 @@ async function OrderDetailContent({
       </div>
 
       {/* Order Items */}
-      <div className="mb-8 rounded-lg border border-neutral-400 bg-card">
-        <div className="border-b p-6">
-          <h3 className="text-xl font-semibold">Order Items</h3>
+      <div className="mb-8 rounded-2xl border border-gray-300 bg-white shadow-lg">
+        <div className="border-b border-gray-200 p-6">
+          <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
+            <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+            Order Items
+          </h3>
         </div>
-        <div className="divide-y">
+        <div className="divide-y divide-gray-200">
           {displayOrder.items.map((item) => (
             <div
               key={item.id}
-              className="flex gap-6 p-6 transition-colors hover:bg-muted/30"
+              className="flex gap-6 p-6 transition-colors hover:bg-emerald-50/50"
             >
-              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border bg-muted">
+              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-gray-300 bg-white">
                 {item.image && item.image !== PLACEHOLDER_IMAGE ? (
                   <Image
                     src={item.image}
@@ -207,21 +226,21 @@ async function OrderDetailContent({
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">
-                    <Package className="h-8 w-8 text-muted-foreground" />
+                    <Package className="h-8 w-8 text-gray-400" strokeWidth={2} />
                   </div>
                 )}
               </div>
               <div className="flex-1">
-                <h4 className="mb-1 font-semibold">{item.name}</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="mb-1 font-semibold text-gray-900">{item.name}</h4>
+                <p className="text-sm text-gray-600">
                   Variant: {item.variant} • Quantity: {item.quantity}
                 </p>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 text-sm text-gray-600">
                   ${item.pricePerUnit.toFixed(2)} / unit
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-lg font-semibold">
+                <div className="text-lg font-semibold text-gray-900">
                   ${item.total.toFixed(2)}
                 </div>
               </div>
@@ -231,27 +250,30 @@ async function OrderDetailContent({
       </div>
 
       {/* Order Summary */}
-      <div className="rounded-lg border border-neutral-400 bg-card p-6">
-        <h3 className="mb-4 text-xl font-semibold">Order Summary</h3>
+      <div className="rounded-2xl border border-gray-300 bg-white shadow-lg p-6">
+        <h3 className="mb-4 text-xl font-bold text-gray-900 flex items-center gap-3">
+          <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+          Order Summary
+        </h3>
         <div className="space-y-3">
-          <div className="flex justify-between text-muted-foreground">
+          <div className="flex justify-between text-gray-600">
             <span>Subtotal</span>
-            <span>${displayOrder.subtotal.toFixed(2)}</span>
+            <span className="text-gray-900">${displayOrder.subtotal.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-muted-foreground">
+          <div className="flex justify-between text-gray-600">
             <span>Discount</span>
-            <span className="text-green-600">
+            <span className="text-emerald-600">
               -${displayOrder.discount.toFixed(2)}
             </span>
           </div>
-          <div className="flex justify-between text-muted-foreground">
+          <div className="flex justify-between text-gray-600">
             <span>Shipping</span>
-            <span>${displayOrder.shipping.toFixed(2)}</span>
+            <span className="text-gray-900">${displayOrder.shipping.toFixed(2)}</span>
           </div>
-          <div className="border-t border-primary pt-3">
+          <div className="border-t border-gray-300 pt-3">
             <div className="flex justify-between text-lg font-bold">
-              <span className="text-primary">Total</span>
-              <span className="text-primary">
+              <span className="bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Total</span>
+              <span className="bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 ${displayOrder.total.toFixed(2)}
               </span>
             </div>
@@ -269,66 +291,66 @@ function OrderDetailSkeleton() {
       {/* Header Skeleton */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-2">
-          <div className="h-9 w-48 bg-neutral-400 rounded animate-pulse" />
-          <div className="h-5 w-32 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-9 w-48 bg-emerald-100 rounded animate-pulse" />
+          <div className="h-5 w-32 bg-emerald-100 rounded animate-pulse" />
         </div>
         <div className="flex gap-3">
-          <div className="h-11 w-40 bg-neutral-400 rounded animate-pulse" />
-          <div className="h-11 w-32 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-11 w-40 bg-emerald-100 rounded animate-pulse" />
+          <div className="h-11 w-32 bg-emerald-100 rounded animate-pulse" />
         </div>
       </div>
 
       {/* Order Info Card Skeleton */}
-      <div className="mb-8 rounded-lg border border-neutral-400 bg-card p-6">
+      <div className="mb-8 rounded-2xl border border-gray-300 bg-white shadow-lg p-6">
         <div className="grid gap-6 md:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <div key={i} className="space-y-2">
-              <div className="h-4 w-20 bg-neutral-400 rounded animate-pulse" />
-              <div className="h-6 w-32 bg-neutral-400 rounded animate-pulse" />
+              <div className="h-4 w-20 bg-emerald-100 rounded animate-pulse" />
+              <div className="h-6 w-32 bg-emerald-100 rounded animate-pulse" />
             </div>
           ))}
         </div>
       </div>
 
       {/* Shipping Address Skeleton */}
-      <div className="mb-8 rounded-lg border border-neutral-400 bg-card p-6">
-        <div className="h-7 w-40 mb-4 bg-neutral-400 rounded animate-pulse" />
+      <div className="mb-8 rounded-2xl border border-gray-300 bg-white shadow-lg p-6">
+        <div className="h-7 w-40 mb-4 bg-emerald-100 rounded animate-pulse" />
         <div className="space-y-2">
-          <div className="h-5 w-48 bg-neutral-400 rounded animate-pulse" />
-          <div className="h-4 w-64 bg-neutral-400 rounded animate-pulse" />
-          <div className="h-4 w-40 bg-neutral-400 rounded animate-pulse" />
-          <div className="h-4 w-32 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-5 w-48 bg-emerald-100 rounded animate-pulse" />
+          <div className="h-4 w-64 bg-emerald-100 rounded animate-pulse" />
+          <div className="h-4 w-40 bg-emerald-100 rounded animate-pulse" />
+          <div className="h-4 w-32 bg-emerald-100 rounded animate-pulse" />
         </div>
       </div>
 
       {/* Order Items Skeleton */}
-      <div className="mb-8 rounded-lg border border-neutral-400 bg-card">
-        <div className="border-b p-6">
-          <div className="h-7 w-32 bg-neutral-400 rounded animate-pulse" />
+      <div className="mb-8 rounded-2xl border border-gray-300 bg-white shadow-lg">
+        <div className="border-b border-gray-200 p-6">
+          <div className="h-7 w-32 bg-emerald-100 rounded animate-pulse" />
         </div>
-        <div className="divide-y">
+        <div className="divide-y divide-gray-200">
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex gap-6 p-6">
-              <div className="h-24 w-24 bg-neutral-400 rounded-lg animate-pulse" />
+              <div className="h-24 w-24 bg-emerald-100 rounded-lg animate-pulse" />
               <div className="flex-1 space-y-2">
-                <div className="h-5 w-48 bg-neutral-400 rounded animate-pulse" />
-                <div className="h-4 w-64 bg-neutral-400 rounded animate-pulse" />
-                <div className="h-4 w-32 bg-neutral-400 rounded animate-pulse" />
+                <div className="h-5 w-48 bg-emerald-100 rounded animate-pulse" />
+                <div className="h-4 w-64 bg-emerald-100 rounded animate-pulse" />
+                <div className="h-4 w-32 bg-emerald-100 rounded animate-pulse" />
               </div>
-              <div className="h-6 w-20 bg-neutral-400 rounded animate-pulse" />
+              <div className="h-6 w-20 bg-emerald-100 rounded animate-pulse" />
             </div>
           ))}
         </div>
       </div>
 
       {/* Order Summary Skeleton */}
-      <div className="rounded-lg border border-neutral-400 bg-card p-6">
-        <div className="h-7 w-40 mb-4 bg-neutral-400 rounded animate-pulse" />
+      <div className="rounded-2xl border border-gray-300 bg-white shadow-lg p-6">
+        <div className="h-7 w-40 mb-4 bg-emerald-100 rounded animate-pulse" />
         <div className="space-y-3">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="flex justify-between">
-              <div className="h-4 w-24 bg-neutral-400 rounded animate-pulse" />
-              <div className="h-4 w-20 bg-neutral-400 rounded animate-pulse" />
+              <div className="h-4 w-24 bg-emerald-100 rounded animate-pulse" />
+              <div className="h-4 w-20 bg-emerald-100 rounded animate-pulse" />
             </div>
           ))}
         </div>

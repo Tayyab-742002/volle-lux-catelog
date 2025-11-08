@@ -10,7 +10,6 @@ import {
   getCategoriesWithFeaturedProducts,
   getAllProducts,
 } from "@/sanity/lib";
-import { Product } from "@/types/product";
 
 const roboto = Roboto({
   subsets: ["latin"],

@@ -26,7 +26,10 @@ export default function NotFound() {
             <div className="relative">
               <div className="absolute inset-0 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full blur-2xl opacity-30 animate-pulse"></div>
               <div className="relative w-24 h-24 bg-linear-to-br from-emerald-100 to-teal-100 rounded-full flex items-center justify-center border-4 border-emerald-200">
-                <FileQuestion className="w-12 h-12 text-emerald-600" strokeWidth={2} />
+                <FileQuestion
+                  className="w-12 h-12 text-emerald-600"
+                  strokeWidth={2}
+                />
               </div>
             </div>
           </div>
@@ -42,8 +45,8 @@ export default function NotFound() {
           {/* Description */}
           <div className="mb-8 bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
             <p className="text-lg text-gray-600 md:text-xl mb-4">
-              Sorry, we couldn't find the page you're looking for. The page may
-              have been moved, deleted, or the URL might be incorrect.
+              Sorry, we couldn&apos;t find the page you&apos;re looking for. The
+              page may have been moved, deleted, or the URL might be incorrect.
             </p>
             <p className="text-base text-gray-500">
               Please check the URL or try one of the options below.
@@ -111,4 +114,3 @@ export default function NotFound() {
     </div>
   );
 }
-

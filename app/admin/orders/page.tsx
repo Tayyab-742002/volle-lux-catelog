@@ -47,10 +47,11 @@ export default function OrdersPage() {
       {/* Header Section - Fully Responsive */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 flex items-center gap-3">
+            <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
             Orders
           </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed sm:text-base">
+          <p className="text-sm text-gray-600 leading-relaxed sm:text-base">
             Manage and track customer orders
           </p>
         </div>
@@ -58,9 +59,11 @@ export default function OrdersPage() {
         {/* Quick Stats - Mobile: Stack, Tablet+: Row */}
         {!loading && !error && orders.length > 0 && (
           <div className="flex flex-wrap gap-3 sm:gap-4">
-            <div className="flex items-center gap-2 rounded-lg bg-primary/30 px-4 py-2 shadow-sm">
-              <span className="text-sm font-medium ">Total</span>
-              <span className="text-lg font-bold tracking-tight text-primary">
+            <div className="flex items-center gap-2 rounded-lg bg-linear-to-r from-emerald-100 to-teal-100 border border-emerald-200 px-4 py-2 shadow-sm">
+              <span className="text-sm font-medium text-emerald-700">
+                Total
+              </span>
+              <span className="text-lg font-bold tracking-tight text-emerald-700">
                 {orders.length}
               </span>
             </div>
@@ -69,10 +72,11 @@ export default function OrdersPage() {
               size="sm"
               onClick={fetchOrders}
               disabled={loading}
-              className="gap-2 border "
+              className="gap-2 border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
             >
               <RefreshCw
                 className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+                strokeWidth={2}
               />
               <span className="hidden sm:inline">Refresh</span>
             </Button>
@@ -85,29 +89,33 @@ export default function OrdersPage() {
         <div className="flex items-center justify-center py-16 sm:py-20">
           <div className="text-center space-y-4 max-w-md px-4">
             <div className="flex justify-center">
-              <div className="rounded-full bg-neutral-100  p-4">
+              <div className="rounded-full bg-linear-to-br from-red-100 to-orange-100 p-4 border border-red-200">
                 <AlertTriangle
-                  className="h-8 w-8 text-muted-foreground"
-                  strokeWidth={1.5}
+                  className="h-8 w-8 text-red-600"
+                  strokeWidth={2}
                 />
               </div>
             </div>
-            <div>
-              <p className="text-lg font-semibold text-foreground">{error}</p>
-              <p className="mt-2 text-sm text-muted-foreground">
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-300">
+              <p className="text-lg font-semibold text-gray-900">{error}</p>
+              <p className="mt-2 text-sm text-gray-600">
                 Unable to load orders. Please check your connection and try
                 again.
               </p>
             </div>
-            <Button onClick={fetchOrders} variant="outline" className="mt-4">
-              <RefreshCw className="h-4 w-4 mr-2" />
+            <Button
+              onClick={fetchOrders}
+              variant="outline"
+              className="mt-4 border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" strokeWidth={2} />
               Try Again
             </Button>
           </div>
         </div>
       ) : (
         /* Orders Table */
-        <div className="rounded-xl border  p-4  bg-card shadow-sm overflow-hidden">
+        <div className="rounded-2xl border border-gray-300 p-4 bg-white shadow-lg overflow-hidden">
           <OrdersTable
             orders={orders}
             loading={loading}
