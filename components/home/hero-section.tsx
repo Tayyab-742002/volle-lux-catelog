@@ -6,10 +6,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
-  Sparkles,
   Sprout,
   Truck,
-  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -116,7 +114,7 @@ export default function HeroSection() {
               />
 
               {/* Content */}
-              <div className="absolute inset-0 flex items-center justify-center px-3 sm:px-4 md:px-6">
+              <div className="absolute inset-0 flex flex-col items-center justify-center px-3 sm:px-4 md:px-6">
                 <div className="text-center w-full max-w-4xl">
                   <div
                     className={`transform transition-all duration-1000 delay-300 ${
@@ -131,15 +129,14 @@ export default function HeroSection() {
                     <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-white font-light drop-shadow-lg px-2 sm:px-0 mb-4 sm:mb-5 md:mb-6 lg:mb-8">
                       {banner.subtitle}
                     </p>
-
-                    <Link
-                      href={"/products"}
-                      className="mt-4 sm:mt-5 md:mt-6 lg:mt-8 xl:mt-10 px-6 sm:px-7 md:px-8 lg:px-10 xl:px-12 py-2.5 sm:py-3 md:py-3.5 lg:py-4  cursor-pointer bg-white text-emerald-700 rounded-full font-semibold text-sm sm:text-base md:text-lg hover:bg-emerald-50 active:bg-emerald-100 transform hover:scale-105 active:scale-95 transition-all shadow-xl sm:shadow-2xl border-2 border-emerald-700/50 min-h-[44px] min-w-[120px] touch-manipulation"
-                    >
-                      Shop Now
-                    </Link>
                   </div>
                 </div>
+                <Link
+                  href={"/products"}
+                  className="mt-4 sm:mt-5 md:mt-6 lg:mt-8 px-6 sm:px-7 md:px-8 lg:px-10 xl:px-12 py-2 sm:py-2 md:py-3  cursor-pointer bg-white text-emerald-600 rounded-full font-semibold text-sm sm:text-base md:text-lg hover:bg-emerald-50 active:bg-emerald-100 transform hover:scale-105 active:scale-95 transition-all shadow-xl sm:shadow-2xl border-2 border-emerald-700/50 min-h-[44px] min-w-[120px] touch-manipulation"
+                >
+                  Shop Now
+                </Link>
               </div>
             </div>
           ))}

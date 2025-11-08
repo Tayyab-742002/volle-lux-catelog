@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowRight, Leaf, Check } from "lucide-react";
+import Image from "next/image";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -94,222 +95,227 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto flex min-h-screen items-center justify-center px-6 py-16">
-        <div className="w-full max-w-md space-y-12">
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="relative z-10 container mx-auto flex min-h-screen items-center justify-center px-6 py-16">
+        <div className="w-full max-w-2xl">
           {/* Header */}
-          <div className="space-y-6 text-center">
-            <Link
-              href="/"
-              className="inline-block text-xl font-light tracking-wider text-neutral-900"
-            >
-              VOLLE
+          <div className="mb-10 space-y-6 text-center">
+            <Link href="/" className="inline-block group">
+              <Image
+                src="/bubble-wrap-shop.png"
+                alt="Logo"
+                width={120}
+                height={40}
+                className="h-10 w-auto transition-transform group-hover:scale-105 brightness-0 "
+              />
             </Link>
-            <div className="space-y-2">
-              <h1 className="text-3xl font-light text-neutral-900 md:text-4xl">
-                Create your account
+            <div className="space-y-3">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                Create Your Account
               </h1>
-              <p className="text-sm text-neutral-600">
-                Already have an account?{" "}
+              <p className="text-sm text-gray-600">
+                Already registered?{" "}
                 <Link
                   href="/auth/login"
-                  className="border-b border-neutral-900 font-normal text-neutral-900 transition-colors hover:border-neutral-600 hover:text-neutral-600"
+                  className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
                 >
-                  Sign in
+                  Sign in here
                 </Link>
               </p>
             </div>
           </div>
 
           {/* Sign Up Form */}
-          <div className="border-t border-neutral-300 pt-12">
-            <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-gray-300 hover:shadow-2xl transition-all duration-300">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Error Alert */}
               {error && (
-                <Alert className="border-neutral-300 bg-neutral-50">
-                  <AlertDescription className="text-sm text-neutral-900">
+                <Alert className="border-red-200 bg-red-50">
+                  <AlertDescription className="text-sm text-red-800">
                     {error}
                   </AlertDescription>
                 </Alert>
               )}
 
-              {/* Full Name Field */}
-              <div className="space-y-3">
-                <Label
-                  htmlFor="fullName"
-                  className="text-sm font-normal text-neutral-900"
-                >
-                  Full Name
-                </Label>
-                <Input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  autoComplete="name"
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  placeholder="Your full name"
-                  disabled={isSubmitting || loading}
-                  className="border-neutral-300 bg-transparent focus:border-neutral-900"
-                />
-              </div>
-
-              {/* Email Field */}
-              <div className="space-y-3">
-                <Label
-                  htmlFor="email"
-                  className="text-sm font-normal text-neutral-900"
-                >
-                  Email address <span className="text-neutral-400">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="your.email@example.com"
-                  disabled={isSubmitting || loading}
-                  className="border-neutral-300 bg-transparent focus:border-neutral-900"
-                />
-              </div>
-
-              {/* Phone Field */}
-              <div className="space-y-3">
-                <Label
-                  htmlFor="phone"
-                  className="text-sm font-normal text-neutral-900"
-                >
-                  Phone Number
-                </Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  autoComplete="tel"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="+1 (555) 123-4567"
-                  disabled={isSubmitting || loading}
-                  className="border-neutral-300 bg-transparent focus:border-neutral-900"
-                />
-              </div>
-
-              {/* Company Field */}
-              <div className="space-y-3">
-                <Label
-                  htmlFor="company"
-                  className="text-sm font-normal text-neutral-900"
-                >
-                  Company
-                </Label>
-                <Input
-                  id="company"
-                  name="company"
-                  type="text"
-                  autoComplete="organization"
-                  value={formData.company}
-                  onChange={handleInputChange}
-                  placeholder="Your company name"
-                  disabled={isSubmitting || loading}
-                  className="border-neutral-300 bg-transparent focus:border-neutral-900"
-                />
-              </div>
-
-              {/* Password Field */}
-              <div className="space-y-3">
-                <Label
-                  htmlFor="password"
-                  className="text-sm font-normal text-neutral-900"
-                >
-                  Password <span className="text-neutral-400">*</span>
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    required
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Create a password"
-                    disabled={isSubmitting || loading}
-                    className="border-neutral-300 bg-transparent pr-10 focus:border-neutral-900"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 transition-colors hover:text-neutral-900"
-                    onClick={() => setShowPassword(!showPassword)}
-                    disabled={isSubmitting || loading}
+              {/* Grid Layout for Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Full Name Field */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="fullName"
+                    className="text-sm font-semibold text-gray-900"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" strokeWidth={1.5} />
-                    ) : (
-                      <Eye className="h-4 w-4" strokeWidth={1.5} />
-                    )}
-                  </button>
+                    Full Name
+                  </Label>
+                  <Input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    autoComplete="name"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    placeholder="John Doe"
+                    disabled={isSubmitting || loading}
+                    className="h-11 border border-gray-300 focus:border-border-300 bg-transparent focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
+                  />
                 </div>
-                <p className="text-xs text-neutral-500">
-                  Password must be at least 6 characters long
-                </p>
-              </div>
 
-              {/* Confirm Password Field */}
-              <div className="space-y-3">
-                <Label
-                  htmlFor="confirmPassword"
-                  className="text-sm font-normal text-neutral-900"
-                >
-                  Confirm Password <span className="text-neutral-400">*</span>
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    required
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    placeholder="Confirm your password"
-                    disabled={isSubmitting || loading}
-                    className="border-neutral-300 bg-transparent pr-10 focus:border-neutral-900"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 transition-colors hover:text-neutral-900"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    disabled={isSubmitting || loading}
+                {/* Email Field */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="email"
+                    className="text-sm font-semibold text-gray-900"
                   >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" strokeWidth={1.5} />
-                    ) : (
-                      <Eye className="h-4 w-4" strokeWidth={1.5} />
-                    )}
-                  </button>
+                    Email address <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="your.email@example.com"
+                    disabled={isSubmitting || loading}
+                    className="h-11 border border-gray-300 focus:border-border-300 bg-transparent focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
+                  />
+                </div>
+
+                {/* Phone Field */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="phone"
+                    className="text-sm font-semibold text-gray-900"
+                  >
+                    Phone Number
+                  </Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="+1 (555) 123-4567"
+                    disabled={isSubmitting || loading}
+                    className="h-11 border border-gray-300 focus:border-border-300 bg-transparent focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
+                  />
+                </div>
+
+                {/* Company Field */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="company"
+                    className="text-sm font-semibold text-gray-900"
+                  >
+                    Company
+                  </Label>
+                  <Input
+                    id="company"
+                    name="company"
+                    type="text"
+                    autoComplete="organization"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    placeholder="Your company"
+                    disabled={isSubmitting || loading}
+                    className="h-11 border border-gray-300 focus:border-border-300 bg-transparent focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
+                  />
+                </div>
+
+                {/* Password Field */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="password"
+                    className="text-sm font-semibold text-gray-900"
+                  >
+                    Password <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="new-password"
+                      required
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder="Create password"
+                      disabled={isSubmitting || loading}
+                      className="h-11 border border-gray-300 focus:border-border-300 bg-transparent pr-10 focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-600"
+                      onClick={() => setShowPassword(!showPassword)}
+                      disabled={isSubmitting || loading}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" strokeWidth={2} />
+                      ) : (
+                        <Eye className="h-5 w-5" strokeWidth={2} />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Confirm Password Field */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="confirmPassword"
+                    className="text-sm font-semibold text-gray-900"
+                  >
+                    Confirm Password <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      autoComplete="new-password"
+                      required
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      placeholder="Confirm password"
+                      disabled={isSubmitting || loading}
+                      className="h-11 border border-gray-300 focus:border-border-300 bg-transparent pr-10 focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-600"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      disabled={isSubmitting || loading}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-5 w-5" strokeWidth={2} />
+                      ) : (
+                        <Eye className="h-5 w-5" strokeWidth={2} />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="group h-12 w-full bg-neutral-900 text-sm font-normal text-white hover:bg-neutral-800"
+                className="group h-12 w-full bg-linear-to-r from-emerald-600 to-teal-600 text-base cursor-pointer font-semibold text-white hover:shadow-lg transition-all duration-300 hover:scale-105"
                 disabled={isSubmitting || loading}
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     Creating account...
                   </>
                 ) : (
                   <>
                     Create account
                     <ArrowRight
-                      className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1"
-                      strokeWidth={1.5}
+                      className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1"
+                      strokeWidth={2}
                     />
                   </>
                 )}
@@ -317,12 +323,12 @@ export default function SignUpPage() {
             </form>
 
             {/* Additional Links */}
-            <div className="mt-12 border-t border-neutral-300 pt-8 text-center">
-              <p className="text-sm text-neutral-600">
+            <div className="mt-6 pt-6 border-t-2 border-emerald-100 text-center">
+              <p className="text-sm text-gray-600">
                 Already have an account?{" "}
                 <Link
                   href="/auth/login"
-                  className="border-b border-neutral-900 font-normal text-neutral-900 transition-colors hover:border-neutral-600 hover:text-neutral-600"
+                  className="font-semibold ml-1 text-emerald-600 hover:text-emerald-700 transition-colors"
                 >
                   Sign in
                 </Link>
@@ -331,19 +337,19 @@ export default function SignUpPage() {
           </div>
 
           {/* Terms and Privacy */}
-          <div className="border-t border-neutral-300 pt-8 text-center text-xs text-neutral-500">
+          <div className="mt-6 text-center text-xs text-gray-500">
             <p>
               By creating an account, you agree to our{" "}
               <Link
                 href="/terms"
-                className="border-b border-neutral-500 text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+                className="text-emerald-600 hover:text-emerald-700 font-medium"
               >
                 Terms of Service
               </Link>{" "}
               and{" "}
               <Link
                 href="/privacy"
-                className="border-b border-neutral-500 text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+                className="text-emerald-600 hover:text-emerald-700 font-medium"
               >
                 Privacy Policy
               </Link>

@@ -23,21 +23,16 @@ export function ProductInfoAccordion({
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border-2 border-emerald-100">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-        <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full"></div>
-        Product Details
-      </h2>
-
+    <div className="bg-white rounded-xl p-6 md:p-8 shadow-lg border border-gray-300">
       <Accordion type="multiple" className="w-full">
         {description && (
           <AccordionItem
             value="description"
-            className="border-b-2 border-emerald-100"
+            className="border-b border-gray-300"
           >
             <AccordionTrigger className="py-5 text-base font-semibold text-gray-900 hover:text-emerald-600 transition-colors [&[data-state=open]]:text-emerald-600">
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                <div className="w-1 h-1 rounded-full bg-emerald-500"></div>
                 Description
               </div>
             </AccordionTrigger>
@@ -56,7 +51,7 @@ export function ProductInfoAccordion({
           >
             <AccordionTrigger className="py-5 text-base font-semibold text-gray-900 hover:text-teal-600 transition-colors [&[data-state=open]]:text-teal-600">
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-teal-500"></div>
+                <div className="w-1 h-1 rounded-full bg-emerald-500"></div>
                 Specifications
               </div>
             </AccordionTrigger>
@@ -87,7 +82,7 @@ export function ProductInfoAccordion({
           >
             <AccordionTrigger className="py-5 text-base font-semibold text-gray-900 hover:text-cyan-600 transition-colors [&[data-state=open]]:text-cyan-600">
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-cyan-500"></div>
+                <div className="w-1 h-1 rounded-full bg-emerald-500"></div>
                 Shipping & Delivery
               </div>
             </AccordionTrigger>
@@ -98,7 +93,7 @@ export function ProductInfoAccordion({
                 </p>
                 {/* Additional Shipping Info */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-emerald-100">
-                  <div className="flex items-start gap-3 p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg">
+                  <div className="flex items-start gap-3 p-3 bg-linear-to-br from-emerald-50 to-teal-50 rounded-lg">
                     <svg
                       className="w-5 h-5 text-emerald-600 mt-0.5 shrink-0"
                       fill="none"
@@ -121,7 +116,7 @@ export function ProductInfoAccordion({
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 p-3 bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg">
+                  <div className="flex items-start gap-3 p-3 bg-linear-to-br from-teal-50 to-cyan-50 rounded-lg">
                     <svg
                       className="w-5 h-5 text-teal-600 mt-0.5 shrink-0"
                       fill="none"

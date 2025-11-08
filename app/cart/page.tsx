@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Leaf } from "lucide-react";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useAuth } from "@/components/auth/auth-provider";
 import { CartItem } from "@/components/cart/cart-item";
@@ -20,64 +20,91 @@ export default function CartPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="mb-2 text-4xl font-bold md:text-5xl">Shopping Cart</h1>
-        <Link
-          href="/products"
-          className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
-          Continue Shopping
-        </Link>
-      </div>
-
-      {isEmpty ? (
-        /* Empty Cart State */
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <ShoppingBag className="mb-6 h-24 w-24 text-muted-foreground" />
-          <h2 className="mb-2 text-2xl font-semibold">Your cart is empty</h2>
-          <p className="mb-8 text-muted-foreground">
-            Start adding products to your cart
-          </p>
-          <Button asChild size="lg">
-            <Link href="/products">Browse Products</Link>
-          </Button>
-        </div>
-      ) : (
-        /* Cart Content */
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Cart Items - Left Column (2/3 width) */}
-          <div className="lg:col-span-2 space-y-4">
-            {items.map((item) => (
-              <CartItem key={item.id} item={item} />
-            ))}
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-8 md:py-12">
+        {/* Page Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
+              Shopping Cart
+            </h1>
           </div>
+          <Link
+            href="/products"
+            className="inline-flex items-center gap-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors group"
+          >
+            <ArrowLeft
+              className="h-4 w-4 transition-transform group-hover:-translate-x-1"
+              strokeWidth={2}
+            />
+            Continue Shopping
+          </Link>
+        </div>
 
-          {/* Order Summary - Right Column (1/3 width) */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 rounded-lg border bg-card p-6">
-              <OrderSummary summary={summary} />
+        {isEmpty ? (
+          /* Empty Cart State */
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <h2 className="mb-3 text-3xl font-bold text-gray-900">
+              Your cart is empty
+            </h2>
+            <p className="mb-8 text-lg text-gray-600 max-w-md">
+              Start adding eco-friendly products to your cart
+            </p>
+            <Button
+              asChild
+              size="lg"
+              className="bg-linear-to-r mt-1 from-emerald-600 to-teal-600 text-white hover:shadow-lg transition-all duration-300 hover:scale-105"
+            >
+              <Link href="/products" className="flex items-center gap-2">
+                <Leaf className="h-5 w-5" />
+                Browse Products
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          /* Cart Content */
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            {/* Cart Items - Left Column (2/3 width) */}
+            <div className="lg:col-span-2 space-y-4">
+              {items.map((item) => (
+                <CartItem key={item.id} item={item} />
+              ))}
+            </div>
 
-              {/* Checkout Button */}
-              <Button asChild size="lg" className="mt-6 w-full">
-                <Link href="/checkout">Proceed to Checkout</Link>
-              </Button>
+            {/* Order Summary - Right Column (1/3 width) */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24 rounded-2xl border-2 p-6 border-gray-300 hover:shadow-2xl transition-all duration-300">
+                <div className="flex items-center gap-2 mb-6">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Order Summary
+                  </h2>
+                </div>
 
-              {/* Clear Cart Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-3 w-full"
-                onClick={handleClearCart}
-              >
-                Clear Cart
-              </Button>
+                <OrderSummary summary={summary} />
+
+                {/* Checkout Button */}
+                <Button
+                  asChild
+                  size="lg"
+                  className="mt-6 w-full h-12 bg-linear-to-r from-emerald-600 to-teal-600 cursor-pointer text-white font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105"
+                >
+                  <Link href="/checkout">Proceed to Checkout</Link>
+                </Button>
+
+                {/* Clear Cart Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 w-full border border-gray-300 focus:border-border-300 bg-transparent text-gray-700 hover:bg-emerald-100 cursor-pointer transition-colors"
+                  onClick={handleClearCart}
+                >
+                  Clear Cart
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

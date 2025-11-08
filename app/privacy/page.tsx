@@ -1,11 +1,14 @@
 import { Breadcrumbs } from "@/components/common";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="bg-white">
+    <div className="relative min-h-screen overflow-hidden">
       {/* Breadcrumbs */}
-      <div className="border-b border-neutral-400">
-        <div className="container mx-auto px-6 py-6">
+      <div className="relative z-10 border-b border-emerald-200 bg-white/50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-6">
           <Breadcrumbs
             items={[{ label: "Privacy Policy", href: "/privacy" }]}
           />
@@ -13,25 +16,28 @@ export default function PrivacyPolicyPage() {
       </div>
 
       {/* Content Section */}
-      <div className="container mx-auto px-6 py-16 md:py-20 lg:py-24">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-16 md:py-20 lg:py-24">
         <div className="mx-auto max-w-4xl">
           {/* Page Header */}
-          <div className="mb-12">
-            <h1 className="mb-4 text-4xl font-light text-neutral-900 md:text-5xl lg:text-6xl">
-              Privacy Policy
+          <div className="mb-16 md:mb-20 text-center">
+            <h1 className="mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900">
+              Privacy
+              <span className="block bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mt-2">
+                Policy
+              </span>
             </h1>
-            <p className="mb-6 text-lg text-neutral-600 md:text-xl">
-              Thousands of products in stock. All orders placed by 2pm are
-              dispatched on the same day.
+            <p className="text-lg text-gray-600 md:text-xl max-w-full mx-auto mb-4">
+              Your privacy matters to us. Learn how we collect, use, and protect
+              your personal information.
             </p>
-            <p className="text-sm text-neutral-500">Last updated: 16/02/2023</p>
+            <p className="text-sm text-gray-500">Last updated: 16/02/2023</p>
           </div>
 
           {/* Main Content */}
-          <div className="space-y-12">
+          <div className="space-y-8 md:space-y-12">
             {/* Introduction */}
-            <section className="space-y-6">
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   This Privacy Policy describes how Bubble Wrap Shop (the
                   &quot;Site&quot;, &quot;we&quot;, &quot;us&quot;, or
@@ -56,11 +62,12 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Changes to This Privacy Policy */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Changes to This Privacy Policy
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   We may update this Privacy Policy from time to time, including
                   to reflect changes to our practices or for other operational,
@@ -72,11 +79,12 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* How We Collect and Use Your Personal Information */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 How We Collect and Use Your Personal Information
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   To provide the Services, we collect and have collected over
                   the past 12 months personal information about you from a
@@ -95,11 +103,12 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* What Personal Information We Collect */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 What Personal Information We Collect
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   The types of personal information we obtain about you depends
                   on how you interact with our Site and use our Services. When
@@ -113,16 +122,17 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Information We Collect Directly from You */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h3 className="text-xl font-light text-neutral-900 md:text-2xl lg:text-3xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h3 className="mb-6 text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-6 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Information We Collect Directly from You
               </h3>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Information that you directly submit to us through our
                   Services may include:
                 </p>
-                <ul className="ml-6 list-disc space-y-2">
+                <ul className="ml-6 list-disc space-y-2 text-gray-600">
                   <li>
                     Basic contact details including your name, address, phone
                     number, email.
@@ -156,11 +166,12 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Information We Collect through Cookies */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h3 className="text-xl font-light text-neutral-900 md:text-2xl lg:text-3xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h3 className="mb-6 text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-6 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Information We Collect through Cookies
               </h3>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   We also automatically collect certain information about your
                   interaction with the Services (&quot;Usage Data&quot;). To do
@@ -175,17 +186,18 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Information We Obtain from Third Parties */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h3 className="text-xl font-light text-neutral-900 md:text-2xl lg:text-3xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h3 className="mb-6 text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-6 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Information We Obtain from Third Parties
               </h3>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Finally, we may obtain information about you from third
                   parties, including from vendors and service providers who may
                   collect information on our behalf, such as:
                 </p>
-                <ul className="ml-6 list-disc space-y-2">
+                <ul className="ml-6 list-disc space-y-2 text-gray-600">
                   <li>
                     Companies who support our Site and Services, such as
                     Shopify.
@@ -218,57 +230,70 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* How We Use Your Personal Information */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 How We Use Your Personal Information
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
-                  <strong>Providing Products and Services.</strong> We use your
-                  personal information to provide you with the Services in order
-                  to perform our contract with you, including to process your
-                  payments, fulfil your orders, to send notifications to you
-                  related to you account, purchases, returns, exchanges or other
-                  transactions, to create, maintain and otherwise manage your
-                  account, to arrange for shipping, facilitate any returns and
-                  exchanges and to enable you to post reviews.
+                  <strong className="text-gray-900">
+                    Providing Products and Services.
+                  </strong>{" "}
+                  We use your personal information to provide you with the
+                  Services in order to perform our contract with you, including
+                  to process your payments, fulfil your orders, to send
+                  notifications to you related to you account, purchases,
+                  returns, exchanges or other transactions, to create, maintain
+                  and otherwise manage your account, to arrange for shipping,
+                  facilitate any returns and exchanges and to enable you to post
+                  reviews.
                 </p>
                 <p>
-                  <strong>Marketing and Advertising.</strong> We use your
-                  personal information for marketing and promotional purposes,
-                  such as to send marketing, advertising and promotional
-                  communications by email, text message or postal mail, and to
-                  show you advertisements for products or services. This may
-                  include using your personal information to better tailor the
-                  Services and advertising on our Site and other websites.
+                  <strong className="text-gray-900">
+                    Marketing and Advertising.
+                  </strong>{" "}
+                  We use your personal information for marketing and promotional
+                  purposes, such as to send marketing, advertising and
+                  promotional communications by email, text message or postal
+                  mail, and to show you advertisements for products or services.
+                  This may include using your personal information to better
+                  tailor the Services and advertising on our Site and other
+                  websites.
                 </p>
                 <p>
-                  <strong>Security and Fraud Prevention.</strong> We use your
-                  personal information to detect, investigate or take action
-                  regarding possible fraudulent, illegal or malicious activity.
-                  If you choose to use the Services and register an account, you
-                  are responsible for keeping your account credentials safe. We
-                  highly recommend that you do not share your username,
-                  password, or other access details with anyone else. If you
-                  believe your account has been compromised, please contact us
-                  immediately.
+                  <strong className="text-gray-900">
+                    Security and Fraud Prevention.
+                  </strong>{" "}
+                  We use your personal information to detect, investigate or
+                  take action regarding possible fraudulent, illegal or
+                  malicious activity. If you choose to use the Services and
+                  register an account, you are responsible for keeping your
+                  account credentials safe. We highly recommend that you do not
+                  share your username, password, or other access details with
+                  anyone else. If you believe your account has been compromised,
+                  please contact us immediately.
                 </p>
                 <p>
-                  <strong>Communicating with you.</strong> We use your personal
-                  information to provide you with customer support and improve
-                  our Services. This is in our legitimate interests in order to
-                  be responsive to you, to provide effective services to you,
-                  and to maintain our business relationship with you.
+                  <strong className="text-gray-900">
+                    Communicating with you.
+                  </strong>{" "}
+                  We use your personal information to provide you with customer
+                  support and improve our Services. This is in our legitimate
+                  interests in order to be responsive to you, to provide
+                  effective services to you, and to maintain our business
+                  relationship with you.
                 </p>
               </div>
             </section>
 
             {/* Cookies */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Cookies
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Like many websites, we use Cookies on our Site. For specific
                   information about the Cookies that we use related to powering
@@ -277,7 +302,7 @@ export default function PrivacyPolicyPage() {
                     href="https://www.shopify.com/legal/cookies"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary underline hover:text-primary/80"
+                    className="text-emerald-600 underline hover:text-emerald-700 font-medium"
                   >
                     https://www.shopify.com/legal/cookies
                   </a>
@@ -305,17 +330,18 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* How We Disclose Personal Information */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 How We Disclose Personal Information
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   In certain circumstances, we may disclose your personal
                   information to third parties for legitimate purposes subject
                   to this Privacy Policy. Such circumstances may include:
                 </p>
-                <ul className="ml-6 list-disc space-y-2">
+                <ul className="ml-6 list-disc space-y-2 text-gray-600">
                   <li>
                     With vendors or other third parties who perform services on
                     our behalf (e.g., IT management, payment processing, data
@@ -355,46 +381,46 @@ export default function PrivacyPolicyPage() {
                   Information&quot; and &quot;How we Disclose Personal
                   Information&quot;:
                 </p>
-                <div className="mt-4 overflow-x-auto">
-                  <table className="min-w-full border border-neutral-300">
-                    <thead className="bg-neutral-100">
+                <div className="mt-4 overflow-x-auto rounded-lg border border-emerald-200">
+                  <table className="min-w-full">
+                    <thead className="bg-linear-to-r from-emerald-50 to-teal-50">
                       <tr>
-                        <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-900">
+                        <th className="border-b border-emerald-200 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-emerald-700">
                           Category
                         </th>
-                        <th className="border border-neutral-300 px-4 py-3 text-left text-sm font-semibold text-neutral-900">
+                        <th className="border-b border-emerald-200 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-emerald-700">
                           Categories of Recipients
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
+                      <tr className="border-b border-emerald-100 hover:bg-emerald-50/50 transition-colors">
+                        <td className="px-4 py-3 text-sm text-gray-600">
                           Identifiers such as basic contact details and certain
                           order and account information
                         </td>
-                        <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
+                        <td className="px-4 py-3 text-sm text-gray-600">
                           Vendors and third parties who perform services on our
                           behalf (such as Internet service providers, payment
                           processors, fulfillment partners, customer support
                           partners and data analytics providers)
                         </td>
                       </tr>
-                      <tr>
-                        <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
+                      <tr className="border-b border-emerald-100 hover:bg-emerald-50/50 transition-colors">
+                        <td className="px-4 py-3 text-sm text-gray-600">
                           Commercial information such as order information,
                           shopping information and customer support information
                         </td>
-                        <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
+                        <td className="px-4 py-3 text-sm text-gray-600">
                           Business and marketing partners
                         </td>
                       </tr>
-                      <tr>
-                        <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
+                      <tr className="hover:bg-emerald-50/50 transition-colors">
+                        <td className="px-4 py-3 text-sm text-gray-600">
                           Internet or other similar network activity, such as
                           Usage Data
                         </td>
-                        <td className="border border-neutral-300 px-4 py-3 text-sm text-neutral-600">
+                        <td className="px-4 py-3 text-sm text-gray-600">
                           Affiliates
                         </td>
                       </tr>
@@ -409,11 +435,12 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* User Generated Content */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 User Generated Content
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   The Services may enable you to post product reviews and other
                   user-generated content. If you choose to submit user generated
@@ -433,11 +460,12 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Third Party Websites and Links */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Third Party Websites and Links
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Our Site may provide links to websites or other online
                   platforms operated by third parties. If you follow links to
@@ -459,11 +487,12 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Children's Data */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Children&apos;s Data
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   The Services are not intended to be used by children, and we
                   do not knowingly collect any personal information about
@@ -483,11 +512,12 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Security and Retention of Your Information */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Security and Retention of Your Information
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Please be aware that no security measures are perfect or
                   impenetrable, and we cannot guarantee &quot;perfect
@@ -507,11 +537,12 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Your Rights and Choices */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Your Rights and Choices
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Depending on where you live, you may have some or all of the
                   rights listed below in relation to your personal information.
@@ -519,42 +550,54 @@ export default function PrivacyPolicyPage() {
                   certain circumstances and, in certain cases, we may decline
                   your request as permitted by law.
                 </p>
-                <ul className="ml-6 list-disc space-y-2">
+                <ul className="ml-6 list-disc space-y-2 text-gray-600">
                   <li>
-                    <strong>Right to Access / Know.</strong> You may have a
-                    right to request access to personal information that we hold
-                    about you, including details relating to the ways in which
-                    we use and share your information.
+                    <strong className="text-gray-900">
+                      Right to Access / Know.
+                    </strong>{" "}
+                    You may have a right to request access to personal
+                    information that we hold about you, including details
+                    relating to the ways in which we use and share your
+                    information.
                   </li>
                   <li>
-                    <strong>Right to Delete.</strong> You may have a right to
-                    request that we delete personal information we maintain
-                    about you.
+                    <strong className="text-gray-900">Right to Delete.</strong>{" "}
+                    You may have a right to request that we delete personal
+                    information we maintain about you.
                   </li>
                   <li>
-                    <strong>Right to Correct.</strong> You may have a right to
-                    request that we correct inaccurate personal information we
-                    maintain about you.
+                    <strong className="text-gray-900">Right to Correct.</strong>{" "}
+                    You may have a right to request that we correct inaccurate
+                    personal information we maintain about you.
                   </li>
                   <li>
-                    <strong>Right of Portability.</strong> You may have a right
-                    to receive a copy of the personal information we hold about
-                    you and to request that we transfer it to a third party, in
-                    certain circumstances and with certain exceptions.
+                    <strong className="text-gray-900">
+                      Right of Portability.
+                    </strong>{" "}
+                    You may have a right to receive a copy of the personal
+                    information we hold about you and to request that we
+                    transfer it to a third party, in certain circumstances and
+                    with certain exceptions.
                   </li>
                   <li>
-                    <strong>Withdrawal of Consent:</strong> Where we rely on
-                    consent to process your personal information, you may have
-                    the right to withdraw this consent.
+                    <strong className="text-gray-900">
+                      Withdrawal of Consent:
+                    </strong>{" "}
+                    Where we rely on consent to process your personal
+                    information, you may have the right to withdraw this
+                    consent.
                   </li>
                   <li>
-                    <strong>Appeal:</strong> You may have a right to appeal our
-                    decision if we decline to process your request. You can do
-                    so by replying directly to our denial.
+                    <strong className="text-gray-900">Appeal:</strong> You may
+                    have a right to appeal our decision if we decline to process
+                    your request. You can do so by replying directly to our
+                    denial.
                   </li>
                   <li>
-                    <strong>Managing Communication Preferences:</strong> We may
-                    send you promotional emails, and you may opt out of
+                    <strong className="text-gray-900">
+                      Managing Communication Preferences:
+                    </strong>{" "}
+                    We may send you promotional emails, and you may opt out of
                     receiving these at any time by using the unsubscribe option
                     displayed in our emails to you. If you opt out, we may still
                     send you non-promotional emails, such as those about your
@@ -583,11 +626,12 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Complaints */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Complaints
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   If you have complaints about how we process your personal
                   information, please contact us using the contact details
@@ -601,11 +645,12 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* International Users */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 International Users
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Please note that we may transfer, store and process your
                   personal information outside the country you live in,
@@ -626,25 +671,26 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Contact */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Contact
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Should you have any questions about our privacy practices or
                   this Privacy Policy, or if you would like to exercise any of
                   the rights available to you, please call{" "}
                   <a
                     href="tel:01254916167"
-                    className="text-primary underline hover:text-primary/80"
+                    className="text-emerald-600 underline hover:text-emerald-700 font-medium"
                   >
                     01254 916167
                   </a>{" "}
                   or email us at{" "}
                   <a
                     href="mailto:sales@bubblewrapshop.co.uk"
-                    className="text-primary underline hover:text-primary/80"
+                    className="text-emerald-600 underline hover:text-emerald-700 font-medium"
                   >
                     sales@bubblewrapshop.co.uk
                   </a>{" "}
@@ -654,6 +700,34 @@ export default function PrivacyPolicyPage() {
               </div>
             </section>
           </div>
+
+          {/* CTA Section */}
+          <section className="relative mt-20 border-t bg-linear-to-br from-emerald-600 to-teal-600 py-20 md:py-28 lg:py-32 overflow-hidden">
+            <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px]">
+              <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
+                <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                  Questions About Your
+                  <span className="block mt-2 text-white">Privacy Rights?</span>
+                </h2>
+                <p className="mb-10 text-base md:text-lg lg:text-xl text-white/80 max-w-2xl leading-relaxed lg:mb-12">
+                  Our team is here to help you understand and exercise your
+                  privacy rights.
+                </p>
+                <Button asChild variant="ghost" className="w-fit group">
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center gap-3 px-8 py-4 mt-4 text-base font-semibold border border-white/20 text-white bg-white/20 rounded-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                  >
+                    Contact Us
+                    <ArrowRight
+                      className="h-5 w-5 transition-transform group-hover:translate-x-1"
+                      strokeWidth={2.5}
+                    />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>

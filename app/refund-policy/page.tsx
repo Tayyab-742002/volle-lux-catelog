@@ -1,11 +1,14 @@
 import { Breadcrumbs } from "@/components/common";
+import { FileText, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function RefundPolicyPage() {
   return (
-    <div className="bg-white">
+    <div className="relative min-h-screen overflow-hidden">
       {/* Breadcrumbs */}
-      <div className="border-b border-neutral-400">
-        <div className="container mx-auto px-6 py-6">
+      <div className="relative z-10 border-b border-emerald-200 bg-white/50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-6">
           <Breadcrumbs
             items={[{ label: "Refund Policy", href: "/refund-policy" }]}
           />
@@ -13,27 +16,31 @@ export default function RefundPolicyPage() {
       </div>
 
       {/* Content Section */}
-      <div className="container mx-auto px-6 py-16 md:py-20 lg:py-24">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-16 md:py-20 lg:py-24">
         <div className="mx-auto max-w-4xl">
           {/* Page Header */}
-          <div className="mb-12">
-            <h1 className="mb-4 text-4xl font-light text-neutral-900 md:text-5xl lg:text-6xl">
-              Refund Policy
+          <div className="mb-16 md:mb-20 text-center">
+            <h1 className="mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900">
+              Refund
+              <span className="block bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mt-2">
+                Policy
+              </span>
             </h1>
-            <p className="text-lg text-neutral-600 md:text-xl">
-              Thousands of products in stock. All orders placed by 2pm are
-              dispatched on the same day.
+            <p className="text-lg text-center! text-gray-600 md:text-xl max-w-full mx-auto">
+              Our commitment to your satisfaction. Clear, fair, and transparent
+              return policy.
             </p>
           </div>
 
           {/* Main Content */}
-          <div className="space-y-12">
+          <div className="space-y-8 md:space-y-12">
             {/* Refund Policy Section */}
-            <section className="space-y-6">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Refund Policy
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   We have a 14-day return policy, which means you have 30 days
                   after receiving your item to request a return.
@@ -48,13 +55,13 @@ export default function RefundPolicyPage() {
                   To start a return, you can contact us at{" "}
                   <a
                     href="mailto:sales@bubblewrapshop.co.uk"
-                    className="text-primary underline hover:text-primary/80"
+                    className="text-emerald-600 underline hover:text-emerald-700 font-medium"
                   >
                     sales@bubblewrapshop.co.uk
                   </a>
                   . Please note that returns will need to be sent to the
                   following address:{" "}
-                  <strong>
+                  <strong className="text-gray-900">
                     Unit 3, GBL House, Cleaver Street, Blackburn, BB1 5DG
                   </strong>
                 </p>
@@ -68,7 +75,7 @@ export default function RefundPolicyPage() {
                   You can always contact us for any return question at{" "}
                   <a
                     href="mailto:sales@bubblewrapshop.co.uk"
-                    className="text-primary underline hover:text-primary/80"
+                    className="text-emerald-600 underline hover:text-emerald-700 font-medium"
                   >
                     sales@bubblewrapshop.co.uk
                   </a>
@@ -78,11 +85,12 @@ export default function RefundPolicyPage() {
             </section>
 
             {/* Damages and Issues Section */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Damages and Issues
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Please inspect your order upon reception and contact us
                   immediately if the item is defective, damaged or if you
@@ -93,11 +101,12 @@ export default function RefundPolicyPage() {
             </section>
 
             {/* Exceptions Section */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Exceptions / Non-returnable Items
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Certain types of items cannot be returned, like perishable
                   goods (such as food, flowers, or plants), custom products
@@ -115,11 +124,12 @@ export default function RefundPolicyPage() {
             </section>
 
             {/* Exchanges Section */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Exchanges
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   The fastest way to ensure you get what you want is to return
                   the item you have, and once the return is accepted, make a
@@ -129,11 +139,12 @@ export default function RefundPolicyPage() {
             </section>
 
             {/* European Union Section */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 European Union 14 Day Cooling Off Period
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Notwithstanding the above, if the merchandise is being shipped
                   into the European Union, you have the right to cancel or
@@ -147,11 +158,12 @@ export default function RefundPolicyPage() {
             </section>
 
             {/* Refunds Section */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Refunds
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   We will notify you once we&apos;ve received and inspected your
                   return, and let you know if the refund was approved or not. If
@@ -165,7 +177,7 @@ export default function RefundPolicyPage() {
                   approved your return, please contact us at{" "}
                   <a
                     href="mailto:sales@bubblewrapshop.co.uk"
-                    className="text-primary underline hover:text-primary/80"
+                    className="text-emerald-600 underline hover:text-emerald-700 font-medium"
                   >
                     sales@bubblewrapshop.co.uk
                   </a>
@@ -174,6 +186,40 @@ export default function RefundPolicyPage() {
               </div>
             </section>
           </div>
+
+          <section className="relative mt-18 border-t bg-linear-to-br from-emerald-600  to-teal-600 py-20 md:py-28 lg:py-32 overflow-hidden">
+            <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px]">
+              <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
+                {/* Heading */}
+                <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                  Need Help with a
+                  <span className="block mt-2 text-white">
+                    Return or Refund?
+                  </span>
+                </h2>
+
+                {/* Description */}
+                <p className="mb-10 text-base md:text-lg lg:text-xl text-white/80 max-w-2xl leading-relaxed lg:mb-12">
+                  Our support team is ready to assist you with any questions
+                  about returns, refunds, or exchanges.
+                </p>
+
+                {/* CTA Button */}
+                <Button asChild variant="ghost" className="w-fit group">
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center gap-3 px-8 py-4 mt-4 text-base font-semibold border border-white/20 text-white bg-white/20 rounded-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                  >
+                    Contact Support
+                    <ArrowRight
+                      className="h-5 w-5 transition-transform group-hover:translate-x-1"
+                      strokeWidth={2.5}
+                    />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>

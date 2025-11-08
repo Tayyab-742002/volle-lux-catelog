@@ -121,7 +121,7 @@ export function Header({
                 alt="VOLLE"
                 width={100}
                 height={32}
-                className="h-8 w-auto transition-transform duration-300 group-hover:scale-105"
+                className="h-8 w-auto transition-transform duration-300 group-hover:scale-105 brightness-0 invert"
               />
             </Link>
 
@@ -241,7 +241,7 @@ export function Header({
                     strokeWidth={2}
                   />
                   {mounted && cartItemCount > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-linear-to-r from-orange-500 to-red-500 text-[10px] font-bold text-white shadow-lg animate-pulse">
+                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-linear-to-r from-orange-600 to-red-600 text-[10px] font-bold text-white shadow-lg animate-pulse">
                       {cartItemCount > 9 ? "9+" : cartItemCount}
                     </span>
                   )}

@@ -44,8 +44,6 @@ export async function CategoryGrid() {
                   >
                     {/* Circular Image Container */}
                     <div className="relative w-full aspect-square max-w-[180px]">
-         
-
                       {/* Image Container */}
                       <div className="relative w-full h-full rounded-full overflow-hidden bg-white shadow-lg group-hover:shadow-2xl transition-all duration-300 border-2 border-emerald-100 group-hover:border-transparent group-hover:scale-105">
                         {category.image ? (
@@ -86,11 +84,11 @@ export async function CategoryGrid() {
 
                     {/* Category Name */}
                     <div className="mt-5 text-center w-full">
-                      <h3 className="text-sm sm:text-base font-semibold text-gray-900  group-hover:bg-linear-to-r group-hover:text-white  transition-all duration-300 px-2">
+                      <h3 className="text-sm sm:text-base font-semibold text-white  group-hover:bg-linear-to-r group-hover:text-white  transition-all duration-300 px-2">
                         {category.name}
                       </h3>
                       {category.description && (
-                        <p className="text-xs text-white/80 mt-1 line-clamp-2 px-2 group-hover:text-teal-200">
+                        <p className="text-xs text-white/70 mt-1 line-clamp-2 px-2 ">
                           {category.description}
                         </p>
                       )}

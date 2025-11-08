@@ -69,7 +69,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {/* Uncomment if your product has an isEcoFriendly property */}
             {/* {product.isEcoFriendly && (
               <div className="absolute left-2 top-2 z-10">
-                <span className="bg-gradient-to-r from-emerald-500 to-teal-500 px-2 py-1 rounded-full text-[10px] font-bold text-white shadow-lg flex items-center gap-1">
+                <span className="bg-linear-to-r from-emerald-500 to-teal-500 px-2 py-1 rounded-full text-[10px] font-bold text-white shadow-lg flex items-center gap-1">
                   🌱 ECO
                 </span>
               </div>
