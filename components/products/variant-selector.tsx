@@ -49,7 +49,7 @@ export function VariantSelector({
             key={variant.id}
             value={variant.id}
             aria-label={`Select ${variant.name}`}
-            className="h-12 min-w-12 border-2 border-border data-[state=on]:border-primary data-[state=on]:bg-primary/5"
+            className="h-12 min-w-12 border-2 border-gray-300 data-[state=on]:border-emerald-600 data-[state=on]:bg-linear-to-br data-[state=on]:from-emerald-100 cursor-pointer data-[state=on]:to-teal-100 data-[state=on]:text-emerald-700 data-[state=on]:font-semibold hover:border-emerald-600 transition-all"
           >
             {variant.name}
           </ToggleGroupItem>

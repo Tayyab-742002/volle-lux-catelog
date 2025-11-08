@@ -21,10 +21,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
     <div className="space-y-4 md:space-y-6">
       {/* Main Image */}
       <div className="relative group">
-        {/* Gradient Border Effect */}
-        <div className="absolute inset-0 bg-linear-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
-
-        <div className="relative aspect-square w-full overflow-hidden bg-linear-to-br from-emerald-50 to-teal-50 rounded-2xl border-2 border-emerald-200 shadow-xl">
+        <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-emerald-300 shadow-xl">
           <Image
             src={displayImages[selectedImageIndex]}
             alt={`${productName} - Image ${selectedImageIndex + 1}`}
@@ -44,9 +41,9 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             <button
               key={index}
               onClick={() => setSelectedImageIndex(index)}
-              className={`relative h-20 w-20 m-2 md:h-24 md:w-24 shrink-0 overflow-hidden rounded-xl transition-all duration-300 ${
+              className={`relative h-20 w-20 m-2 md:h-24 cursor-pointer md:w-24 shrink-0 overflow-hidden rounded-md transition-all duration-300 ${
                 index === selectedImageIndex
-                  ? "ring-4 ring-emerald-500 scale-105 shadow-lg"
+                  ? "ring-2 ring-emerald-500 scale-105 shadow-lg"
                   : "ring-2 ring-emerald-200 opacity-60 hover:opacity-100 hover:ring-emerald-400 hover:scale-105"
               }`}
               aria-label={`View image ${index + 1}`}

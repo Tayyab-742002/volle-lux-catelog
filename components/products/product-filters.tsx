@@ -238,7 +238,8 @@ function FilterContent({
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-normal uppercase tracking-wider text-neutral-900">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-2">
+          <div className="h-1 w-1 rounded-full bg-emerald-500"></div>
           Filters
         </h3>
         {hasActiveFilters && (
@@ -246,7 +247,7 @@ function FilterContent({
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="h-auto p-0 text-xs font-normal text-neutral-600 hover:bg-transparent hover:text-neutral-900"
+            className="h-auto p-0 text-xs font-medium text-emerald-600 hover:bg-transparent hover:text-emerald-700"
           >
             Clear All
           </Button>
@@ -255,11 +256,11 @@ function FilterContent({
 
       {/* Active Category Badge */}
       {activeCategoryName && (
-        <div className="border border-neutral-300 bg-neutral-50 p-4">
+        <div className="border-2 border-emerald-200 bg-linear-to-r from-emerald-50 to-teal-50 p-4 rounded-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="mb-1 text-xs text-neutral-500">Browsing</p>
-              <p className="text-sm font-normal text-neutral-900">
+              <p className="mb-1 text-xs font-medium text-emerald-700 uppercase tracking-wider">Browsing</p>
+              <p className="text-sm font-semibold text-gray-900">
                 {activeCategoryName}
               </p>
             </div>
@@ -273,18 +274,19 @@ function FilterContent({
                   });
                 });
               }}
-              className="text-neutral-600 transition-colors hover:text-neutral-900"
+              className="text-emerald-600 transition-colors hover:text-emerald-700 hover:bg-emerald-100 rounded-full p-1"
               title="Clear category"
             >
-              <X className="h-4 w-4" strokeWidth={1.5} />
+              <X className="h-4 w-4" strokeWidth={2} />
             </button>
           </div>
         </div>
       )}
 
       {/* Price Range */}
-      <div className="space-y-6 border-t border-neutral-300 pt-8">
-        <Label className="text-xs uppercase tracking-wider text-neutral-500">
+      <div className="space-y-6 border-t border-emerald-200 pt-8">
+        <Label className="text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-2">
+          <div className="h-1 w-1 rounded-full bg-teal-500"></div>
           Price Range
         </Label>
         <div className="space-y-4">
@@ -296,7 +298,7 @@ function FilterContent({
             onValueChange={updatePriceRange}
             className="w-full"
           />
-          <div className="flex items-center justify-between text-sm text-neutral-600">
+          <div className="flex items-center justify-between text-sm font-semibold text-emerald-700">
             <span>${localPriceRange[0]}</span>
             <span>${localPriceRange[1]}</span>
           </div>
@@ -313,14 +315,14 @@ function FilterContent({
           <AccordionItem
             key={filter.key}
             value={filter.key}
-            className="border-t border-neutral-300"
+            className="border-t border-emerald-200"
           >
-            <AccordionTrigger className="py-6 text-sm font-normal text-neutral-900 hover:text-neutral-600">
+            <AccordionTrigger className="py-6 text-sm font-semibold text-gray-900 hover:text-emerald-600 transition-colors">
               <div className="flex items-center gap-2">
                 <span>{filter.name}</span>
                 {activeFilters[filter.key] &&
                   activeFilters[filter.key].length > 0 && (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-xs text-white">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-linear-to-r from-emerald-600 to-teal-600 text-xs font-bold text-white shadow-md">
                       {activeFilters[filter.key].length}
                     </span>
                   )}
@@ -336,7 +338,7 @@ function FilterContent({
                   return (
                     <div
                       key={option.value}
-                      className="flex items-center space-x-3"
+                      className="flex items-center space-x-3 group"
                     >
                       <Checkbox
                         id={`${filter.key}-${option.value}`}
@@ -348,11 +350,11 @@ function FilterContent({
                             checked as boolean
                           )
                         }
-                        className="border-neutral-300"
+                        className="border-emerald-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
                       />
                       <Label
                         htmlFor={`${filter.key}-${option.value}`}
-                        className="flex-1 cursor-pointer text-sm font-normal leading-none text-neutral-900"
+                        className="flex-1 cursor-pointer text-sm font-medium leading-none text-gray-900 group-hover:text-emerald-700 transition-colors"
                       >
                         {option.label}
                       </Label>
@@ -383,9 +385,9 @@ export function ProductFilters({
           <SheetTrigger asChild>
             <Button
               variant="outline"
-              className="w-full border-neutral-300 bg-white text-sm font-normal text-neutral-900 hover:bg-neutral-50"
+              className="w-full border-2 border-emerald-300 bg-white text-sm font-semibold text-emerald-700 hover:bg-emerald-50 hover:border-emerald-600"
             >
-              <SlidersHorizontal className="mr-2 h-4 w-4" strokeWidth={1.5} />
+              <SlidersHorizontal className="mr-2 h-4 w-4" strokeWidth={2} />
               Filters
             </Button>
           </SheetTrigger>
@@ -408,7 +410,7 @@ export function ProductFilters({
 
       {/* Desktop Filters */}
       <aside className="sticky top-24 hidden h-fit lg:block">
-        <div className="border border-neutral-300 bg-white p-6">
+        <div className="border-2 border-emerald-200 bg-white rounded-2xl p-6 shadow-lg">
           <FilterContent categories={categories} />
         </div>
       </aside>

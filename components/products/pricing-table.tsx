@@ -13,14 +13,14 @@ export function PricingTable({ tiers, basePrice }: PricingTableProps) {
       : [{ minQuantity: 1, pricePerUnit: basePrice }];
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-hidden rounded-lg border border-emerald-200">
       <table className="w-full">
         <thead>
-          <tr className="border-b">
-            <th className="label-luxury px-4 py-3 text-left text-xs text-muted-foreground">
+          <tr className="border-b border-emerald-200 bg-linear-to-r from-emerald-50 to-teal-50">
+            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-emerald-700">
               Quantity
             </th>
-            <th className="label-luxury px-4 py-3 text-left text-xs text-muted-foreground">
+            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-emerald-700">
               Price per Unit
             </th>
           </tr>
@@ -34,17 +34,17 @@ export function PricingTable({ tiers, basePrice }: PricingTableProps) {
             return (
               <tr
                 key={index}
-                className="border-b transition-colors hover:bg-muted/50"
+                className="border-b border-emerald-100 transition-colors hover:bg-emerald-50/50 last:border-0"
               >
-                <td className="px-4 py-3 font-medium">{quantityRange}</td>
+                <td className="px-4 py-3 font-medium text-gray-900">{quantityRange}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold">
+                    <span className="font-bold text-emerald-700">
                       ${tier.pricePerUnit.toFixed(2)}
                     </span>
                     {tier.label && (
-                      <span className="text-sm text-muted-foreground">
-                        ({tier.label})
+                      <span className="text-xs font-medium text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">
+                        {tier.label}
                       </span>
                     )}
                   </div>

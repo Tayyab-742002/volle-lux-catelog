@@ -35,7 +35,7 @@ export function ProductHeader({
         {/* Product Code / SKU */}
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium text-gray-600">SKU:</span>
-          <span className="px-3 py-1.5 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-lg text-sm font-semibold text-emerald-800 border border-emerald-200">
+          <span className="px-3 py-1.5 bg-linear-to-r from-emerald-100 to-teal-100 rounded-lg text-sm font-semibold text-emerald-700 border border-emerald-400">
             {productCode}
           </span>
         </div>

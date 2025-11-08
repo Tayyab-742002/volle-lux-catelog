@@ -74,24 +74,28 @@ export function QuantityPriceSelector({
           min="1"
           value={quantity}
           onChange={(e) => handleQuantityChange(e.target.value)}
-          className="w-32 border border-neutral-300 focus:border-none"
+          className="w-32 border border-gray-400 focus-visible:ring-emerald-600/50! focus-visible:ring-2!"
         />
       </div>
 
       {/* Dynamic Price Display */}
-      <div className="space-y-2 rounded-lg border border-neutral-300 bg-neutral-50 p-6">
+      <div className="space-y-2 rounded-lg border border-gray-300 bg-white p-6">
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold">${pricePerUnit.toFixed(2)}</span>
-          <span className="text-sm text-muted-foreground">per unit</span>
+          <span className="text-2xl font-bold text-gray-900">
+            ${pricePerUnit.toFixed(2)}
+          </span>
+          <span className="text-sm text-gray-600">per unit</span>
         </div>
         {quantity > 1 && (
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-gray-600">
             Total:{" "}
-            <span className="font-semibold">${totalPrice.toFixed(2)}</span>
+            <span className="font-bold text-gray-900">
+              ${totalPrice.toFixed(2)}
+            </span>
           </div>
         )}
         {activeTier?.label && (
-          <div className="mt-2 inline-block rounded-md bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+          <div className="mt-2 inline-block rounded-full bg-linear-to-r from-emerald-600 to-teal-600 px-3 py-1 text-xs font-semibold text-white shadow-md">
             {activeTier.label}
           </div>
         )}

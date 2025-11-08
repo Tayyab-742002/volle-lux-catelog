@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Package, Zap } from "lucide-react";
+import { ArrowRight} from "lucide-react";
 
 export function FinalCTA() {
   return (
