@@ -14,15 +14,18 @@ import {
   CATEGORY_BY_SLUG_QUERY,
   PRODUCT_COUNT_BY_CATEGORY_QUERY,
   HOMEPAGE_DATA_QUERY,
+  ALL_BANNERS_QUERY,
 } from "./queries";
 import {
   transformSanityProduct,
   transformSanityCategory,
+  transformSanityBanner,
   buildFilterString,
   buildOrderString,
   safeQuery,
   SanityProduct,
   SanityCategory,
+  SanityBanner,
 } from "./helpers";
 
 /**
@@ -183,6 +186,17 @@ export async function getProductCountByCategory(categoryId: string) {
     return await client.fetch<number>(PRODUCT_COUNT_BY_CATEGORY_QUERY, {
       categoryId,
     });
+  });
+}
+
+// Banners
+export async function getAllBanners() {
+  return safeQuery(async () => {
+    const { data } = await sanityFetch({
+      query: ALL_BANNERS_QUERY,
+      tags: ["banners:all"],
+    });
+    return (data as SanityBanner[]).map(transformSanityBanner);
   });
 }
 

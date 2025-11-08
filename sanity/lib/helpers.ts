@@ -108,6 +108,28 @@ export interface SanityCategory {
   sortOrder: number;
 }
 
+export interface SanityBanner {
+  _id: string;
+  _type: string;
+  title: string;
+  description: string;
+  index: number;
+  isActive: boolean;
+  backgroundImage: {
+    asset: {
+      _id: string;
+      url: string;
+      metadata: {
+        dimensions: {
+          width: number;
+          height: number;
+        };
+      };
+    };
+    alt: string;
+  };
+}
+
 // Transform Sanity product to our Product type
 export function transformSanityProduct(sanityProduct: SanityProduct) {
   return {
@@ -159,6 +181,18 @@ export function transformSanityCategory(sanityCategory: SanityCategory) {
     image: sanityCategory.image?.asset?.url || "",
     isActive: sanityCategory.isActive,
     sortOrder: sanityCategory.sortOrder,
+  };
+}
+
+// Transform Sanity banner to our Banner type
+export function transformSanityBanner(sanityBanner: SanityBanner) {
+  return {
+    id: sanityBanner._id,
+    title: sanityBanner.title,
+    description: sanityBanner.description,
+    index: sanityBanner.index,
+    image: sanityBanner.backgroundImage?.asset?.url || "",
+    alt: sanityBanner.backgroundImage?.alt || sanityBanner.title,
   };
 }
 

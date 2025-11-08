@@ -216,6 +216,34 @@ export const CATEGORY_BY_SLUG_QUERY = `*[_type == "category" && slug.current == 
 // Product count by category
 export const PRODUCT_COUNT_BY_CATEGORY_QUERY = `*[_type == "product" && isActive == true && category._ref == $categoryId] | length`;
 
+// Banner query
+export const BANNER_QUERY = `
+  _id,
+  _type,
+  title,
+  description,
+  index,
+  isActive,
+  backgroundImage {
+    asset-> {
+      _id,
+      url,
+      metadata {
+        dimensions {
+          width,
+          height
+        }
+      }
+    },
+    alt
+  }
+`;
+
+// All banners query (ordered by index)
+export const ALL_BANNERS_QUERY = `*[_type == "banner" && isActive == true] | order(index asc) {
+  ${BANNER_QUERY}
+}`;
+
 // Homepage data query (categories + featured products)
 export const HOMEPAGE_DATA_QUERY = `{
   "categories": *[_type == "category" && isActive == true] | order(sortOrder asc, name asc) [0...6] {
