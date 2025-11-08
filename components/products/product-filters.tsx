@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
+// import { Slider } from "@/components/ui/slider";
 import { X, SlidersHorizontal } from "lucide-react";
 import {
   Sheet,
@@ -23,7 +23,7 @@ import {
   useMemo,
   useCallback,
   useState,
-  useRef,
+  // useRef,
   useEffect,
   startTransition,
 } from "react";
@@ -81,7 +81,7 @@ function FilterContent({
   const [optimisticFilters, setOptimisticFilters] = useState<
     Record<string, string[]>
   >({});
-  const priceDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  // const priceDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const filters: FilterGroup[] = useMemo(() => {
     if (categories && categories.length > 0) {
@@ -168,21 +168,21 @@ function FilterContent({
     [searchParams, pathname, router, activeFilters]
   );
 
-  const updatePriceRange = useCallback(
-    (values: number[]) => {
-      setLocalPriceRange(values);
-      if (priceDebounceRef.current) clearTimeout(priceDebounceRef.current);
-      priceDebounceRef.current = setTimeout(() => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("priceMin", values[0].toString());
-        params.set("priceMax", values[1].toString());
-        startTransition(() => {
-          router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-        });
-      }, 120);
-    },
-    [searchParams, pathname, router]
-  );
+  // const updatePriceRange = useCallback(
+  //   (values: number[]) => {
+  //     setLocalPriceRange(values);
+  //     if (priceDebounceRef.current) clearTimeout(priceDebounceRef.current);
+  //     priceDebounceRef.current = setTimeout(() => {
+  //       const params = new URLSearchParams(searchParams.toString());
+  //       params.set("priceMin", values[0].toString());
+  //       params.set("priceMax", values[1].toString());
+  //       startTransition(() => {
+  //         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  //       });
+  //     }, 120);
+  //   },
+  //   [searchParams, pathname, router]
+  // );
 
   const clearFilters = useCallback(() => {
     const params = new URLSearchParams();

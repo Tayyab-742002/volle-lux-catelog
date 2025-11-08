@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { X, Sparkles } from "lucide-react";
+import { X } from "lucide-react";
 
 interface AnnouncementBannerProps {
   announcement: {
@@ -15,15 +15,18 @@ interface AnnouncementBannerProps {
 }
 
 export function AnnouncementBanner({ announcement }: AnnouncementBannerProps) {
-  const [isVisible, setIsVisible] = useState(true);
-
-  useEffect(() => {
-    // Check if announcement was dismissed
-    const dismissedId = localStorage.getItem("dismissedAnnouncementId");
-    if (dismissedId === announcement.id) {
-      setIsVisible(false);
+  // Check localStorage on client-side only to prevent hydration mismatches
+  // Initialize state based on localStorage check
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window === "undefined") return true;
+    try {
+      const dismissedId = localStorage.getItem("dismissedAnnouncementId");
+      return dismissedId !== announcement.id;
+    } catch {
+      // localStorage might not be available (SSR)
+      return true;
     }
-  }, [announcement.id]);
+  });
 
   const handleDismiss = () => {
     if (announcement.dismissible) {
@@ -37,17 +40,17 @@ export function AnnouncementBanner({ announcement }: AnnouncementBannerProps) {
   }
 
   return (
-    <div className="relative z-60 w-full bg-gray-900 border-b-2 border-linear-to-r from-emerald-500 via-teal-500 to-cyan-500 shadow-lg">
+    <div className="relative z-60 w-full overflow-hidden bg-gray-900 border-b-2 border-emerald-500 shadow-lg">
       {/* Vibrant gradient border effect */}
       <div className="absolute inset-0 bg-linear-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 pointer-events-none"></div>
 
-      {/* Animated shimmer effect */}
-      <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent animate-shimmer pointer-events-none"></div>
+      {/* Animated shimmer effect - constrained to prevent overflow */}
+      <div className="absolute inset-0 w-full h-full bg-linear-to-r from-transparent via-white/5 to-transparent animate-shimmer pointer-events-none overflow-hidden"></div>
 
-      <div className="relative container mx-auto px-4 py-3 sm:py-3.5">
+      <div className="relative w-full mx-auto px-4 py-3 sm:py-3.5">
         <div className="flex items-center justify-center gap-3 sm:gap-4">
           {/* Message with vibrant accent */}
-          <p className="flex-1 text-center text-sm font-medium sm:text-base text-gray-100">
+          <p className="flex-1 text-center text-sm font-medium sm:text-base text-gray-100 min-w-0">
             <span className="text-white font-semibold">
               {announcement.message}
             </span>
