@@ -1,14 +1,17 @@
 // Querying with "sanityFetch" will keep content automatically updated
 // Before using it, import and render "<SanityLive />" in your layout, see
 // https://github.com/sanity-io/next-sanity#live-content-api for more information.
+
 import { defineLive } from "next-sanity/live";
 import { client } from "./client";
 import { token, browserToken } from "../env";
 
 // Enable live updates with tokens for real-time content
-// Note: defineLive can only be used in React Server Components
+// defineLive can only be used in React Server Components
+// This module should ONLY be imported in Server Components
+// WARNING: This will throw an error if imported in client components
 export const { sanityFetch, SanityLive } = defineLive({
   client,
   serverToken: token || undefined, // Server-side live updates
-  browserToken: browserToken || undefined, // Client-side live preview
+  browserToken: browserToken ? browserToken : false, // Set to false to silence warning about Viewer rights
 });

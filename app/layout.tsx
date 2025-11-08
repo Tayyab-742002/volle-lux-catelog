@@ -2,12 +2,9 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import {
-  Header,
-  Footer,
-  AnnouncementBannerWrapper,
-  SanityLiveWrapper,
-} from "@/components/common";
+import { Header, Footer } from "@/components/common";
+import { AnnouncementBannerWrapper } from "@/components/common/announcement-banner-wrapper";
+import { SanityLiveWrapper } from "@/components/common/sanity-live-wrapper";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
 import {
