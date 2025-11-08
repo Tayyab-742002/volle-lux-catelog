@@ -121,7 +121,7 @@ export function Header({
                 alt="VOLLE"
                 width={100}
                 height={32}
-                className="h-8 w-auto transition-transform duration-300 group-hover:scale-105"
+                className="h-8 w-auto transition-transform duration-300 group-hover:scale-105 brightness-0 invert"
               />
             </Link>
 
