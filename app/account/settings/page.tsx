@@ -143,7 +143,10 @@ export default function AccountSettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2
+          className="h-8 w-8 animate-spin text-emerald-600"
+          strokeWidth={2}
+        />
       </div>
     );
   }
@@ -155,7 +158,7 @@ export default function AccountSettingsPage() {
   return (
     <div className="space-y-8">
       {/* Custom Tabs Navigation */}
-      <div className="border border-neutral-300 bg-card shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-gray-300 bg-white shadow-lg overflow-hidden">
         <div className="overflow-x-auto">
           <nav className="flex min-w-max">
             <button
@@ -163,11 +166,11 @@ export default function AccountSettingsPage() {
               className={cn(
                 "flex flex-1 items-center justify-center gap-2 px-6 py-3 text-sm font-medium transition-all whitespace-nowrap border-b-2",
                 activeTab === "profile"
-                  ? "border-primary bg-primary/5 text-primary"
-                  : "border-transparent text-muted-foreground hover:bg-neutral-50 hover:text-foreground"
+                  ? "border-emerald-600 bg-linear-to-r from-emerald-50 to-teal-50 text-emerald-700"
+                  : "border-transparent text-gray-600 hover:bg-emerald-50/50 hover:text-emerald-700"
               )}
             >
-              <User className="h-4 w-4" strokeWidth={1.5} />
+              <User className="h-4 w-4" strokeWidth={2} />
               Profile
             </button>
             <button
@@ -175,11 +178,11 @@ export default function AccountSettingsPage() {
               className={cn(
                 "flex flex-1 items-center justify-center gap-2 px-6 py-3 text-sm font-medium transition-all whitespace-nowrap border-b-2",
                 activeTab === "password"
-                  ? "border-primary bg-primary/5 text-primary"
-                  : "border-transparent text-muted-foreground hover:bg-neutral-50 hover:text-foreground"
+                  ? "border-emerald-600 bg-linear-to-r from-emerald-50 to-teal-50 text-emerald-700"
+                  : "border-transparent text-gray-600 hover:bg-emerald-50/50 hover:text-emerald-700"
               )}
             >
-              <Lock className="h-4 w-4" strokeWidth={1.5} />
+              <Lock className="h-4 w-4" strokeWidth={2} />
               Password
             </button>
           </nav>
@@ -188,17 +191,18 @@ export default function AccountSettingsPage() {
 
       {/* Profile Tab */}
       {activeTab === "profile" && (
-        <div className="border border-neutral-400 bg-card shadow-sm overflow-hidden">
-          <div className="border-b border-neutral-400 p-4 sm:p-6">
+        <div className="rounded-2xl border border-gray-300 bg-white shadow-lg overflow-hidden">
+          <div className="border-b border-gray-200 p-4 sm:p-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <User className="h-5 w-5 text-primary" strokeWidth={1.5} />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-emerald-100 to-teal-100">
+                <User className="h-5 w-5 text-emerald-600" strokeWidth={2} />
               </div>
               <div>
-                <h3 className="text-lg font-semibold tracking-tight">
+                <h3 className="text-lg font-bold text-gray-900 tracking-tight flex items-center gap-3">
+                  <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                   Profile Information
                 </h3>
-                <p className="text-xs sm:text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-gray-600">
                   Update your personal details
                 </p>
               </div>
@@ -210,7 +214,7 @@ export default function AccountSettingsPage() {
               <Alert
                 className={`mb-6 ${profileMessage.type === "success" ? "bg-green-50 text-green-900 border-green-200" : "bg-red-50 text-red-900 border-red-200"}`}
               >
-                <CheckCircle className="h-4 w-4" />
+                <CheckCircle className="h-4 w-4" strokeWidth={2} />
                 <AlertDescription>{profileMessage.text}</AlertDescription>
               </Alert>
             )}
@@ -224,7 +228,7 @@ export default function AccountSettingsPage() {
                   onChange={(e) =>
                     setProfile({ ...profile, fullName: e.target.value })
                   }
-                  className="mt-2 border border-neutral-300"
+                  className="mt-2 border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                   disabled={isSubmitting}
                 />
               </div>
@@ -236,9 +240,9 @@ export default function AccountSettingsPage() {
                   type="email"
                   value={profile.email}
                   disabled
-                  className="mt-2 opacity-60 border border-neutral-300"
+                  className="mt-2 opacity-60 border border-gray-300"
                 />
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-1 text-xs text-gray-600">
                   Email cannot be changed. Contact support if needed.
                 </p>
               </div>
@@ -252,7 +256,7 @@ export default function AccountSettingsPage() {
                   onChange={(e) =>
                     setProfile({ ...profile, phone: e.target.value })
                   }
-                  className="mt-2 border border-neutral-300"
+                  className="mt-2 border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                   disabled={isSubmitting}
                   placeholder="Enter your phone number"
                 />
@@ -266,16 +270,23 @@ export default function AccountSettingsPage() {
                   onChange={(e) =>
                     setProfile({ ...profile, company: e.target.value })
                   }
-                  className="mt-2 border border-neutral-300"
+                  className="mt-2 border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                   disabled={isSubmitting}
                   placeholder="Enter your company name"
                 />
               </div>
 
               <div className="flex gap-3">
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+                >
                   {isSubmitting && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2
+                      className="mr-2 h-4 w-4 animate-spin"
+                      strokeWidth={2}
+                    />
                   )}
                   Save Changes
                 </Button>
@@ -294,6 +305,7 @@ export default function AccountSettingsPage() {
                     }
                     setProfileMessage(null);
                   }}
+                  className="border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
                 >
                   Cancel
                 </Button>
@@ -305,17 +317,18 @@ export default function AccountSettingsPage() {
 
       {/* Password Tab */}
       {activeTab === "password" && (
-        <div className="border border-neutral-400 bg-card shadow-sm overflow-hidden">
-          <div className="border-b border-neutral-400 p-4 sm:p-6">
+        <div className="rounded-2xl border border-gray-300 bg-white shadow-lg overflow-hidden">
+          <div className="border-b border-gray-200 p-4 sm:p-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <Lock className="h-5 w-5 text-primary" strokeWidth={1.5} />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-emerald-100 to-teal-100">
+                <Lock className="h-5 w-5 text-emerald-600" strokeWidth={2} />
               </div>
               <div>
-                <h3 className="text-lg font-semibold tracking-tight">
+                <h3 className="text-lg font-bold text-gray-900 tracking-tight flex items-center gap-3">
+                  <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                   Change Password
                 </h3>
-                <p className="text-xs sm:text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-gray-600">
                   Update your password to keep your account secure
                 </p>
               </div>
@@ -327,7 +340,7 @@ export default function AccountSettingsPage() {
               <Alert
                 className={`mb-6 ${passwordMessage.type === "success" ? "bg-green-50 text-green-900 border-green-200" : "bg-red-50 text-red-900 border-red-200"}`}
               >
-                <CheckCircle className="h-4 w-4" />
+                <CheckCircle className="h-4 w-4" strokeWidth={2} />
                 <AlertDescription>{passwordMessage.text}</AlertDescription>
               </Alert>
             )}
@@ -346,7 +359,7 @@ export default function AccountSettingsPage() {
                     })
                   }
                   placeholder="Enter current password"
-                  className="mt-2 border border-neutral-300"
+                  className="mt-2 border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                   disabled={isSubmitting}
                 />
               </div>
@@ -364,10 +377,10 @@ export default function AccountSettingsPage() {
                     })
                   }
                   placeholder="Enter new password"
-                  className="mt-2 border border-neutral-300"
+                  className="mt-2 border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                   disabled={isSubmitting}
                 />
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-1 text-xs text-gray-600">
                   Minimum 6 characters
                 </p>
               </div>
@@ -385,15 +398,22 @@ export default function AccountSettingsPage() {
                     })
                   }
                   placeholder="Confirm new password"
-                  className="mt-2 border border-neutral-300"
+                  className="mt-2 border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                   disabled={isSubmitting}
                 />
               </div>
 
               <div className="flex gap-3">
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+                >
                   {isSubmitting && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2
+                      className="mr-2 h-4 w-4 animate-spin"
+                      strokeWidth={2}
+                    />
                   )}
                   Update Password
                 </Button>
@@ -409,6 +429,7 @@ export default function AccountSettingsPage() {
                     });
                     setPasswordMessage(null);
                   }}
+                  className="border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
                 >
                   Cancel
                 </Button>

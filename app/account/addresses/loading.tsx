@@ -4,10 +4,10 @@ export default function Loading() {
       {/* Header Skeleton */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-2">
-          <div className="h-8 w-48 bg-neutral-400 rounded animate-pulse" />
-          <div className="h-5 w-64 bg-neutral-400 rounded animate-pulse" />
+          <div className="h-8 w-48 bg-emerald-300 rounded animate-pulse" />
+          <div className="h-5 w-64 bg-emerald-300 rounded animate-pulse" />
         </div>
-        <div className="h-10 w-36 bg-neutral-400 rounded animate-pulse" />
+        <div className="h-10 w-36 bg-emerald-300 rounded animate-pulse" />
       </div>
 
       {/* Address Grid Skeleton */}
@@ -15,22 +15,22 @@ export default function Loading() {
         {[1, 2].map((i) => (
           <div
             key={i}
-            className="rounded-xl border border-neutral-400 bg-card p-4 sm:p-6"
+            className="rounded-xl border border-emerald-300 bg-card p-4 sm:p-6"
           >
             <div className="flex items-start justify-between gap-3 mb-4">
               <div className="flex-1 space-y-2">
-                <div className="h-6 w-32 bg-neutral-400 rounded animate-pulse" />
-                <div className="h-4 w-40 bg-neutral-400 rounded animate-pulse" />
+                <div className="h-6 w-32 bg-emerald-300 rounded animate-pulse" />
+                <div className="h-4 w-40 bg-emerald-300 rounded animate-pulse" />
               </div>
               <div className="flex gap-1">
-                <div className="h-8 w-8 bg-neutral-400 rounded animate-pulse" />
-                <div className="h-8 w-8 bg-neutral-400 rounded animate-pulse" />
+                <div className="h-8 w-8 bg-emerald-300 rounded animate-pulse" />
+                <div className="h-8 w-8 bg-emerald-300 rounded animate-pulse" />
               </div>
             </div>
             <div className="space-y-2">
-              <div className="h-4 w-full bg-neutral-400 rounded animate-pulse" />
-              <div className="h-4 w-3/4 bg-neutral-400 rounded animate-pulse" />
-              <div className="h-4 w-1/2 bg-neutral-400 rounded animate-pulse" />
+              <div className="h-4 w-full bg-emerald-300 rounded animate-pulse" />
+              <div className="h-4 w-3/4 bg-emerald-300 rounded animate-pulse" />
+              <div className="h-4 w-1/2 bg-emerald-300 rounded animate-pulse" />
             </div>
           </div>
         ))}

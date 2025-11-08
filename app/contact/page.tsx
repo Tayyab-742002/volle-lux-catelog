@@ -5,7 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Send,
+  Leaf,
+  Clock,
+  CheckCircle,
+} from "lucide-react";
+
+// Force dynamic rendering to prevent static generation issues with SanityLive
+export const dynamic = 'force-dynamic';
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,117 +75,146 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 relative overflow-hidden">
+      {/* Decorative Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 -right-20 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+      </div>
+
       {/* Breadcrumbs */}
-      <div className="border-b border-neutral-400">
-        <div className="container mx-auto px-6 py-6">
+      <div className="relative z-10 border-b-2 border-emerald-100 bg-white/80 backdrop-blur-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-6">
           <Breadcrumbs items={[{ label: "Contact", href: "/contact" }]} />
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-16 md:py-20 lg:py-24">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-16 md:py-20 lg:py-24">
         <div className="mx-auto max-w-6xl">
           {/* Page Header */}
-          <div className="mb-16 md:mb-20">
-            <h1 className="mb-4 text-4xl font-light text-neutral-900 md:text-5xl lg:text-6xl">
-              Get in Touch
+          <div className="mb-16 md:mb-20 text-center">
+            <div className="flex items-center justify-center gap-2 mb-4 text-emerald-600">
+              <Leaf className="h-6 w-6" />
+              <span className="text-sm font-semibold uppercase tracking-wider">
+                Get In Touch
+              </span>
+            </div>
+            <h1 className="mb-4 text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900">
+              We&apos;re Here to Help
             </h1>
-            <p className="text-lg text-neutral-600">
-              Have a question? We&apos;re here to help
+            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+              Have questions about our eco-friendly packaging? We&apos;d love to
+              hear from you.
             </p>
           </div>
 
-          <div className="grid gap-16 lg:grid-cols-3 lg:gap-20">
+          <div className="grid gap-12 lg:grid-cols-3 lg:gap-16">
             {/* Contact Info Sidebar */}
-            <div className="space-y-12">
-              <div className="space-y-3">
-                <div className="mb-4">
-                  <Mail
-                    className="h-5 w-5 text-neutral-900"
-                    strokeWidth={1.5}
-                  />
+            <div className="space-y-6">
+              {/* Email Card */}
+              <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-emerald-100 hover:shadow-xl transition-all duration-300 group">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg group-hover:scale-110 transition-transform">
+                    <Mail className="h-6 w-6 text-white" strokeWidth={2} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-700 mb-2">
+                      Email
+                    </h3>
+                    <a
+                      href="mailto:sales@bubblewrapshop.co.uk"
+                      className="block text-sm font-medium text-gray-700 hover:text-emerald-600 transition-colors"
+                    >
+                      sales@bubblewrapshop.co.uk
+                    </a>
+                  </div>
                 </div>
-                <h3 className="text-sm font-normal text-neutral-900">Email</h3>
-                <a
-                  href="mailto:sales@bubblewrapshop.co.uk"
-                  className="block text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
-                >
-                  sales@bubblewrapshop.co.uk
-                </a>
               </div>
 
-              <div className="space-y-3">
-                <div className="mb-4">
-                  <Phone
-                    className="h-5 w-5 text-neutral-900"
-                    strokeWidth={1.5}
-                  />
+              {/* Phone Card */}
+              <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-emerald-100 hover:shadow-xl transition-all duration-300 group">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 shadow-lg group-hover:scale-110 transition-transform">
+                    <Phone className="h-6 w-6 text-white" strokeWidth={2} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-teal-700 mb-2">
+                      Phone
+                    </h3>
+                    <a
+                      href="tel:01254916167"
+                      className="block text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors mb-2"
+                    >
+                      01254 916167
+                    </a>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <Clock className="h-3 w-3" />
+                      <span>Mon - Fri, 9 AM - 6 PM BST</span>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-sm font-normal text-neutral-900">Phone</h3>
-                <a
-                  href="tel:01254916167"
-                  className="block text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
-                >
-                  01254 916167
-                </a>
-                <p className="text-sm text-neutral-500">
-                  Mon - Fri, 9 AM - 6 PM BST
-                </p>
               </div>
 
-              <div className="space-y-3">
-                <div className="mb-4">
-                  <MapPin
-                    className="h-5 w-5 text-neutral-900"
-                    strokeWidth={1.5}
-                  />
+              {/* Office Card */}
+              <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-emerald-100 hover:shadow-xl transition-all duration-300 group">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 shadow-lg group-hover:scale-110 transition-transform">
+                    <MapPin className="h-6 w-6 text-white" strokeWidth={2} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-cyan-700 mb-2">
+                      Office
+                    </h3>
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      Bubble Wrap Shop (NW) Ltd
+                      <br />
+                      Unit 3, GBL House
+                      <br />
+                      Cleaver Street, Blackburn
+                      <br />
+                      BB1 5DG, United Kingdom
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-sm font-normal text-neutral-900">Office</h3>
-                <p className="text-sm text-neutral-600">
-                  Bubble Wrap Shop (NW) Ltd
-                  <br />
-                  Unit 3, GBL House
-                  <br />
-                  Cleaver Street, Blackburn
-                  <br />
-                  BB1 5DG, United Kingdom
-                </p>
               </div>
             </div>
 
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <div className="border-t border-neutral-400 pt-8 lg:pt-0 lg:border-t-0">
-                <h2 className="mb-8 text-2xl font-light text-neutral-900">
-                  Send us a Message
-                </h2>
+              <div className="bg-white rounded-2xl p-8 md:p-10 shadow-xl border-2 border-emerald-100">
+                <div className="flex items-center gap-2 mb-8">
+                  <div className="h-1 w-1 rounded-full bg-emerald-500"></div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                    Send us a Message
+                  </h2>
+                </div>
 
-                <form onSubmit={handleSubmit} className="space-y-8">
-                  <div className="grid gap-8 md:grid-cols-2">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid gap-6 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label
                         htmlFor="name"
-                        className="text-sm font-normal text-neutral-900"
+                        className="text-sm font-semibold text-gray-900"
                       >
-                        Name <span className="text-neutral-400">*</span>
+                        Name <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="name"
                         name="name"
                         type="text"
                         required
-                        placeholder="Your name"
-                        className="border-neutral-300 bg-transparent focus:border-neutral-900"
+                        placeholder="John Doe"
+                        className="h-11 border-2 border-emerald-200 bg-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label
                         htmlFor="email"
-                        className="text-sm font-normal text-neutral-900"
+                        className="text-sm font-semibold text-gray-900"
                       >
-                        Email <span className="text-neutral-400">*</span>
+                        Email <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="email"
@@ -182,16 +222,16 @@ export default function ContactPage() {
                         type="email"
                         required
                         placeholder="your.email@example.com"
-                        className="border-neutral-300 bg-transparent focus:border-neutral-900"
+                        className="h-11 border-2 border-emerald-200 bg-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
                       />
                     </div>
                   </div>
 
-                  <div className="grid gap-8 md:grid-cols-2">
+                  <div className="grid gap-6 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label
                         htmlFor="company"
-                        className="text-sm font-normal text-neutral-900"
+                        className="text-sm font-semibold text-gray-900"
                       >
                         Company
                       </Label>
@@ -199,15 +239,15 @@ export default function ContactPage() {
                         id="company"
                         name="company"
                         type="text"
-                        placeholder="Your company name"
-                        className="border-neutral-300 bg-transparent focus:border-neutral-900"
+                        placeholder="Your company"
+                        className="h-11 border-2 border-emerald-200 bg-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label
                         htmlFor="phone"
-                        className="text-sm font-normal text-neutral-900"
+                        className="text-sm font-semibold text-gray-900"
                       >
                         Phone
                       </Label>
@@ -216,7 +256,7 @@ export default function ContactPage() {
                         name="phone"
                         type="tel"
                         placeholder="01254 916167"
-                        className="border-neutral-300 bg-transparent focus:border-neutral-900"
+                        className="h-11 border-2 border-emerald-200 bg-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
                       />
                     </div>
                   </div>
@@ -224,9 +264,9 @@ export default function ContactPage() {
                   <div className="space-y-2">
                     <Label
                       htmlFor="subject"
-                      className="text-sm font-normal text-neutral-900"
+                      className="text-sm font-semibold text-gray-900"
                     >
-                      Subject <span className="text-neutral-400">*</span>
+                      Subject <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="subject"
@@ -234,35 +274,39 @@ export default function ContactPage() {
                       type="text"
                       required
                       placeholder="What's this about?"
-                      className="border-neutral-300 bg-transparent focus:border-neutral-900"
+                      className="h-11 border-2 border-emerald-200 bg-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label
                       htmlFor="message"
-                      className="text-sm font-normal text-neutral-900"
+                      className="text-sm font-semibold text-gray-900"
                     >
-                      Message <span className="text-neutral-400">*</span>
+                      Message <span className="text-red-500">*</span>
                     </Label>
                     <Textarea
                       id="message"
                       name="message"
                       required
-                      rows={8}
+                      rows={6}
                       placeholder="Tell us how we can help..."
-                      className="resize-none border border-neutral-300 bg-transparent focus:border-none"
+                      className="resize-none border-2 border-emerald-200 bg-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
                     />
                   </div>
 
                   {submitStatus === "success" && (
-                    <div className="border border-neutral-400 bg-neutral-50 p-4 text-sm text-neutral-900">
-                      Thank you! Your message has been sent successfully.
+                    <div className="border-2 border-emerald-200 bg-emerald-50 p-4 rounded-xl flex items-start gap-3">
+                      <CheckCircle className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-sm font-medium text-emerald-800">
+                        Thank you! Your message has been sent successfully.
+                        We&apos;ll get back to you soon.
+                      </p>
                     </div>
                   )}
 
                   {submitStatus === "error" && (
-                    <div className="border border-neutral-400 bg-neutral-50 p-4 text-sm text-neutral-900">
+                    <div className="border-2 border-red-200 bg-red-50 p-4 rounded-xl text-sm text-red-800">
                       {errorMessage ||
                         "Something went wrong. Please try again later."}
                     </div>
@@ -272,14 +316,14 @@ export default function ContactPage() {
                     type="submit"
                     size="lg"
                     disabled={isSubmitting}
-                    className="h-12 bg-primary px-8 text-sm cursor-pointer font-normal text-white hover:bg-primary/70"
+                    className="h-12 w-full md:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 px-8 text-base font-semibold text-white hover:shadow-lg transition-all duration-300 hover:scale-105"
                   >
                     {isSubmitting ? (
                       "Sending..."
                     ) : (
                       <>
                         Send Message
-                        <Send className="ml-2 h-4 w-4" strokeWidth={1.5} />
+                        <Send className="ml-2 h-5 w-5" strokeWidth={2} />
                       </>
                     )}
                   </Button>

@@ -48,7 +48,7 @@ export function AdminSidebar() {
     <>
       {/* Mobile/Tablet Top Tabs (< 1024px) */}
       <div className="lg:hidden mb-6">
-        <div className=" border border-neutral-300 bg-card shadow-sm overflow-hidden">
+        <div className="rounded-xl border border-gray-300 bg-white shadow-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <nav className="flex min-w-max">
               {navigation.map((item) => {
@@ -68,11 +68,11 @@ export function AdminSidebar() {
                       className={cn(
                         "flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all whitespace-nowrap border-b-2",
                         isActive
-                          ? "border-primary bg-primary/5 text-primary"
-                          : "border-transparent text-muted-foreground hover:bg-neutral-50 hover:text-foreground"
+                          ? "border-emerald-600 bg-linear-to-r from-emerald-100 to-teal-100 text-emerald-700"
+                          : "border-transparent text-gray-600 hover:bg-emerald-200 hover:text-emerald-700"
                       )}
                     >
-                      <Icon className="h-4 w-4" strokeWidth={1.5} />
+                      <Icon className="h-4 w-4" strokeWidth={2} />
                       <span className="hidden sm:inline">{item.name}</span>
                     </a>
                   );
@@ -85,11 +85,11 @@ export function AdminSidebar() {
                     className={cn(
                       "flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all whitespace-nowrap border-b-2",
                       isActive
-                        ? "border-primary bg-primary/5 text-primary"
-                        : "border-transparent text-muted-foreground hover:bg-neutral-50 hover:text-foreground"
+                        ? "border-emerald-600 bg-linear-to-r from-emerald-100 to-teal-100 text-emerald-700"
+                        : "border-transparent text-gray-600 hover:bg-emerald-200 hover:text-emerald-700"
                     )}
                   >
-                    <Icon className="h-4 w-4" strokeWidth={1.5} />
+                    <Icon className="h-4 w-4" strokeWidth={2} />
                     <span className="hidden sm:inline">{item.name}</span>
                   </Link>
                 );
@@ -101,8 +101,8 @@ export function AdminSidebar() {
 
       {/* Desktop Sidebar Navigation (≥ 1024px) */}
       <aside className="hidden lg:block lg:col-span-1">
-        <div className="sticky top-4  border border-neutral-300 bg-card shadow-sm overflow-hidden">
-          <nav className="divide-y divide-neutral-200">
+        <div className="sticky top-4 rounded-xl border border-gray-300 bg-white shadow-lg overflow-hidden">
+          <nav className="divide-y divide-gray-400">
             {navigation.map((item) => {
               const isActive =
                 pathname === item.href ||
@@ -120,11 +120,11 @@ export function AdminSidebar() {
                     className={cn(
                       "flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all",
                       isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-neutral-50 hover:text-foreground"
+                        ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white"
+                        : "text-gray-600 hover:bg-emerald-200 hover:text-emerald-700"
                     )}
                   >
-                    <Icon className="h-5 w-5" strokeWidth={1.5} />
+                    <Icon className="h-5 w-5" strokeWidth={2} />
                     {item.name}
                   </a>
                 );
@@ -135,13 +135,13 @@ export function AdminSidebar() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 border-b border-neutral-300 text-sm font-medium transition-all",
+                    "flex items-center gap-3 px-4 py-3 border-b border-gray-200 text-sm font-medium transition-all last:border-0",
                     isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-neutral-50 hover:text-foreground"
+                      ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white"
+                      : "text-gray-600 hover:bg-emerald-200 hover:text-emerald-700"
                   )}
                 >
-                  <Icon className="h-5 w-5" strokeWidth={1.5} />
+                  <Icon className="h-5 w-5" strokeWidth={2} />
                   {item.name}
                 </Link>
               );

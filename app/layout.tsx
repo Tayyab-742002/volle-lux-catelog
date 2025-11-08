@@ -2,16 +2,19 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import { Header, Footer } from "@/components/common";
+import {
+  Header,
+  Footer,
+  AnnouncementBannerWrapper,
+  SanityLiveWrapper,
+} from "@/components/common";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
-import { SanityLive } from "@/sanity/lib";
 import {
   getCategoriesWithFeaturedProducts,
   getAllProducts,
 } from "@/sanity/lib";
-import { Product } from "@/types/product";
-
+import Chatbot from "@/components/common/Chatbot";
 const roboto = Roboto({
   subsets: ["latin"],
   variable: "--font-roboto", // 3. Set the CSS variable
@@ -24,6 +27,10 @@ export const metadata: Metadata = {
   description:
     "Professional packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options.",
 };
+
+// Make layout dynamic to prevent issues with SanityLive during static generation
+// This ensures defineLive is only called in a proper Server Component context
+export const dynamic = "force-dynamic";
 
 export default async function RootLayout({
   children,
@@ -80,12 +87,15 @@ export default async function RootLayout({
         </Script>
         <AuthProvider>
           <CartProvider>
+            {/* Announcement Banner - Above Header */}
+            <AnnouncementBannerWrapper />
             <Header categories={categories || []} products={products || null} />
             <main className="flex-1">{children}</main>
             <Footer />
 
             {/* Enable real-time Sanity content updates */}
-            <SanityLive />
+            <Chatbot />
+            <SanityLiveWrapper />
           </CartProvider>
         </AuthProvider>
       </body>

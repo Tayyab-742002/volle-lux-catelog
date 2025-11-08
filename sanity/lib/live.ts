@@ -6,8 +6,9 @@ import { client } from "./client";
 import { token, browserToken } from "../env";
 
 // Enable live updates with tokens for real-time content
+// Note: defineLive can only be used in React Server Components
 export const { sanityFetch, SanityLive } = defineLive({
   client,
-  serverToken: token, // Server-side live updates
-  browserToken: browserToken, // Client-side live preview
+  serverToken: token || undefined, // Server-side live updates
+  browserToken: browserToken || undefined, // Client-side live preview
 });

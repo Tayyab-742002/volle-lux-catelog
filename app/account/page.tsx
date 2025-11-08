@@ -5,7 +5,7 @@ import { Package, ShoppingBag, DollarSign, TrendingUp } from "lucide-react";
 import { getCurrentUserServer } from "@/services/auth/auth-server.service";
 import { getUserOrders } from "@/services/orders/order.service";
 import { Button } from "@/components/ui/button";
-import { ORDER_STATUS_CONFIG, DASHBOARD_COLORS } from "@/lib/constants";
+import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 
 // Force fresh data on every request - no caching
 export const dynamic = "force-dynamic";
@@ -21,20 +21,25 @@ export default async function AccountDashboard() {
       <div className="flex items-center justify-center py-16 sm:py-20">
         <div className="text-center space-y-4 max-w-md px-4">
           <div className="flex justify-center">
-            <div className="rounded-full bg-primary/10 p-4">
-              <ShoppingBag className="h-8 w-8 text-primary" strokeWidth={1.5} />
+            <div className="rounded-full bg-linear-to-br from-emerald-100 to-teal-100 p-4 border border-emerald-200">
+              <ShoppingBag
+                className="h-8 w-8 text-emerald-600"
+                strokeWidth={2}
+              />
             </div>
           </div>
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-300">
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900">
               Welcome to Your Account
             </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2 text-sm text-gray-600">
               Please sign in to view your dashboard
             </p>
           </div>
           <Link href="/auth/login">
-            <Button>Sign In</Button>
+            <Button className="bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700">
+              Sign In
+            </Button>
           </Link>
         </div>
       </div>
@@ -91,27 +96,27 @@ async function DashboardContent({ userId }: { userId: string }) {
   return (
     <div className="space-y-8">
       {/* Stats Grid - Fully Responsive */}
-      <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 border lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          icon={<ShoppingBag className="h-5 w-5" strokeWidth={1.5} />}
+          icon={<ShoppingBag className="h-5 w-5" strokeWidth={2} />}
           label="Total Orders"
           value={totalOrders.toString()}
           color="primary"
         />
         <StatCard
-          icon={<DollarSign className="h-5 w-5" strokeWidth={1.5} />}
+          icon={<DollarSign className="h-5 w-5" strokeWidth={2} />}
           label="Total Spent"
           value={`$${totalSpent.toFixed(2)}`}
           color="secondary"
         />
         <StatCard
-          icon={<TrendingUp className="h-5 w-5" strokeWidth={1.5} />}
+          icon={<TrendingUp className="h-5 w-5" strokeWidth={2} />}
           label="Average Order"
           value={`$${averageOrder.toFixed(2)}`}
           color="tertiary"
         />
         <StatCard
-          icon={<Package className="h-5 w-5" strokeWidth={1.5} />}
+          icon={<Package className="h-5 w-5" strokeWidth={2} />}
           label="Last Order"
           value={lastOrderDate}
           small
@@ -121,46 +126,48 @@ async function DashboardContent({ userId }: { userId: string }) {
 
       {/* Order Status Breakdown - Only show if there are orders */}
       {totalOrders > 0 && (
-        <div className="rounded-xl border border-neutral-400 bg-card p-6 sm:p-8 shadow-sm">
-          <h3 className="text-lg font-semibold tracking-tight mb-6">
+        <div className="rounded-2xl border border-gray-300 bg-white p-6 sm:p-8 shadow-lg">
+          <h3 className="text-lg font-bold text-gray-900 tracking-tight mb-6 flex items-center gap-3">
+            <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
             Order Status
           </h3>
           <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
             <StatusCard
               label="Processing"
               value={ordersByStatus.processing}
-              color="quinary"
+              color="processing"
             />
             <StatusCard
               label="Shipped"
               value={ordersByStatus.shipped}
-              color="senary"
+              color="shipped"
             />
             <StatusCard
               label="Delivered"
               value={ordersByStatus.delivered}
-              color="septenary"
+              color="delivered"
             />
             <StatusCard
               label="Cancelled"
               value={ordersByStatus.cancelled}
-              color="octonary"
+              color="cancelled"
             />
           </div>
         </div>
       )}
 
       {/* Recent Orders */}
-      <div className="rounded-xl border border-neutral-400  bg-card shadow-sm overflow-hidden">
-        <div className="border-b border-neutral-400  p-4 sm:p-6">
+      <div className="rounded-2xl border border-gray-300 bg-white shadow-lg overflow-hidden">
+        <div className="border-b border-gray-200 p-4 sm:p-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
+            <h2 className="text-xl font-bold text-gray-900 tracking-tight sm:text-2xl flex items-center gap-3">
+              <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
               Recent Orders
             </h2>
             {totalOrders > 0 && (
               <Link
                 href="/account/orders"
-                className="text-sm text-primary hover:underline"
+                className="text-sm text-emerald-600 hover:text-emerald-700 hover:underline font-medium"
               >
                 View All
               </Link>
@@ -172,21 +179,25 @@ async function DashboardContent({ userId }: { userId: string }) {
           <div className="flex items-center justify-center py-12 sm:py-16">
             <div className="text-center space-y-4 max-w-md px-4">
               <div className="flex justify-center">
-                <div className="rounded-full bg-neutral-100  p-4">
+                <div className="rounded-full bg-linear-to-br from-emerald-100 to-teal-100 p-4 border border-emerald-200">
                   <Package
-                    className="h-8 w-8 text-muted-foreground"
-                    strokeWidth={1.5}
+                    className="h-8 w-8 text-emerald-600"
+                    strokeWidth={2}
                   />
                 </div>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold">No Orders Yet</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
+              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-300">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  No Orders Yet
+                </h3>
+                <p className="mt-2 text-sm text-gray-600">
                   Start shopping to see your orders here
                 </p>
               </div>
               <Link href="/products">
-                <Button>Browse Products</Button>
+                <Button className="bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700">
+                  Browse Products
+                </Button>
               </Link>
             </div>
           </div>
@@ -211,33 +222,33 @@ function DashboardSkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="rounded-xl border border-neutral-300 bg-card p-4 sm:p-6 shadow-sm"
+            className="rounded-2xl border border-gray-300 bg-white p-4 sm:p-6 shadow-lg"
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="h-4 w-24 bg-neutral-400 rounded-lg animate-[pulse_3s_ease-in-out_infinite]" />
-              <div className="h-10 w-10 bg-neutral-400 rounded-lg animate-[pulse_3s_ease-in-out_infinite]" />
+              <div className="h-4 w-24 bg-emerald-300 rounded-lg animate-pulse" />
+              <div className="h-10 w-10 bg-emerald-300 rounded-lg animate-pulse" />
             </div>
-            <div className="h-9 w-32 bg-neutral-400 rounded-lg animate-[pulse_3s_ease-in-out_infinite]" />
+            <div className="h-9 w-32 bg-emerald-300 rounded-lg animate-pulse" />
           </div>
         ))}
       </div>
 
       {/* Orders Skeleton */}
-      <div className="rounded-xl border border-neutral-400 bg-card shadow-sm overflow-hidden">
-        <div className="border-b border-neutral-400 p-4 sm:p-6">
-          <div className="h-7 w-32 bg-neutral-400 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+      <div className="rounded-2xl border border-gray-300 bg-white shadow-lg overflow-hidden">
+        <div className="border-b border-gray-200 p-4 sm:p-6">
+          <div className="h-7 w-32 bg-emerald-300 rounded animate-pulse" />
         </div>
-        <div className="divide-y divide-neutral-400">
+        <div className="divide-y divide-gray-200">
           {[1, 2, 3].map((i) => (
             <div key={i} className="p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 w-40 bg-neutral-400 rounded animate-[pulse_3s_ease-in-out_infinite]" />
-                  <div className="h-3 w-32 bg-neutral-400 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+                  <div className="h-4 w-40 bg-emerald-300 rounded animate-pulse" />
+                  <div className="h-3 w-32 bg-emerald-300 rounded animate-pulse" />
                 </div>
                 <div className="flex items-center gap-2 sm:flex-col sm:items-end">
-                  <div className="h-5 w-20 bg-neutral-400 rounded animate-[pulse_3s_ease-in-out_infinite]" />
-                  <div className="h-3 w-24 bg-neutral-400 rounded animate-[pulse_3s_ease-in-out_infinite]" />
+                  <div className="h-5 w-20 bg-emerald-300 rounded animate-pulse" />
+                  <div className="h-3 w-24 bg-emerald-300 rounded animate-pulse" />
                 </div>
               </div>
             </div>
@@ -272,21 +283,33 @@ function StatCard({
     | "nonary"
     | "denary";
 }) {
+  // Map colors to emerald/teal theme
+  const iconColors = {
+    primary: "bg-linear-to-br from-emerald-200 to-teal-200 text-emerald-600",
+    secondary: "bg-linear-to-br from-teal-200 to-cyan-200 text-teal-600",
+    tertiary: "bg-linear-to-br from-emerald-200 to-teal-200 text-emerald-600",
+    quaternary: "bg-linear-to-br from-cyan-200 to-teal-200 text-cyan-600",
+    quinary: "bg-linear-to-br from-emerald-200 to-teal-200 text-emerald-600",
+    senary: "bg-linear-to-br from-teal-200 to-cyan-200 text-teal-600",
+    septenary: "bg-linear-to-br from-emerald-200 to-teal-200 text-emerald-600",
+    octonary: "bg-linear-to-br from-red-200 to-orange-200 text-red-600",
+    nonary: "bg-linear-to-br from-emerald-200 to-teal-200 text-emerald-600",
+    denary: "bg-linear-to-br from-emerald-200 to-teal-200 text-emerald-600",
+  };
+
   return (
-    <div
-      className={`group relative overflow-hidden rounded-xl border border-neutral-300 p-4 sm:p-6 shadow-sm transition-all duration-300 hover:shadow-md ${DASHBOARD_COLORS[color]}`}
-    >
+    <div className="group relative overflow-hidden rounded-2xl border border-gray-300 bg-white p-4 sm:p-6 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
       <div className="flex items-start justify-between">
         {/* Content */}
         <div className="flex-1 space-y-3">
-          <p className="text-xs sm:text-sm font-medium text-foreground/50 tracking-wide">
+          <p className="text-xs sm:text-sm font-medium text-gray-600 tracking-wide uppercase">
             {label}
           </p>
           <p
             className={
               small
-                ? "text-base sm:text-lg font-semibold text-foreground/70"
-                : "text-2xl sm:text-3xl font-bold tracking-tight text-foreground/70"
+                ? "text-base sm:text-lg font-semibold text-gray-900"
+                : "text-2xl sm:text-3xl font-bold tracking-tight text-gray-900"
             }
           >
             {value}
@@ -294,13 +317,12 @@ function StatCard({
         </div>
 
         {/* Icon - Unified Brand Style */}
-        <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg  text-white transition-all duration-200 group-hover:bg-primary/20">
+        <div
+          className={`inline-flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 ${iconColors[color]}`}
+        >
           {icon}
         </div>
       </div>
-
-      {/* Subtle Hover Effect */}
-      <div className="absolute inset-0 -z-10 from-primary/0 to-primary/0 transition-all duration-300 group-hover:from-primary/5 group-hover:to-primary/0" />
     </div>
   );
 }
@@ -313,28 +335,25 @@ function StatusCard({
 }: {
   label: string;
   value: number;
-  color?:
-    | "primary"
-    | "secondary"
-    | "tertiary"
-    | "quaternary"
-    | "quinary"
-    | "senary"
-    | "septenary"
-    | "octonary"
-    | "nonary"
-    | "denary";
+  color?: "processing" | "shipped" | "delivered" | "cancelled";
 }) {
+  const statusColors = {
+    processing: "bg-linear-to-br from-teal-200 to-cyan-200 border-teal-200",
+    shipped:
+      "bg-linear-to-br from-emerald-200 to-emerald-200 border-emerald-200",
+    delivered:
+      "bg-linear-to-br from-emerald-400 to-emerald-400 border-emerald-400",
+    cancelled: "bg-linear-to-br from-red-400 to-red-400 border-red-400",
+  };
+
   return (
     <div
-      className={`group rounded-lg border border-neutral-300 p-4 ${DASHBOARD_COLORS[color || "primary"]} transition-all duration-200 hover:shadow-md`}
+      className={`group rounded-lg border p-4 ${statusColors[color || "processing"]} transition-all duration-200 hover:shadow-md hover:scale-105`}
     >
-      <div className="text-xs sm:text-sm font-medium mb-1 text-foreground/70">
+      <div className="text-xs sm:text-sm font-medium mb-1 text-gray-600 uppercase tracking-wide">
         {label}
       </div>
-      <div className="text-xl sm:text-2xl font-bold text-foreground/70">
-        {value}
-      </div>
+      <div className="text-xl sm:text-2xl font-bold text-gray-900">{value}</div>
     </div>
   );
 }
@@ -356,11 +375,14 @@ function OrderCard({ order }: OrderCardProps) {
     ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG];
 
   return (
-    <div className="p-4 sm:p-6 border border-neutral-400 transition-colors">
+    <Link
+      href={`/account/orders/${order.fullId}`}
+      className="block p-4 sm:p-6 border-b border-gray-200 transition-colors hover:bg-emerald-50/50"
+    >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap mb-1">
-            <span className="font-semibold text-sm sm:text-base">
+            <span className="font-semibold text-sm sm:text-base text-gray-900">
               #{order.id}
             </span>
             <span
@@ -373,23 +395,20 @@ function OrderCard({ order }: OrderCardProps) {
                 order.status.charAt(0).toUpperCase() + order.status.slice(1)}
             </span>
           </div>
-          <div className="text-xs sm:text-sm text-muted-foreground">
+          <div className="text-xs sm:text-sm text-gray-600">
             {order.date} • {order.itemCount}{" "}
             {order.itemCount === 1 ? "item" : "items"}
           </div>
         </div>
         <div className="flex items-center justify-between sm:justify-end sm:flex-col sm:items-end gap-2 sm:gap-1">
-          <div className="text-base sm:text-lg font-semibold">
+          <div className="text-base sm:text-lg font-semibold text-gray-900">
             ${order.total.toFixed(2)}
           </div>
-          <Link
-            href={`/account/orders/${order.fullId}`}
-            className="text-xs sm:text-sm text-primary hover:underline"
-          >
+          <span className="text-xs sm:text-sm text-emerald-600 hover:text-emerald-700 hover:underline font-medium">
             View Details
-          </Link>
+          </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

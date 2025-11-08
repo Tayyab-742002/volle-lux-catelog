@@ -8,9 +8,9 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <div className="bg-background min-h-screen">
+    <div className="relative min-h-screen overflow-hidden bg-linear-to-br from-emerald-50 via-white to-teal-50">
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 sm:py-8 lg:py-12">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-6 sm:py-8 lg:py-12">
         {/* Desktop Layout */}
         <div className="grid gap-6 lg:gap-8 lg:grid-cols-4">
           {/* Desktop Sidebar - AdminSidebar handles its own positioning */}

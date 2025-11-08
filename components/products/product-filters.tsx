@@ -51,16 +51,7 @@ const baseFilters: FilterGroup[] = [
       { value: "containers", label: "Containers" },
     ],
   },
-  {
-    name: "Size",
-    key: "size",
-    options: [
-      { value: "small", label: "Small" },
-      { value: "medium", label: "Medium" },
-      { value: "large", label: "Large" },
-      { value: "extra-large", label: "Extra Large" },
-    ],
-  },
+
   {
     name: "Material",
     key: "material",
@@ -70,16 +61,6 @@ const baseFilters: FilterGroup[] = [
       { value: "paper", label: "Paper" },
       { value: "foam", label: "Foam" },
       { value: "metal", label: "Metal" },
-    ],
-  },
-  {
-    name: "Eco-Friendly",
-    key: "ecoFriendly",
-    options: [
-      { value: "recyclable", label: "Recyclable" },
-      { value: "biodegradable", label: "Biodegradable" },
-      { value: "compostable", label: "Compostable" },
-      { value: "recycled-content", label: "Recycled Content" },
     ],
   },
 ];
@@ -237,9 +218,9 @@ function FilterContent({
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-2">
-          <div className="h-1 w-1 rounded-full bg-emerald-500"></div>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-3">
+          <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
           Filters
         </h3>
         {hasActiveFilters && (
@@ -247,7 +228,7 @@ function FilterContent({
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="h-auto p-0 text-xs font-medium text-emerald-600 hover:bg-transparent hover:text-emerald-700"
+            className="h-auto px-3 py-1.5 text-xs font-medium text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 rounded-md"
           >
             Clear All
           </Button>
@@ -256,10 +237,12 @@ function FilterContent({
 
       {/* Active Category Badge */}
       {activeCategoryName && (
-        <div className="border-2 border-emerald-200 bg-linear-to-r from-emerald-50 to-teal-50 p-4 rounded-lg">
+        <div className="mb-6 rounded-lg border border-emerald-200 bg-linear-to-r from-emerald-50 to-teal-50 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="mb-1 text-xs font-medium text-emerald-700 uppercase tracking-wider">Browsing</p>
+              <p className="mb-1 text-xs font-medium text-emerald-700 uppercase tracking-wider">
+                Browsing
+              </p>
               <p className="text-sm font-semibold text-gray-900">
                 {activeCategoryName}
               </p>
@@ -274,7 +257,7 @@ function FilterContent({
                   });
                 });
               }}
-              className="text-emerald-600 transition-colors hover:text-emerald-700 hover:bg-emerald-100 rounded-full p-1"
+              className="text-emerald-600 transition-colors hover:text-emerald-700 hover:bg-emerald-100 rounded-full p-1.5"
               title="Clear category"
             >
               <X className="h-4 w-4" strokeWidth={2} />
@@ -284,9 +267,9 @@ function FilterContent({
       )}
 
       {/* Price Range */}
-      <div className="space-y-6 border-t border-emerald-200 pt-8">
-        <Label className="text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-2">
-          <div className="h-1 w-1 rounded-full bg-teal-500"></div>
+      {/* <div className="space-y-4 border-t border-gray-200 pt-6">
+        <Label className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+          <div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
           Price Range
         </Label>
         <div className="space-y-4">
@@ -298,12 +281,12 @@ function FilterContent({
             onValueChange={updatePriceRange}
             className="w-full"
           />
-          <div className="flex items-center justify-between text-sm font-semibold text-emerald-700">
+          <div className="flex items-center justify-between text-sm font-semibold text-gray-900">
             <span>${localPriceRange[0]}</span>
             <span>${localPriceRange[1]}</span>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Filter Accordions */}
       <Accordion
@@ -315,21 +298,21 @@ function FilterContent({
           <AccordionItem
             key={filter.key}
             value={filter.key}
-            className="border-t border-emerald-200"
+            className="border-t border-gray-200"
           >
-            <AccordionTrigger className="py-6 text-sm font-semibold text-gray-900 hover:text-emerald-600 transition-colors">
+            <AccordionTrigger className="py-4 text-sm font-semibold text-gray-900 hover:text-emerald-700 transition-colors">
               <div className="flex items-center gap-2">
                 <span>{filter.name}</span>
                 {activeFilters[filter.key] &&
                   activeFilters[filter.key].length > 0 && (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-linear-to-r from-emerald-600 to-teal-600 text-xs font-bold text-white shadow-md">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-linear-to-r from-emerald-600 to-teal-600 text-xs font-bold text-white shadow-sm">
                       {activeFilters[filter.key].length}
                     </span>
                   )}
               </div>
             </AccordionTrigger>
-            <AccordionContent className="pb-6">
-              <div className="space-y-4">
+            <AccordionContent className="pb-4 pt-2">
+              <div className="space-y-3">
                 {filter.options.map((option) => {
                   const isChecked =
                     optimisticFilters[filter.key]?.includes(option.value) ||
@@ -350,11 +333,11 @@ function FilterContent({
                             checked as boolean
                           )
                         }
-                        className="border-emerald-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
+                        className="border-gray-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
                       />
                       <Label
                         htmlFor={`${filter.key}-${option.value}`}
-                        className="flex-1 cursor-pointer text-sm font-medium leading-none text-gray-900 group-hover:text-emerald-700 transition-colors"
+                        className="flex-1 cursor-pointer text-sm font-medium leading-none text-gray-700 group-hover:text-emerald-700 transition-colors"
                       >
                         {option.label}
                       </Label>
@@ -385,7 +368,7 @@ export function ProductFilters({
           <SheetTrigger asChild>
             <Button
               variant="outline"
-              className="w-full border-2 border-emerald-300 bg-white text-sm font-semibold text-emerald-700 hover:bg-emerald-50 hover:border-emerald-600"
+              className="w-full border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
             >
               <SlidersHorizontal className="mr-2 h-4 w-4" strokeWidth={2} />
               Filters
@@ -393,10 +376,11 @@ export function ProductFilters({
           </SheetTrigger>
           <SheetContent
             side="left"
-            className="w-full overflow-y-auto sm:max-w-md"
+            className="w-full overflow-y-auto sm:max-w-md bg-white border-gray-300"
           >
             <SheetHeader className="mb-6">
-              <SheetTitle className="text-left text-lg font-light text-neutral-900">
+              <SheetTitle className="text-left text-xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Filter Products
               </SheetTitle>
             </SheetHeader>
@@ -410,7 +394,7 @@ export function ProductFilters({
 
       {/* Desktop Filters */}
       <aside className="sticky top-24 hidden h-fit lg:block">
-        <div className="border-2 border-emerald-200 bg-white rounded-2xl p-6 shadow-lg">
+        <div className="rounded-xl border border-gray-300 bg-white p-6 shadow-lg">
           <FilterContent categories={categories} />
         </div>
       </aside>

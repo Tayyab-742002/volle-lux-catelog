@@ -132,9 +132,9 @@ export default function AdminOrderDetailPage() {
 
   if (loading) {
     return (
-      <div className="rounded-lg border bg-card p-12 text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent" />
-        <p className="mt-4 text-sm text-muted-foreground">
+      <div className="rounded-2xl border border-gray-300 bg-white p-12 text-center shadow-lg">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-emerald-600 border-r-transparent" />
+        <p className="mt-4 text-sm text-gray-600">
           Loading order details...
         </p>
       </div>
@@ -143,14 +143,19 @@ export default function AdminOrderDetailPage() {
 
   if (error || !order) {
     return (
-      <div className="rounded-lg border border-destructive bg-destructive/10 p-12 text-center">
-        <p className="text-lg font-medium text-destructive">
+      <div className="rounded-2xl border border-red-300 bg-linear-to-br from-red-50 to-orange-50 p-12 text-center shadow-lg">
+        <div className="flex justify-center mb-4">
+          <div className="rounded-full bg-linear-to-br from-red-100 to-orange-100 p-4 border border-red-200">
+            <Package className="h-8 w-8 text-red-600" strokeWidth={2} />
+          </div>
+        </div>
+        <p className="text-lg font-medium text-red-700">
           {error || "Order not found"}
         </p>
         <div className="mt-4 flex justify-center gap-3">
           <Link href="/admin/orders">
-            <Button variant="outline">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+            <Button variant="outline" className="border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700">
+              <ArrowLeft className="mr-2 h-4 w-4" strokeWidth={2} />
               Back to Orders
             </Button>
           </Link>
@@ -170,27 +175,30 @@ export default function AdminOrderDetailPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link href="/admin/orders">
-            <Button variant="ghost" size="sm" className="mb-2">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+            <Button variant="ghost" size="sm" className="mb-2 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700">
+              <ArrowLeft className="mr-2 h-4 w-4" strokeWidth={2} />
               Back to Orders
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold">Order Details</h1>
-            <p className="mt-2 text-muted-foreground">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+              Order Details
+            </h1>
+            <p className="mt-2 text-gray-600">
               Order #{order.orderNumber}
             </p>
           </div>
         </div>
         <div className="flex gap-3">
           {order.paymentIntentId && (
-            <Button variant="outline" size="lg">
-              <ExternalLink className="mr-2 h-5 w-5" />
+            <Button variant="outline" size="lg" className="border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700">
+              <ExternalLink className="mr-2 h-5 w-5" strokeWidth={2} />
               View Stripe Payment
             </Button>
           )}
-          <Button variant="outline" size="lg">
-            <Download className="mr-2 h-5 w-5" />
+          <Button variant="outline" size="lg" className="border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700">
+            <Download className="mr-2 h-5 w-5" strokeWidth={2} />
             Download Invoice
           </Button>
         </div>
@@ -201,29 +209,32 @@ export default function AdminOrderDetailPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
           {/* Order Info */}
-          <div className="rounded-lg border bg-card p-6">
-            <h3 className="mb-6 text-xl font-semibold">Order Information</h3>
+          <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-lg">
+            <h3 className="mb-6 text-xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+              Order Information
+            </h3>
             <div className="grid gap-6 md:grid-cols-3">
               <div>
-                <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-                  <Package className="h-4 w-4" />
+                <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
+                  <Package className="h-4 w-4" strokeWidth={2} />
                   Order Date
                 </div>
-                <div className="font-semibold">{formatDate(order.createdAt)}</div>
+                <div className="font-semibold text-gray-900">{formatDate(order.createdAt)}</div>
               </div>
               <div>
-                <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-                  <Truck className="h-4 w-4" />
+                <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
+                  <Truck className="h-4 w-4" strokeWidth={2} />
                   Status
                 </div>
                 <div><StatusBadge status={order.status} /></div>
               </div>
               <div>
-                <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-                  <CreditCard className="h-4 w-4" />
+                <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
+                  <CreditCard className="h-4 w-4" strokeWidth={2} />
                   Total
                 </div>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                   {formatCurrency(order.total)}
                 </div>
               </div>
@@ -231,13 +242,16 @@ export default function AdminOrderDetailPage() {
           </div>
 
           {/* Status Update Section */}
-          <div className="rounded-lg border bg-card p-6">
-            <h3 className="mb-6 text-xl font-semibold">Update Order Status</h3>
+          <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-lg">
+            <h3 className="mb-6 text-xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+              Update Order Status
+            </h3>
             <div className="space-y-6">
               <div>
-                <Label htmlFor="status">Order Status</Label>
+                <Label htmlFor="status" className="text-gray-700">Order Status</Label>
                 <Select value={status} onValueChange={setStatus}>
-                  <SelectTrigger id="status" className="mt-2">
+                  <SelectTrigger id="status" className="mt-2 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -251,24 +265,24 @@ export default function AdminOrderDetailPage() {
               </div>
 
               <div>
-                <Label htmlFor="tracking">Tracking Number</Label>
+                <Label htmlFor="tracking" className="text-gray-700">Tracking Number</Label>
                 <Input
                   id="tracking"
                   value={trackingNumber}
                   onChange={(e) => setTrackingNumber(e.target.value)}
                   placeholder="Enter tracking number..."
-                  className="mt-2"
+                  className="mt-2 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                 />
               </div>
 
               <div>
-                <Label htmlFor="notes">Admin Notes</Label>
+                <Label htmlFor="notes" className="text-gray-700">Admin Notes</Label>
                 <Textarea
                   id="notes"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add any notes about this order..."
-                  className="mt-2"
+                  className="mt-2 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                   rows={4}
                 />
               </div>
@@ -277,7 +291,7 @@ export default function AdminOrderDetailPage() {
                 onClick={handleUpdateStatus}
                 disabled={!hasChanges || updating}
                 size="lg"
-                className="w-full"
+                className="w-full bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:shadow-lg hover:scale-[1.02] transition-all duration-300 hover:from-emerald-700 hover:to-teal-700"
               >
                 {updating ? (
                   <>
@@ -286,7 +300,7 @@ export default function AdminOrderDetailPage() {
                   </>
                 ) : (
                   <>
-                    <Save className="mr-2 h-5 w-5" />
+                    <Save className="mr-2 h-5 w-5" strokeWidth={2} />
                     Save Changes
                   </>
                 )}
@@ -295,10 +309,13 @@ export default function AdminOrderDetailPage() {
           </div>
 
           {/* Shipping Address */}
-          <div className="rounded-lg border bg-card p-6">
-            <h3 className="mb-6 text-xl font-semibold">Shipping Address</h3>
-            <div className="text-muted-foreground">
-              <p className="font-medium text-foreground">
+          <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-lg">
+            <h3 className="mb-6 text-xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+              Shipping Address
+            </h3>
+            <div className="text-gray-600 space-y-1">
+              <p className="font-medium text-gray-900">
                 {order.shippingAddress?.fullName || "N/A"}
               </p>
               <p>{order.shippingAddress?.address || ""}</p>
@@ -313,17 +330,20 @@ export default function AdminOrderDetailPage() {
           </div>
 
           {/* Order Items */}
-          <div className="rounded-lg border bg-card">
-            <div className="border-b p-6">
-              <h3 className="text-xl font-semibold">Order Items</h3>
+          <div className="rounded-2xl border border-gray-300 bg-white shadow-lg">
+            <div className="border-b border-gray-200 p-6">
+              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+                Order Items
+              </h3>
             </div>
-            <div className="divide-y">
+            <div className="divide-y divide-gray-200">
               {order.items.map((item: any, index: number) => (
                 <div
                   key={index}
-                  className="flex gap-6 p-6 transition-colors hover:bg-muted/30"
+                  className="flex gap-6 p-6 transition-colors hover:bg-emerald-50/50"
                 >
-                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border">
+                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-gray-300">
                     <Image
                       src={item.product?.image || "/placeholder-image.jpg"}
                       alt={item.product?.name || "Product"}
@@ -332,19 +352,19 @@ export default function AdminOrderDetailPage() {
                     />
                   </div>
                   <div className="flex-1">
-                    <h4 className="mb-1 font-semibold">
+                    <h4 className="mb-1 font-semibold text-gray-900">
                       {item.product?.name || "Product"}
                     </h4>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-gray-600">
                       Variant: {item.variant?.name || "Default"} • Quantity:{" "}
                       {item.quantity}
                     </p>
-                    <p className="mt-2 text-sm text-muted-foreground">
+                    <p className="mt-2 text-sm text-gray-600">
                       {formatCurrency(item.pricePerUnit)} / unit
                     </p>
                   </div>
                   <div className="text-right">
-                    <div className="text-lg font-semibold">
+                    <div className="text-lg font-semibold text-gray-900">
                       {formatCurrency(item.totalPrice)}
                     </div>
                   </div>
@@ -357,50 +377,58 @@ export default function AdminOrderDetailPage() {
         {/* Sidebar */}
         <div className="space-y-8">
           {/* Customer Info */}
-          <div className="rounded-lg border bg-card p-6">
-            <h3 className="mb-6 text-xl font-semibold">Customer</h3>
+          <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-lg">
+            <h3 className="mb-6 text-xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+              Customer
+            </h3>
             <div className="space-y-4">
               <div>
-                <div className="text-sm text-muted-foreground">Name</div>
-                <div className="mt-1 font-medium">
+                <div className="text-sm text-gray-600">Name</div>
+                <div className="mt-1 font-medium text-gray-900">
                   {order.customerName || "Guest"}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-muted-foreground">Email</div>
-                <div className="mt-1">{order.email}</div>
+                <div className="text-sm text-gray-600">Email</div>
+                <div className="mt-1 text-gray-900">{order.email}</div>
               </div>
               {order.customerPhone && (
                 <div>
-                  <div className="text-sm text-muted-foreground">Phone</div>
-                  <div className="mt-1">{order.customerPhone}</div>
+                  <div className="text-sm text-gray-600">Phone</div>
+                  <div className="mt-1 text-gray-900">{order.customerPhone}</div>
                 </div>
               )}
             </div>
           </div>
 
           {/* Order Summary */}
-          <div className="rounded-lg border bg-card p-6">
-            <h3 className="mb-6 text-xl font-semibold">Order Summary</h3>
+          <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-lg">
+            <h3 className="mb-6 text-xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+              Order Summary
+            </h3>
             <div className="space-y-3">
-              <div className="flex justify-between text-muted-foreground">
+              <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>{formatCurrency(order.subtotal)}</span>
+                <span className="text-gray-900">{formatCurrency(order.subtotal)}</span>
               </div>
-              <div className="flex justify-between text-muted-foreground">
+              <div className="flex justify-between text-gray-600">
                 <span>Discount</span>
-                <span className="text-green-600">
+                <span className="text-emerald-600">
                   -{formatCurrency(order.discount)}
                 </span>
               </div>
-              <div className="flex justify-between text-muted-foreground">
+              <div className="flex justify-between text-gray-600">
                 <span>Shipping</span>
-                <span>{formatCurrency(order.shipping)}</span>
+                <span className="text-gray-900">{formatCurrency(order.shipping)}</span>
               </div>
-              <div className="border-t pt-3">
+              <div className="border-t border-gray-300 pt-3">
                 <div className="flex justify-between text-lg font-bold">
-                  <span>Total</span>
-                  <span>{formatCurrency(order.total)}</span>
+                  <span className="text-gray-900">Total</span>
+                  <span className="bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                    {formatCurrency(order.total)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -408,15 +436,18 @@ export default function AdminOrderDetailPage() {
 
           {/* Tracking Info */}
           {order.trackingNumber && (
-            <div className="rounded-lg border bg-card p-6">
-              <h3 className="mb-4 text-xl font-semibold">Tracking</h3>
+            <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-lg">
+              <h3 className="mb-4 text-xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+                Tracking
+              </h3>
               <div className="flex items-center gap-2">
-                <Truck className="h-5 w-5 text-muted-foreground" />
+                <Truck className="h-5 w-5 text-emerald-600" strokeWidth={2} />
                 <div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-gray-600">
                     Tracking Number
                   </div>
-                  <div className="mt-1 font-medium font-mono">
+                  <div className="mt-1 font-medium font-mono text-gray-900">
                     {order.trackingNumber}
                   </div>
                 </div>

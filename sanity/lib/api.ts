@@ -14,15 +14,21 @@ import {
   CATEGORY_BY_SLUG_QUERY,
   PRODUCT_COUNT_BY_CATEGORY_QUERY,
   HOMEPAGE_DATA_QUERY,
+  ALL_BANNERS_QUERY,
+  ACTIVE_ANNOUNCEMENT_QUERY,
 } from "./queries";
 import {
   transformSanityProduct,
   transformSanityCategory,
+  transformSanityBanner,
+  transformSanityAnnouncement,
   buildFilterString,
   buildOrderString,
   safeQuery,
   SanityProduct,
   SanityCategory,
+  SanityBanner,
+  SanityAnnouncement,
 } from "./helpers";
 
 /**
@@ -183,6 +189,28 @@ export async function getProductCountByCategory(categoryId: string) {
     return await client.fetch<number>(PRODUCT_COUNT_BY_CATEGORY_QUERY, {
       categoryId,
     });
+  });
+}
+
+// Banners
+export async function getAllBanners() {
+  return safeQuery(async () => {
+    const { data } = await sanityFetch({
+      query: ALL_BANNERS_QUERY,
+      tags: ["banners:all"],
+    });
+    return (data as SanityBanner[]).map(transformSanityBanner);
+  });
+}
+
+// Announcements
+export async function getActiveAnnouncement() {
+  return safeQuery(async () => {
+    const { data } = await sanityFetch({
+      query: ACTIVE_ANNOUNCEMENT_QUERY,
+      tags: ["announcement:active"],
+    });
+    return data ? transformSanityAnnouncement(data as SanityAnnouncement) : null;
   });
 }
 

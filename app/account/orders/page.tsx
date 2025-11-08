@@ -18,17 +18,20 @@ export default async function OrderHistoryPage() {
     return (
       <div>
         <div className="mb-6">
-          <h2 className="text-3xl font-bold">Order History</h2>
-          <p className="mt-2 text-muted-foreground">
+          <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+            Order History
+          </h2>
+          <p className="mt-2 text-gray-600">
             View and track all your past orders
           </p>
         </div>
-        <div className="rounded-lg border bg-card p-12 text-center">
-          <p className="text-muted-foreground">
-            Please sign in to view your orders
-          </p>
+        <div className="rounded-2xl border border-gray-300 bg-white shadow-lg p-12 text-center">
+          <p className="text-gray-600">Please sign in to view your orders</p>
           <Link href="/auth/login">
-            <Button className="mt-4">Sign In</Button>
+            <Button className="mt-4 bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700">
+              Sign In
+            </Button>
           </Link>
         </div>
       </div>
@@ -38,8 +41,11 @@ export default async function OrderHistoryPage() {
   return (
     <div>
       <div className="mb-6">
-        <h2 className="text-3xl font-bold">Order History</h2>
-        <p className="mt-2 text-muted-foreground">
+        <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+          Order History
+        </h2>
+        <p className="mt-2 text-gray-600">
           View and track all your past orders
         </p>
       </div>

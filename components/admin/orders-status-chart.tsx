@@ -59,18 +59,18 @@ export function OrdersStatusChart({ initialData = [] }: OrdersStatusChartProps) 
       {
         data: data.map((entry) => entry.count),
         backgroundColor: [
-          "rgba(148, 163, 184, 0.8)", // Pending - slate
-          "rgba(59, 130, 246, 0.8)", // Processing - blue
-          "rgba(245, 158, 11, 0.8)", // Shipped - amber
-          "rgba(16, 185, 129, 0.8)", // Delivered - emerald
-          "rgba(239, 68, 68, 0.8)", // Cancelled - red
+          "rgba(203, 213, 225, 0.8)", // Pending - slate-300
+          "rgba(94, 234, 212, 0.8)", // Processing - teal-300
+          "rgba(52, 211, 153, 0.8)", // Shipped - emerald-400
+          "rgba(5, 150, 105, 0.8)", // Delivered - emerald-600
+          "rgba(239, 68, 68, 0.8)", // Cancelled - red-500
         ],
         borderColor: [
-          "rgb(148, 163, 184)",
-          "rgb(59, 130, 246)",
-          "rgb(245, 158, 11)",
-          "rgb(16, 185, 129)",
-          "rgb(239, 68, 68)",
+          "rgb(203, 213, 225)", // slate-300
+          "rgb(94, 234, 212)", // teal-300
+          "rgb(52, 211, 153)", // emerald-400
+          "rgb(5, 150, 105)", // emerald-600
+          "rgb(239, 68, 68)", // red-500
         ],
         borderWidth: 2,
         hoverBorderWidth: 3,
@@ -130,8 +130,17 @@ export function OrdersStatusChart({ initialData = [] }: OrdersStatusChartProps) 
     return (
       <div className="flex h-[400px] items-center justify-center">
         <div className="text-center">
-          <Package className="mx-auto h-12 w-12 text-muted-foreground" />
-          <p className="mt-4 text-lg font-medium">No orders yet</p>
+          <div className="flex justify-center mb-4">
+            <div className="rounded-full bg-linear-to-br from-emerald-100 to-teal-100 p-4 border border-emerald-200">
+              <Package className="mx-auto h-12 w-12 text-emerald-600" strokeWidth={2} />
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-300">
+            <p className="mt-4 text-lg font-medium text-gray-900">No orders yet</p>
+            <p className="mt-2 text-sm text-gray-600">
+              Order status data will appear here once orders are placed
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -146,8 +155,8 @@ export function OrdersStatusChart({ initialData = [] }: OrdersStatusChartProps) 
       {/* Center label */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-3xl font-bold">{totalOrders}</div>
-          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <div className="text-3xl font-bold text-gray-900">{totalOrders}</div>
+          <div className="text-xs font-medium text-gray-600 uppercase tracking-wider">
             Total Orders
           </div>
         </div>

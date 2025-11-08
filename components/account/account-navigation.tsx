@@ -41,7 +41,7 @@ export function AccountNavigation() {
     <>
       {/* Mobile/Tablet Top Tabs (< 1024px) */}
       <div className="lg:hidden mb-6">
-        <div className=" border border-neutral-300 bg-card shadow-sm overflow-hidden">
+        <div className="rounded-xl border border-gray-300 bg-white shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
             <nav className="flex min-w-max">
               {navigation.map((item) => {
@@ -54,11 +54,11 @@ export function AccountNavigation() {
                     className={cn(
                       "flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all whitespace-nowrap border-b-2",
                       isActive
-                        ? "border-primary bg-primary/5 text-primary"
-                        : "border-transparent text-muted-foreground hover:bg-neutral-50 hover:text-foreground"
+                        ? "border-emerald-600 bg-linear-to-r from-emerald-50 to-teal-50 text-emerald-700"
+                        : "border-transparent text-gray-600 hover:bg-emerald-50/50 hover:text-emerald-700"
                     )}
                   >
-                    <Icon className="h-4 w-4" strokeWidth={1.5} />
+                    <Icon className="h-4 w-4" strokeWidth={2} />
                     <span className="hidden sm:inline">{item.name}</span>
                   </Link>
                 );
@@ -70,8 +70,8 @@ export function AccountNavigation() {
 
       {/* Desktop Sidebar Navigation (≥ 1024px) */}
       <aside className="hidden lg:block lg:col-span-1">
-        <div className="sticky top-4 border border-neutral-300 bg-card shadow-sm overflow-hidden">
-          <nav className="divide-y divide-neutral-200">
+        <div className="sticky top-4 rounded-xl border border-gray-300 bg-white shadow-lg overflow-hidden">
+          <nav className="divide-y divide-gray-200">
             {navigation.map((item) => {
               const isActive = pathname === item.href;
               const Icon = item.icon;
@@ -80,13 +80,13 @@ export function AccountNavigation() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 border-b border-neutral-300 text-sm font-medium transition-all",
+                    "flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all last:border-0",
                     isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-neutral-50 hover:text-foreground"
+                      ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white"
+                      : "text-gray-600 hover:bg-emerald-50 hover:text-emerald-700"
                   )}
                 >
-                  <Icon className="h-5 w-5" strokeWidth={1.5} />
+                  <Icon className="h-5 w-5" strokeWidth={2} />
                   {item.name}
                 </Link>
               );
@@ -100,17 +100,17 @@ export function AccountNavigation() {
 
 export function AccountBreadcrumbs() {
   return (
-    <div className="border-b border-neutral-200">
+    <div className="border-b border-gray-200 bg-white/50 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center gap-2 text-sm">
           <Link
             href="/"
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="text-gray-600 hover:text-emerald-700 transition-colors"
           >
             Home
           </Link>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          <span className="text-foreground font-medium">Account</span>
+          <ChevronRight className="h-4 w-4 text-gray-400" strokeWidth={2} />
+          <span className="text-gray-900 font-medium">Account</span>
         </nav>
       </div>
     </div>

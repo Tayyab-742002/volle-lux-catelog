@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -42,15 +42,11 @@ interface RevenueChartProps {
 export function RevenueChart({ initialData = [] }: RevenueChartProps) {
   const [data, setData] = useState<RevenueDataPoint[]>(initialData);
   const [loading, setLoading] = useState(!initialData.length);
-  const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d" | "all">("30d");
+  const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d" | "all">(
+    "30d"
+  );
 
-  useEffect(() => {
-    if (!initialData.length) {
-      fetchData();
-    }
-  }, [timeRange]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(
@@ -68,7 +64,13 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeRange]);
+
+  useEffect(() => {
+    if (!initialData.length) {
+      fetchData();
+    }
+  }, [timeRange, initialData.length, fetchData]);
 
   // Format date for display
   const formatDate = (date: string) => {
@@ -87,14 +89,14 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
       {
         label: "Revenue",
         data: data.map((point) => point.revenue),
-        borderColor: "rgb(14, 165, 233)", // sky-500
-        backgroundColor: "rgba(14, 165, 233, 0.1)",
+        borderColor: "rgb(5, 150, 105)", // emerald-600
+        backgroundColor: "rgba(5, 150, 105, 0.1)",
         fill: true,
         tension: 0.4,
         borderWidth: 2,
         pointRadius: 0,
         pointHoverRadius: 6,
-        pointBackgroundColor: "rgb(14, 165, 233)",
+        pointBackgroundColor: "rgb(5, 150, 105)",
         pointBorderColor: "#fff",
         pointBorderWidth: 2,
         yAxisID: "y",
@@ -102,14 +104,14 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
       {
         label: "Orders",
         data: data.map((point) => point.orders),
-        borderColor: "rgb(245, 158, 11)", // amber-500
-        backgroundColor: "rgba(245, 158, 11, 0.1)",
+        borderColor: "rgb(20, 184, 166)", // teal-500
+        backgroundColor: "rgba(20, 184, 166, 0.1)",
         fill: true,
         tension: 0.4,
         borderWidth: 2,
         pointRadius: 0,
         pointHoverRadius: 6,
-        pointBackgroundColor: "rgb(245, 158, 11)",
+        pointBackgroundColor: "rgb(20, 184, 166)",
         pointBorderColor: "#fff",
         pointBorderWidth: 2,
         yAxisID: "y1",
@@ -144,7 +146,10 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
         cornerRadius: 8,
         displayColors: true,
         callbacks: {
-          label: function (context: any) {
+          label: function (context: {
+            dataset: { label?: string };
+            parsed: { y: number | null };
+          }) {
             let label = context.dataset.label || "";
             if (label) {
               label += ": ";
@@ -202,10 +207,13 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
             size: 11,
           },
           color: "rgb(148, 163, 184)",
-          callback: function (value: any) {
-            return "$" + value.toFixed(0);
+          callback: function (value: number | string) {
+            if (typeof value === "number") {
+              return "$" + value.toFixed(0);
+            }
+            return value;
           },
-        } as any,
+        },
       },
       y1: {
         type: "linear" as const,
@@ -223,7 +231,7 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
             size: 11,
           },
           color: "rgb(148, 163, 184)",
-        } as any,
+        },
       },
     },
   };
@@ -236,11 +244,20 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
     return (
       <div className="flex h-[400px] items-center justify-center">
         <div className="text-center">
-          <TrendingUp className="mx-auto h-12 w-12 text-muted-foreground" />
-          <p className="mt-4 text-lg font-medium">No revenue data</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Revenue data will appear here once orders are placed
-          </p>
+          <div className="flex justify-center mb-4">
+            <div className="rounded-full bg-linear-to-br from-emerald-100 to-teal-100 p-4 border border-emerald-200">
+              <TrendingUp
+                className="mx-auto h-12 w-12 text-emerald-600"
+                strokeWidth={2}
+              />
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-300">
+            <p className="text-lg font-medium text-gray-900">No revenue data</p>
+            <p className="mt-2 text-sm text-gray-600">
+              Revenue data will appear here once orders are placed
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -250,21 +267,21 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
     <div className="space-y-6">
       {/* Summary Stats */}
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-blue-100 p-4 dark:from-blue-950 dark:to-blue-900">
-          <div className="flex items-center gap-2 text-sm font-medium text-blue-700 dark:text-blue-300">
-            <DollarSign className="h-4 w-4" />
+        <div className="rounded-lg border border-gray-300 bg-linear-to-br from-emerald-50 to-teal-50 p-4">
+          <div className="flex items-center gap-2 text-sm font-medium text-emerald-700">
+            <DollarSign className="h-4 w-4" strokeWidth={2} />
             Total Revenue
           </div>
-          <div className="mt-2 text-3xl font-bold text-blue-900 dark:text-blue-50">
+          <div className="mt-2 text-3xl font-bold text-gray-900">
             ${totalRevenue.toFixed(2)}
           </div>
         </div>
-        <div className="rounded-lg border bg-gradient-to-br from-amber-50 to-amber-100 p-4 dark:from-amber-950 dark:to-amber-900">
-          <div className="flex items-center gap-2 text-sm font-medium text-amber-700 dark:text-amber-300">
-            <TrendingUp className="h-4 w-4" />
+        <div className="rounded-lg border border-gray-300 bg-linear-to-br from-teal-50 to-cyan-50 p-4">
+          <div className="flex items-center gap-2 text-sm font-medium text-teal-700">
+            <TrendingUp className="h-4 w-4" strokeWidth={2} />
             Total Orders
           </div>
-          <div className="mt-2 text-3xl font-bold text-amber-900 dark:text-amber-50">
+          <div className="mt-2 text-3xl font-bold text-gray-900">
             {totalOrders}
           </div>
         </div>
@@ -276,7 +293,11 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
           variant={timeRange === "7d" ? "default" : "outline"}
           size="sm"
           onClick={() => setTimeRange("7d")}
-          className="transition-all hover:scale-105"
+          className={`transition-all hover:scale-105 ${
+            timeRange === "7d"
+              ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+              : "border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
+          }`}
         >
           7 Days
         </Button>
@@ -284,7 +305,11 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
           variant={timeRange === "30d" ? "default" : "outline"}
           size="sm"
           onClick={() => setTimeRange("30d")}
-          className="transition-all hover:scale-105"
+          className={`transition-all hover:scale-105 ${
+            timeRange === "30d"
+              ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+              : "border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
+          }`}
         >
           30 Days
         </Button>
@@ -292,7 +317,11 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
           variant={timeRange === "90d" ? "default" : "outline"}
           size="sm"
           onClick={() => setTimeRange("90d")}
-          className="transition-all hover:scale-105"
+          className={`transition-all hover:scale-105 ${
+            timeRange === "90d"
+              ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+              : "border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
+          }`}
         >
           90 Days
         </Button>
@@ -300,14 +329,18 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
           variant={timeRange === "all" ? "default" : "outline"}
           size="sm"
           onClick={() => setTimeRange("all")}
-          className="transition-all hover:scale-105"
+          className={`transition-all hover:scale-105 ${
+            timeRange === "all"
+              ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+              : "border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
+          }`}
         >
           All Time
         </Button>
       </div>
 
       {/* Chart */}
-      <div className="h-[400px] rounded-lg bg-gradient-to-br from-white to-slate-50 p-4 dark:from-slate-900 dark:to-slate-800">
+      <div className="h-[400px] rounded-lg border border-gray-300 bg-white p-4">
         <Line data={chartData} options={chartOptions} />
       </div>
     </div>

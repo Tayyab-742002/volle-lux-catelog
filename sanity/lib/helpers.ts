@@ -108,6 +108,38 @@ export interface SanityCategory {
   sortOrder: number;
 }
 
+export interface SanityBanner {
+  _id: string;
+  _type: string;
+  title: string;
+  description: string;
+  index: number;
+  isActive: boolean;
+  backgroundImage: {
+    asset: {
+      _id: string;
+      url: string;
+      metadata: {
+        dimensions: {
+          width: number;
+          height: number;
+        };
+      };
+    };
+    alt: string;
+  };
+}
+
+export interface SanityAnnouncement {
+  _id: string;
+  _type: string;
+  message: string;
+  link?: string;
+  linkText?: string;
+  isActive: boolean;
+  dismissible: boolean;
+}
+
 // Transform Sanity product to our Product type
 export function transformSanityProduct(sanityProduct: SanityProduct) {
   return {
@@ -159,6 +191,31 @@ export function transformSanityCategory(sanityCategory: SanityCategory) {
     image: sanityCategory.image?.asset?.url || "",
     isActive: sanityCategory.isActive,
     sortOrder: sanityCategory.sortOrder,
+  };
+}
+
+// Transform Sanity banner to our Banner type
+export function transformSanityBanner(sanityBanner: SanityBanner) {
+  return {
+    id: sanityBanner._id,
+    title: sanityBanner.title,
+    description: sanityBanner.description,
+    index: sanityBanner.index,
+    image: sanityBanner.backgroundImage?.asset?.url || "",
+    alt: sanityBanner.backgroundImage?.alt || sanityBanner.title,
+  };
+}
+
+// Transform Sanity announcement to our Announcement type
+export function transformSanityAnnouncement(
+  sanityAnnouncement: SanityAnnouncement
+) {
+  return {
+    id: sanityAnnouncement._id,
+    message: sanityAnnouncement.message,
+    link: sanityAnnouncement.link || null,
+    linkText: sanityAnnouncement.linkText || null,
+    dismissible: sanityAnnouncement.dismissible,
   };
 }
 
