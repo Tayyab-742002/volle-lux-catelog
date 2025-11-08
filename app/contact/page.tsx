@@ -15,9 +15,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-// Force dynamic rendering to prevent static generation issues with SanityLive
-export const dynamic = 'force-dynamic';
-
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<

@@ -1,4 +1,6 @@
-import { getActiveAnnouncement } from "@/sanity/lib";
+// Import directly from API to avoid pulling in live.ts (which uses defineLive)
+// This prevents client components from triggering server-only code
+import { getActiveAnnouncement } from "@/sanity/lib/api";
 
 /**
  * Announcement Service
