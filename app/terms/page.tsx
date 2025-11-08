@@ -1,11 +1,19 @@
 import { Breadcrumbs } from "@/components/common";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function TermsAndConditions() {
   return (
-    <div className="bg-white">
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Decorative Background Blobs */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+      <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+
       {/* Breadcrumbs */}
-      <div className="border-b border-neutral-400">
-        <div className="container mx-auto px-6 py-6">
+      <div className="relative z-10 border-b border-emerald-200 bg-white/50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-6">
           <Breadcrumbs
             items={[{ label: "Terms & Conditions", href: "/terms-conditions" }]}
           />
@@ -13,44 +21,48 @@ export default function TermsAndConditions() {
       </div>
 
       {/* Content Section */}
-      <div className="container mx-auto px-6 py-16 md:py-20 lg:py-24">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-16 md:py-20 lg:py-24">
         <div className="mx-auto max-w-4xl">
           {/* Page Header */}
-          <div className="mb-12">
-            <h1 className="mb-4 text-4xl font-light text-neutral-900 md:text-5xl lg:text-6xl">
-              Terms & Conditions
+          <div className="mb-16 md:mb-20 text-center">
+            <h1 className="mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900">
+              Terms &{" "}
+              <span className="block bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mt-2">
+                Conditions
+              </span>
             </h1>
-            <p className="text-lg text-neutral-600 md:text-xl">
-              Thousands of products in stock. All orders placed by 2pm are
-              dispatched on the same day.
+            <p className="text-lg text-gray-600 md:text-xl max-w-full mx-auto mb-4">
+              Please read these terms carefully before using our services.
             </p>
           </div>
 
           {/* Main Content */}
-          <div className="space-y-12">
+          <div className="space-y-8 md:space-y-12">
             {/* Overview Section */}
-            <section className="space-y-6">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Overview
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   This website is operated by Bubble Wrap Shop. Throughout the
-                  site, the terms &quot;we&quot;, &quot;us&quot; and &quot;our&quot; refer to Bubble Wrap
-                  Shop. Bubble Wrap Shop offers this website, including all
-                  information, tools and Services available from this site to
-                  you, the user, conditioned upon your acceptance of all terms,
-                  conditions, policies and notices stated here.
+                  site, the terms &quot;we&quot;, &quot;us&quot; and
+                  &quot;our&quot; refer to Bubble Wrap Shop. Bubble Wrap Shop
+                  offers this website, including all information, tools and
+                  Services available from this site to you, the user,
+                  conditioned upon your acceptance of all terms, conditions,
+                  policies and notices stated here.
                 </p>
                 <p>
                   By visiting our site and/or purchasing something from us, you
-                  engage in our &quot;Service&quot; and agree to be bound by the following
-                  terms and conditions (&quot;Terms of Service&quot;, &quot;Terms&quot;), including
-                  those additional terms and conditions and policies referenced
-                  herein and/or available by hyperlink. These Terms of Service
-                  apply to all users of the site, including without limitation
-                  users who are browsers, vendors, customers, merchants, and/or
-                  contributors of content.
+                  engage in our &quot;Service&quot; and agree to be bound by the
+                  following terms and conditions (&quot;Terms of Service&quot;,
+                  &quot;Terms&quot;), including those additional terms and
+                  conditions and policies referenced herein and/or available by
+                  hyperlink. These Terms of Service apply to all users of the
+                  site, including without limitation users who are browsers,
+                  vendors, customers, merchants, and/or contributors of content.
                 </p>
                 <p>
                   Please read these Terms of Service carefully before accessing
@@ -76,11 +88,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 1 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 1 - Online Store Terms
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   By agreeing to these Terms of Service, you represent that you
                   are at least the age of majority in your state or province of
@@ -106,11 +119,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 2 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 2 - General Conditions
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   We reserve the right to refuse Service to anyone for any
                   reason at any time.
@@ -139,11 +153,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 3 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 3 - Accuracy, Completeness and Timeliness of Information
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   We are not responsible if information made available on this
                   site is not accurate, complete or current. The material on
@@ -165,11 +180,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 4 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 4 - Modifications to the Service and Prices
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Prices for our products are subject to change without notice.
                 </p>
@@ -187,11 +203,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 5 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 5 - Products or Services
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Certain products or Services may be available exclusively
                   online through the website. These products or Services may
@@ -226,11 +243,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 6 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 6 - Accuracy of Billing and Account Information
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   We reserve the right to refuse any order you place with us. We
                   may, in our sole discretion, limit or cancel quantities
@@ -256,21 +274,23 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 7 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 7 - Optional Tools
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   We may provide you with access to third-party tools over which
                   we neither monitor nor have any control nor input.
                 </p>
                 <p>
                   You acknowledge and agree that we provide access to such tools
-                  &quot;as is&quot; and &quot;as available&quot; without any warranties,
-                  representations or conditions of any kind and without any
-                  endorsement. We shall have no liability whatsoever arising
-                  from or relating to your use of optional third-party tools.
+                  &quot;as is&quot; and &quot;as available&quot; without any
+                  warranties, representations or conditions of any kind and
+                  without any endorsement. We shall have no liability whatsoever
+                  arising from or relating to your use of optional third-party
+                  tools.
                 </p>
                 <p>
                   Any use by you of the optional tools offered through the site
@@ -289,11 +309,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 8 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 8 - Third-Party Links
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Certain content, products and Services available via our
                   Service may include materials from third-parties.
@@ -321,11 +342,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 9 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 9 - User Comments, Feedback and Other Submissions
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   If, at our request, you send certain specific submissions (for
                   example contest entries) or without a request from us, you
@@ -366,11 +388,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 10 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 10 - Personal Information
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Your submission of personal information through the store is
                   governed by our Privacy Policy.
@@ -379,11 +402,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 11 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 11 - Errors, Inaccuracies and Omissions
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Occasionally there may be information on our site or in the
                   Service that contains typographical errors, inaccuracies or
@@ -408,11 +432,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 12 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 12 - Prohibited Uses
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   In addition to other prohibitions as set forth in the Terms of
                   Service, you are prohibited from using the site or its
@@ -442,11 +467,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 13 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 13 - Disclaimer of Warranties; Limitation of Liability
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   We do not guarantee, represent or warrant that your use of our
                   Service will be uninterrupted, timely, secure or error-free.
@@ -499,11 +525,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 14 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 14 - Indemnification
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   You agree to indemnify, defend and hold harmless Bubble Wrap
                   Shop and our parent, subsidiaries, affiliates, partners,
@@ -519,11 +546,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 15 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 15 - Severability
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   In the event that any provision of these Terms of Service is
                   determined to be unlawful, void or unenforceable, such
@@ -537,11 +565,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 16 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 16 - Termination
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   The obligations and liabilities of the parties incurred prior
                   to the termination date shall survive the termination of this
@@ -566,11 +595,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 17 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 17 - Entire Agreement
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   The failure of us to exercise or enforce any right or
                   provision of these Terms of Service shall not constitute a
@@ -594,11 +624,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 18 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 18 - Governing Law
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   These Terms of Service and any separate agreements whereby we
                   provide you Services shall be governed by and construed in
@@ -608,11 +639,12 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 19 */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 19 - Changes to Terms of Service
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   You can review the most current version of the Terms of
                   Service at any time at this page.
@@ -630,16 +662,17 @@ export default function TermsAndConditions() {
             </section>
 
             {/* Section 20 - Contact Information */}
-            <section className="space-y-6 border-t border-neutral-400 pt-12">
-              <h2 className="text-2xl font-light text-neutral-900 md:text-3xl lg:text-4xl">
+            <section className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300">
+              <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                 Section 20 - Contact Information
               </h2>
-              <div className="space-y-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
                 <p>
                   Questions about the Terms of Service should be sent to us at{" "}
                   <a
                     href="mailto:sales@bubblewrapshop.co.uk"
-                    className="text-primary underline hover:text-primary/80"
+                    className="text-emerald-600 underline hover:text-emerald-700 font-medium"
                   >
                     sales@bubblewrapshop.co.uk
                   </a>
@@ -648,34 +681,71 @@ export default function TermsAndConditions() {
                 <p>Our contact information is posted below:</p>
                 <div className="mt-4 space-y-2">
                   <p>
-                    <strong>Company Name:</strong> Bubble Wrap Shop (NW) Ltd
+                    <strong className="text-gray-900">Company Name:</strong>{" "}
+                    Bubble Wrap Shop (NW) Ltd
                   </p>
                   <p>
-                    <strong>Email:</strong>{" "}
+                    <strong className="text-gray-900">Email:</strong>{" "}
                     <a
                       href="mailto:sales@bubblewrapshop.co.uk"
-                      className="text-primary underline hover:text-primary/80"
+                      className="text-emerald-600 underline hover:text-emerald-700 font-medium"
                     >
                       sales@bubblewrapshop.co.uk
                     </a>
                   </p>
                   <p>
-                    <strong>Phone:</strong>{" "}
+                    <strong className="text-gray-900">Phone:</strong>{" "}
                     <a
                       href="tel:01254916167"
-                      className="text-primary underline hover:text-primary/80"
+                      className="text-emerald-600 underline hover:text-emerald-700 font-medium"
                     >
                       01254 916167
                     </a>
                   </p>
                   <p>
-                    <strong>Address:</strong> Bubble Wrap Shop (NW) Ltd, Unit 3,
-                    GBL House, Cleaver Street, Blackburn BB1 5DG, United Kingdom
+                    <strong className="text-gray-900">Address:</strong> Bubble
+                    Wrap Shop (NW) Ltd, Unit 3, GBL House, Cleaver Street,
+                    Blackburn BB1 5DG, United Kingdom
                   </p>
                 </div>
               </div>
             </section>
           </div>
+
+          {/* CTA Section */}
+          <section className="relative mt-18 border-t bg-linear-to-br from-emerald-600 to-teal-600 py-20 md:py-28 lg:py-32 overflow-hidden">
+            <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px]">
+              <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
+                {/* Heading */}
+                <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                  Questions About Our
+                  <span className="block mt-2 text-white">
+                    Terms & Conditions?
+                  </span>
+                </h2>
+
+                {/* Description */}
+                <p className="mb-10 text-base md:text-lg lg:text-xl text-white/80 max-w-2xl leading-relaxed lg:mb-12">
+                  Our team is here to help you understand our terms and answer
+                  any questions you may have.
+                </p>
+
+                {/* CTA Button */}
+                <Button asChild variant="ghost" className="w-fit group">
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center gap-3 px-8 py-4 mt-4 text-base font-semibold border border-white/20 text-white bg-white/20 rounded-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                  >
+                    Contact Support
+                    <ArrowRight
+                      className="h-5 w-5 transition-transform group-hover:translate-x-1"
+                      strokeWidth={2.5}
+                    />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>

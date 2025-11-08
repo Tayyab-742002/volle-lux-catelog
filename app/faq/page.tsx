@@ -1,12 +1,13 @@
 import { Breadcrumbs } from "@/components/common";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, HelpCircle } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 
 const faqData = [
   {
@@ -108,32 +109,39 @@ const faqData = [
 
 export default function FAQPage() {
   return (
-    <div className="bg-white">
+    <div className="relative min-h-screen overflow-hidden">
       {/* Breadcrumbs */}
-      <div className="border-b border-neutral-400">
-        <div className="container mx-auto px-6 py-6">
+      <div className="relative z-10 border-b border-emerald-200 bg-white/50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-6">
           <Breadcrumbs items={[{ label: "FAQ", href: "/faq" }]} />
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-16 md:py-20 lg:py-24">
-        <div className="mx-auto max-w-3xl">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-16 md:py-20 lg:py-24">
+        <div className="mx-auto max-w-4xl">
           {/* Page Header */}
-          <div className="mb-16 md:mb-20">
-            <h1 className="mb-6 text-4xl font-light text-neutral-900 md:text-5xl lg:text-6xl">
-              Frequently Asked Questions
+          <div className="mb-16 md:mb-20 text-center">
+            <h1 className="mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900">
+              Frequently Asked
+              <span className="block bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mt-2">
+                Questions
+              </span>
             </h1>
-            <p className="text-base text-neutral-600 md:text-lg">
+            <p className="text-base text-gray-600 md:text-lg max-w-2xl mx-auto">
               Find answers to common questions about our products and services
             </p>
           </div>
 
           {/* FAQ Accordion */}
-          <div className="space-y-16">
+          <div className="space-y-12 md:space-y-16">
             {faqData.map((category, categoryIndex) => (
-              <div key={categoryIndex}>
-                <h2 className="mb-8 text-xl font-normal text-neutral-900 md:text-2xl">
+              <div
+                key={categoryIndex}
+                className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-300"
+              >
+                <h2 className="mb-8 text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                  <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
                   {category.category}
                 </h2>
                 <Accordion type="single" collapsible className="w-full">
@@ -141,13 +149,18 @@ export default function FAQPage() {
                     <AccordionItem
                       key={faqIndex}
                       value={`${categoryIndex}-${faqIndex}`}
-                      className="border-b border-neutral-400"
+                      className="border-b border-gray-200 last:border-0"
                     >
-                      <AccordionTrigger className="py-6 text-left text-sm font-normal text-neutral-900 hover:text-neutral-600">
-                        {faq.question}
+                      <AccordionTrigger className="py-5 text-left text-base font-semibold text-gray-900 hover:text-emerald-600 transition-colors [&[data-state=open]]:text-emerald-600">
+                        <div className="flex items-center gap-3">
+                          <div className="w-1 h-1 rounded-full bg-emerald-500 shrink-0"></div>
+                          <span>{faq.question}</span>
+                        </div>
                       </AccordionTrigger>
-                      <AccordionContent className="pb-6 text-sm leading-relaxed text-neutral-600">
-                        {faq.answer}
+                      <AccordionContent className="pb-6 pt-2 pl-5">
+                        <p className="text-sm md:text-base leading-relaxed text-gray-600">
+                          {faq.answer}
+                        </p>
                       </AccordionContent>
                     </AccordionItem>
                   ))}
@@ -156,25 +169,36 @@ export default function FAQPage() {
             ))}
           </div>
 
-          {/* CTA Section */}
-          <div className="mt-20 border-t border-neutral-400 pt-16 text-center">
-            <h2 className="mb-6 text-2xl font-light text-neutral-900 md:text-3xl">
-              Still have questions?
-            </h2>
-            <p className="mb-10 text-base text-neutral-600">
-              Our support team is here to help
-            </p>
-            <Link
-              href="/contact"
-              className="group inline-flex items-center gap-2 border-b-2 border-neutral-900 pb-1 text-sm font-normal text-neutral-900 transition-colors hover:border-neutral-600 hover:text-neutral-600"
-            >
-              Contact Us
-              <ArrowRight
-                className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                strokeWidth={1.5}
-              />
-            </Link>
-          </div>
+          <section className="relative border-t bg-linear-to-br from-emerald-600  to-teal-600 py-20 md:py-28 lg:py-32 overflow-hidden">
+            <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px]">
+              <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
+                {/* Heading */}
+                <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                  Still have questions?
+                  <span className="block mt-2 text-white">Contact Us</span>
+                </h2>
+
+                {/* Description */}
+                <p className="mb-10 text-base md:text-lg lg:text-xl text-white/80 max-w-2xl leading-relaxed lg:mb-12">
+                  Our support team is here to help
+                </p>
+
+                {/* CTA Button */}
+                <Button asChild variant="ghost" className="w-fit group">
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center gap-3 px-8 py-4 mt-4 text-base font-semibold border border-white/20 text-white bg-white/20 rounded-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                  >
+                    Contact Us
+                    <ArrowRight
+                      className="h-5 w-5 transition-transform group-hover:translate-x-1"
+                      strokeWidth={2.5}
+                    />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>
