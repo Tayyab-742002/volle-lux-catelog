@@ -56,17 +56,19 @@ async function ProductGridContent({ searchParams }: ProductGridWrapperProps) {
 
 export function ProductGridWrapper({ searchParams }: ProductGridWrapperProps) {
   return (
-    <Suspense
-      fallback={
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 lg:gap-3">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <ProductCardSkeleton key={i} />
-          ))}
-        </div>
-      }
-    >
-      <ProductGridContent searchParams={searchParams} />
-    </Suspense>
+    <div className="rounded-xl border border-gray-300 bg-white p-4 sm:p-6 shadow-lg">
+      <Suspense
+        fallback={
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 sm:gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
+        }
+      >
+        <ProductGridContent searchParams={searchParams} />
+      </Suspense>
+    </div>
   )
 }
 
