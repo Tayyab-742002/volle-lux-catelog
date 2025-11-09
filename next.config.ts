@@ -1,6 +1,11 @@
 import {withSentryConfig} from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
+// PERFORMANCE: Bundle analyzer for tracking bundle sizes
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+
 const nextConfig: NextConfig = {
   images: {
     // Disable image optimization in development to avoid CDN timeout issues
@@ -33,7 +38,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
+// PERFORMANCE: Wrap config with bundle analyzer, then Sentry
+export default withSentryConfig(withBundleAnalyzer(nextConfig), {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
