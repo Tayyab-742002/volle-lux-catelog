@@ -37,7 +37,7 @@ export interface AdminCustomer {
   phone: string | null;
   company: string | null;
   avatarUrl: string | null;
-  role: 'customer' | 'admin';
+  role: "customer" | "admin";
   createdAt: Date;
   updatedAt: Date;
   totalOrders: number;
@@ -75,9 +75,7 @@ export async function getAllCustomers(
     const supabase = createServiceRoleClient();
 
     // Build query
-    let query = supabase
-      .from("users")
-      .select("*", { count: "exact" });
+    let query = supabase.from("users").select("*", { count: "exact" });
 
     // Apply search filter
     if (filters.search) {
@@ -111,45 +109,76 @@ export async function getAllCustomers(
       };
     }
 
-    // For each customer, get their order statistics
-    const customersData = (data as any[]) || [];
-    const customersWithStats: AdminCustomer[] = await Promise.all(
-      customersData.map(async (user) => {
-        // Get customer's order stats
-        const { data: orders } = await supabase
-          .from("orders")
-          .select("total_amount, created_at")
-          .eq("user_id", user.id);
+    // PERFORMANCE: Get all customer IDs for batch order query
+    const customersData =
+      (data as Array<{
+        id: string;
+        email: string;
+        full_name: string;
+        phone?: string;
+        company?: string;
+        avatar_url?: string;
+        role: string;
+        created_at: string;
+        updated_at: string;
+      }>) || [];
+    const customerIds = customersData.map((user) => user.id);
 
-        const ordersData = (orders as any[]) || [];
-        const totalOrders = ordersData.length;
-        const totalSpent = ordersData.reduce(
-          (sum, order) => sum + parseFloat(order.total_amount || 0),
-          0
-        );
+    // PERFORMANCE: Single query to get all orders for all customers (instead of N+1)
+    const { data: allOrders, error: ordersError } = await supabase
+      .from("orders")
+      .select("user_id, total_amount, created_at")
+      .in("user_id", customerIds);
 
-        // Find last order date
-        const orderDates = ordersData
-          .map((order) => new Date(order.created_at))
-          .sort((a, b) => b.getTime() - a.getTime());
-        const lastOrderDate = orderDates.length > 0 ? orderDates[0] : null;
+    if (ordersError) {
+      console.error("Error fetching customer orders:", ordersError);
+      // Continue with empty orders rather than failing
+    }
 
-        return {
-          id: user.id,
-          email: user.email,
-          fullName: user.full_name,
-          phone: user.phone,
-          company: user.company,
-          avatarUrl: user.avatar_url,
-          role: user.role,
-          createdAt: new Date(user.created_at),
-          updatedAt: new Date(user.updated_at),
-          totalOrders,
-          totalSpent,
-          lastOrderDate,
-        };
-      })
-    );
+    // Group orders by user_id for O(1) lookup
+    type OrderData = {
+      user_id: string;
+      total_amount: number;
+      created_at: string;
+    };
+    const ordersByUser = new Map<string, OrderData[]>();
+    (allOrders || []).forEach((order: OrderData) => {
+      if (!ordersByUser.has(order.user_id)) {
+        ordersByUser.set(order.user_id, []);
+      }
+      ordersByUser.get(order.user_id)!.push(order);
+    });
+
+    // Build customer stats from grouped data
+    const customersWithStats: AdminCustomer[] = customersData.map((user) => {
+      const userOrders = ordersByUser.get(user.id) || [];
+      const totalOrders = userOrders.length;
+      const totalSpent = userOrders.reduce(
+        (sum, order) => sum + (order.total_amount || 0),
+        0
+      );
+
+      // Find last order date
+      const orderDates = userOrders
+        .map((order) => new Date(order.created_at))
+        .sort((a, b) => b.getTime() - a.getTime());
+      const lastOrderDate = orderDates.length > 0 ? orderDates[0] : null;
+
+      return {
+        id: user.id,
+        email: user.email,
+        fullName: user.full_name,
+        phone: user.phone || null,
+        company: user.company || null,
+        avatarUrl: user.avatar_url || null,
+        role: (user.role as "customer" | "admin") || "customer",
+        createdAt: new Date(user.created_at),
+        updatedAt: new Date(user.updated_at),
+        totalOrders,
+        totalSpent,
+        lastOrderDate,
+      };
+    });
 
     return {
       customers: customersWithStats,
@@ -165,7 +194,9 @@ export async function getAllCustomers(
 /**
  * Get single customer by ID with full details
  */
-export async function getCustomerById(customerId: string): Promise<AdminCustomer | null> {
+export async function getCustomerById(
+  customerId: string
+): Promise<AdminCustomer | null> {
   try {
     const supabase = createServiceRoleClient();
 
@@ -178,7 +209,6 @@ export async function getCustomerById(customerId: string): Promise<AdminCustomer
 
     if (error) {
       if (error.code === "PGRST116") {
-        console.log("Customer not found:", customerId);
         return null;
       }
       console.error("Error fetching customer:", error);
@@ -195,10 +225,11 @@ export async function getCustomerById(customerId: string): Promise<AdminCustomer
       .select("total_amount, created_at")
       .eq("user_id", user.id);
 
-    const ordersData = (orders as any[]) || [];
+    type OrderData = { total_amount: number; created_at: string };
+    const ordersData = (orders as OrderData[]) || [];
     const totalOrders = ordersData.length;
     const totalSpent = ordersData.reduce(
-      (sum, order) => sum + parseFloat(order.total_amount || 0),
+      (sum, order) => sum + (order.total_amount || 0),
       0
     );
 
@@ -228,4 +259,3 @@ export async function getCustomerById(customerId: string): Promise<AdminCustomer
     throw error;
   }
 }
-

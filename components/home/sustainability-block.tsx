@@ -18,6 +18,7 @@ export function SustainabilityBlock() {
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 quality={95}
                 sizes="(max-width: 1024px) 100vw, 50vw"
+                loading="lazy" // PERFORMANCE: Lazy load below-fold image
               />
               {/* Overlay Gradient */}
               <div className="absolute inset-0 bg-linear-to-t from-emerald-900/20 via-transparent to-transparent"></div>

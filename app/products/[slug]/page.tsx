@@ -1,5 +1,7 @@
+// PERFORMANCE: Dynamic import for heavy ProductGallery component
+import dynamic from "next/dynamic";
+import { ProductGallerySkeleton } from "@/components/products/product-gallery-loader";
 import {
-  ProductGallery,
   ProductHeader,
   ProductPurchaseSection,
   ProductInfoAccordion,
@@ -7,6 +9,15 @@ import {
 import { getProductBySlug } from "@/services/products/product.service";
 import { getProductSlugs } from "@/sanity/lib/api";
 import { notFound } from "next/navigation";
+
+// PERFORMANCE: Code split ProductGallery (heavy image component)
+const ProductGallery = dynamic(
+  () => import("@/components/products").then((mod) => ({ default: mod.ProductGallery })),
+  {
+    loading: () => <ProductGallerySkeleton />,
+    ssr: true,
+  }
+);
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;

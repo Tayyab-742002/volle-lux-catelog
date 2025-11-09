@@ -42,6 +42,7 @@ export function ProductCard({ product }: ProductCardProps) {
               }`}
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
               priority={false}
+              loading="lazy" // PERFORMANCE: Lazy load product images
             />
 
             {/* Secondary Image (shows on hover) */}
@@ -54,6 +55,7 @@ export function ProductCard({ product }: ProductCardProps) {
               }`}
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
               priority={false}
+              loading="lazy" // PERFORMANCE: Lazy load product images
             />
 
             {/* Discount Badge */}

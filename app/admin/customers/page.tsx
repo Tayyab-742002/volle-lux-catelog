@@ -1,10 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CustomerTable } from "@/components/admin/customer-table";
+// PERFORMANCE: Dynamic import for heavy CustomerTable component
+import dynamic from "next/dynamic";
+import { AdminTableSkeleton } from "@/components/admin/admin-table-loader";
 import { AlertTriangle, RefreshCw, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AdminCustomer } from "@/services/admin/customer.service";
+
+// PERFORMANCE: Code split CustomerTable (large component with filtering/sorting)
+const CustomerTable = dynamic(
+  () => import("@/components/admin/customer-table").then((mod) => ({ default: mod.CustomerTable })),
+  {
+    loading: () => <AdminTableSkeleton />,
+    ssr: false, // Client-only component with interactivity
+  }
+);
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<AdminCustomer[]>([]);

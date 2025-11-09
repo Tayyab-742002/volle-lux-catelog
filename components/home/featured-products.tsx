@@ -6,7 +6,6 @@ import { getFeaturedProductsList } from "@/services/products/product.service";
 
 export async function FeaturedProducts() {
   const featuredProducts = await getFeaturedProductsList();
-  console.log("Featured Products", featuredProducts);
 
   return (
     <section className="relativepy-16 md:py-20 lg:py-24 overflow-hidden">

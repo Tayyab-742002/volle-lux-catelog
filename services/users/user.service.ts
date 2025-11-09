@@ -5,6 +5,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { fetchWithRetry } from "@/lib/utils/retry";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 export interface SavedAddressInput {
   name: string;
@@ -31,8 +32,6 @@ export interface SavedAddress extends SavedAddressInput {
 export async function getSavedAddresses(
   userId: string
 ): Promise<SavedAddress[]> {
-  console.log("🔍 getSavedAddresses called with userId:", userId);
-
   // Prefer server API (service role) to avoid RLS/network edge cases
   try {
     const res = await fetchWithRetry(`/api/user/addresses/${userId}`, {
@@ -40,12 +39,11 @@ export async function getSavedAddresses(
       headers: { "Content-Type": "application/json" },
     });
     const data = (await res.json()) as SavedAddress[];
-    console.log("📍 Addresses via API:", data.length);
     return data || [];
   } catch (apiErr) {
     console.warn("⚠️ Fallback to client Supabase for addresses", apiErr);
 
-    const supabase = createClient() as any;
+    const supabase = createClient() as SupabaseClient;
     const { data, error } = await supabase
       .from("saved_addresses")
       .select("*")
@@ -67,13 +65,13 @@ export async function createSavedAddress(
   input: SavedAddressInput,
   makeDefault?: boolean
 ): Promise<SavedAddress> {
-  const supabase = createClient() as any;
+  const supabase = createClient() as SupabaseClient;
 
   // If making default, unset other defaults first
   if (makeDefault || input.is_default) {
     const { error: unsetErr } = await supabase
       .from("saved_addresses")
-      .update({ is_default: false } as any)
+      .update({ is_default: false } as Record<string, unknown>)
       .eq("user_id", userId);
     if (unsetErr) {
       console.error("Error unsetting previous default addresses:", unsetErr);
@@ -90,7 +88,7 @@ export async function createSavedAddress(
       country: input.country || "US",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-    } as any)
+    } as Record<string, unknown>)
     .select("*")
     .single();
 
@@ -107,13 +105,13 @@ export async function updateSavedAddress(
   addressId: string,
   input: Partial<SavedAddressInput>
 ): Promise<SavedAddress> {
-  const supabase = createClient() as any;
+  const supabase = createClient() as SupabaseClient;
 
   // If toggling default to true, unset others
   if (input.is_default) {
     const { error: unsetErr } = await supabase
       .from("saved_addresses")
-      .update({ is_default: false } as any)
+      .update({ is_default: false } as Record<string, unknown>)
       .eq("user_id", userId);
     if (unsetErr) {
       console.error("Error unsetting previous default addresses:", unsetErr);
@@ -126,7 +124,7 @@ export async function updateSavedAddress(
     .update({
       ...input,
       updated_at: new Date().toISOString(),
-    } as any)
+    } as Record<string, unknown>)
     .eq("id", addressId)
     .eq("user_id", userId)
     .select("*")
@@ -144,7 +142,7 @@ export async function deleteSavedAddress(
   userId: string,
   addressId: string
 ): Promise<void> {
-  const supabase = createClient() as any;
+  const supabase = createClient() as SupabaseClient;
 
   const { error } = await supabase
     .from("saved_addresses")
@@ -162,11 +160,11 @@ export async function setDefaultSavedAddress(
   userId: string,
   addressId: string
 ): Promise<void> {
-  const supabase = createClient() as any;
+  const supabase = createClient() as SupabaseClient;
 
   const { error: unsetErr } = await supabase
     .from("saved_addresses")
-    .update({ is_default: false } as any)
+    .update({ is_default: false } as Record<string, unknown>)
     .eq("user_id", userId);
   if (unsetErr) {
     console.error("Error unsetting previous default addresses:", unsetErr);
@@ -175,7 +173,7 @@ export async function setDefaultSavedAddress(
 
   const { error } = await supabase
     .from("saved_addresses")
-    .update({ is_default: true } as any)
+    .update({ is_default: true } as Record<string, unknown>)
     .eq("id", addressId)
     .eq("user_id", userId);
 
@@ -188,7 +186,7 @@ export async function setDefaultSavedAddress(
 export async function getDefaultSavedAddress(
   userId: string
 ): Promise<SavedAddress | null> {
-  const supabase = createClient() as any;
+  const supabase = createClient() as SupabaseClient;
 
   const { data, error } = await supabase
     .from("saved_addresses")

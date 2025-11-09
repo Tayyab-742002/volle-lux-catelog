@@ -21,7 +21,6 @@ import { Category } from "@/types/category";
 
 interface HeaderProps {
   categories?: Category[];
-  products?: Product[] | null;
 }
 
 const MOCK_CATEGORIES: Category[] = [
@@ -53,7 +52,6 @@ const MOCK_CATEGORIES: Category[] = [
 
 export function Header({
   categories = MOCK_CATEGORIES,
-  products = null,
 }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
@@ -289,68 +287,36 @@ export function Header({
                   ))}
                 </div>
 
-                {/* Featured Products from Active Category */}
+                {/* Category Description and CTA - PERFORMANCE: Removed product grid to reduce bundle */}
                 <div className="flex-1 px-6">
                   {activeCategory && (
-                    <>
-                      {products &&
-                      products.filter(
-                        (product) =>
-                          product.categorySlug === activeCategory.slug
-                      ).length > 0 ? (
-                        <>
-                          <div className="grid grid-cols-4 gap-4">
-                            {products
-                              .filter(
-                                (product) =>
-                                  product.categorySlug === activeCategory.slug
-                              )
-                              .slice(0, 4)
-                              .map((product) => (
-                                <Link
-                                  key={product.id}
-                                  href={`/products/${product.slug}`}
-                                  className="group block cursor-pointer border-2 border-emerald-100 hover:border-emerald-300 p-3 rounded-xl transition-all duration-300 hover:shadow-lg"
-                                  onClick={handleMegaMenuLeave}
-                                >
-                                  <div className="relative aspect-square overflow-hidden rounded-lg bg-linear-to-br from-emerald-50 to-teal-50">
-                                    <Image
-                                      src={product.image}
-                                      alt={product.name}
-                                      fill
-                                      className="object-cover transition-transform duration-300 group-hover:scale-110"
-                                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                                    />
-                                  </div>
-                                  <p className="mt-2 text-sm font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2">
-                                    {product.name}
-                                  </p>
-                                </Link>
-                              ))}
-                          </div>
-                          <Link
-                            href={`/products?category=${activeCategory.slug}`}
-                            className="inline-flex items-center gap-2 mt-4 px-4 py-2 text-sm font-semibold cursor-pointer text-white bg-linear-to-r from-emerald-600 to-teal-600 rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
-                            onClick={handleMegaMenuLeave}
-                          >
-                            View all →
-                          </Link>
-                        </>
-                      ) : (
-                        <div className="py-8 text-center">
-                          <p className="text-sm text-gray-500">
-                            No products in this category
-                          </p>
-                          <Link
-                            href={`/products?category=${activeCategory.slug}`}
-                            className="inline-block mt-2 text-sm font-semibold cursor-pointer text-emerald-600 hover:text-emerald-700 transition-colors"
-                            onClick={handleMegaMenuLeave}
-                          >
-                            Browse category →
-                          </Link>
-                        </div>
+                    <div className="py-8">
+                      {activeCategory.description && (
+                        <p className="text-sm text-gray-600 mb-6 leading-relaxed max-w-2xl">
+                          {activeCategory.description}
+                        </p>
                       )}
-                    </>
+                      <Link
+                        href={`/products?category=${activeCategory.slug}`}
+                        className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold cursor-pointer text-white bg-linear-to-r from-emerald-600 to-teal-600 rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
+                        onClick={handleMegaMenuLeave}
+                      >
+                        Browse {activeCategory.name}
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </Link>
+                    </div>
                   )}
                 </div>
 
