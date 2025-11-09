@@ -1,6 +1,7 @@
 "use client";
 import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Search,
   User,
@@ -50,9 +51,8 @@ const MOCK_CATEGORIES: Category[] = [
   },
 ];
 
-export function Header({
-  categories = MOCK_CATEGORIES,
-}: HeaderProps) {
+export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
@@ -75,8 +75,12 @@ export function Header({
   }, []);
 
   const handleSignOut = useCallback(async () => {
-    await signOut();
-  }, [signOut]);
+    const result = await signOut();
+    if (result.success) {
+      // Redirect to home page after successful signout
+      router.push("/");
+    }
+  }, [signOut, router]);
 
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
@@ -197,14 +201,14 @@ export function Header({
                         Account
                       </Link>
                       <Link
-                        href="/account/orders"
+                        href="/account?tab=orders"
                         className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm cursor-pointer text-gray-900 hover:bg-emerald-50 transition-colors"
                       >
                         <Package className="h-4 w-4 text-emerald-600" />
                         Orders
                       </Link>
                       <Link
-                        href="/account/addresses"
+                        href="/account?tab=addresses"
                         className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm cursor-pointer text-gray-900 hover:bg-emerald-50 transition-colors"
                       >
                         <MapPin className="h-4 w-4 text-emerald-600" />

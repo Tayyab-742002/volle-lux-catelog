@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, memo } from "react";
 import Link from "next/link";
 import {
   MoreVertical,
@@ -44,40 +44,43 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
   const [sortBy, setSortBy] = useState<string>("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  // Filter and sort orders
-  const filteredOrders = orders
-    .filter((order) => {
-      if (searchTerm) {
-        const searchLower = searchTerm.toLowerCase();
-        return (
-          order.orderNumber.toLowerCase().includes(searchLower) ||
-          order.email.toLowerCase().includes(searchLower) ||
-          order.customerName?.toLowerCase().includes(searchLower)
-        );
-      }
-      return true;
-    })
-    .filter((order) => {
-      if (statusFilter === "all") return true;
-      return order.status === statusFilter;
-    })
-    .sort((a, b) => {
-      let comparison = 0;
-      switch (sortBy) {
-        case "date":
-          comparison = a.createdAt.getTime() - b.createdAt.getTime();
-          break;
-        case "total":
-          comparison = a.total - b.total;
-          break;
-        case "status":
-          comparison = a.status.localeCompare(b.status);
-          break;
-        default:
-          return 0;
-      }
-      return sortOrder === "asc" ? comparison : -comparison;
-    });
+  // Memoize filtered and sorted orders for better performance
+  const filteredOrders = useMemo(() => {
+    return orders
+      .filter((order) => {
+        if (searchTerm) {
+          const searchLower = searchTerm.toLowerCase();
+          return (
+            order.orderNumber?.toLowerCase().includes(searchLower) ||
+            order.email?.toLowerCase().includes(searchLower) ||
+            order.customerName?.toLowerCase().includes(searchLower)
+          );
+        }
+        return true;
+      })
+      .filter((order) => {
+        if (statusFilter === "all") return true;
+        return order.status === statusFilter;
+      })
+      .sort((a, b) => {
+        let comparison = 0;
+        switch (sortBy) {
+          case "date":
+            comparison =
+              (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0);
+            break;
+          case "total":
+            comparison = (a.total || 0) - (b.total || 0);
+            break;
+          case "status":
+            comparison = (a.status || "").localeCompare(b.status || "");
+            break;
+          default:
+            return 0;
+        }
+        return sortOrder === "asc" ? comparison : -comparison;
+      });
+  }, [orders, searchTerm, statusFilter, sortBy, sortOrder]);
 
   if (loading) {
     return <OrdersTableSkeleton />;
@@ -254,8 +257,8 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
   );
 }
 
-// Mobile Card Component
-function OrderCard({ order }: { order: AdminOrder }) {
+// Mobile Card Component - Memoized
+const OrderCard = memo(function OrderCard({ order }: { order: AdminOrder }) {
   return (
     <Link
       href={`/admin/orders/${order.id}`}
@@ -301,7 +304,7 @@ function OrderCard({ order }: { order: AdminOrder }) {
           <div className="min-w-0">
             <p className="text-xs text-gray-600">Total</p>
             <p className="text-sm font-semibold truncate text-gray-900">
-              ${order.total.toFixed(2)}
+              ${(order.total || 0).toFixed(2)}
             </p>
           </div>
         </div>
@@ -313,10 +316,10 @@ function OrderCard({ order }: { order: AdminOrder }) {
       </div>
     </Link>
   );
-}
+});
 
-// Desktop Table Row Component
-function OrderRow({ order }: { order: AdminOrder }) {
+// Desktop Table Row Component - Memoized
+const OrderRow = memo(function OrderRow({ order }: { order: AdminOrder }) {
   return (
     <tr className="hover:bg-emerald-50/50 border-b border-gray-300 transition-colors bg-white">
       <td className="py-3 px-4">
@@ -340,7 +343,7 @@ function OrderRow({ order }: { order: AdminOrder }) {
       </td>
       <td className="py-3 px-4">
         <p className="text-sm font-medium text-gray-900">
-          ${order.total.toFixed(2)}
+          ${(order.total || 0).toFixed(2)}
         </p>
       </td>
       <td className="py-3 px-4">
@@ -372,7 +375,7 @@ function OrderRow({ order }: { order: AdminOrder }) {
       </td>
     </tr>
   );
-}
+});
 
 // Loading Skeleton
 function OrdersTableSkeleton() {

@@ -218,6 +218,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const result = await signOut();
       if (result.success) {
         setUser(null);
+        // Force redirect to home page after signout
+        if (typeof window !== 'undefined') {
+          window.location.href = '/';
+        }
       }
       return result;
     } finally {
@@ -311,6 +315,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
  */
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
+  
+  if (typeof window === 'undefined') {
+    // During SSR, return a safe default to prevent errors
+    // The actual context will be available after hydration
+    return {
+      user: null,
+      loading: true,
+      isAuthenticated: false,
+      signIn: async () => ({ success: false, error: 'Not initialized' }),
+      signUp: async () => ({ success: false, error: 'Not initialized' }),
+      signOut: async () => ({ success: false, error: 'Not initialized' }),
+      resetPassword: async () => ({ success: false, error: 'Not initialized' }),
+      updatePassword: async () => ({ success: false, error: 'Not initialized' }),
+      updateProfile: async () => ({ success: false, error: 'Not initialized' }),
+      refreshUser: async () => {},
+    } as AuthContextType;
+  }
+  
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }

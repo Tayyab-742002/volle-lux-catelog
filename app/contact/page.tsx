@@ -72,15 +72,9 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 relative overflow-hidden">
-      {/* Decorative Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 -right-20 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-        <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-      </div>
-
+    <div className="min-h-screen relative overflow-hidden">
       {/* Breadcrumbs */}
-      <div className="relative z-10 border-b-2 border-emerald-100 bg-white/80 backdrop-blur-sm">
+      <div className="relative z-10 border-b-2 border-emerald-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-6">
           <Breadcrumbs items={[{ label: "Contact", href: "/contact" }]} />
         </div>
@@ -110,9 +104,9 @@ export default function ContactPage() {
             {/* Contact Info Sidebar */}
             <div className="space-y-6">
               {/* Email Card */}
-              <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-emerald-100 hover:shadow-xl transition-all duration-300 group">
+              <div className="bg-white rounded-2xl p-6 shadow-2xl border border-gray-300  transition-all duration-300 group">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg group-hover:scale-110 transition-transform">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-emerald-600 to-teal-600 shadow-lg group-hover:scale-110 transition-transform">
                     <Mail className="h-6 w-6 text-white" strokeWidth={2} />
                   </div>
                   <div className="flex-1">
@@ -130,18 +124,18 @@ export default function ContactPage() {
               </div>
 
               {/* Phone Card */}
-              <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-emerald-100 hover:shadow-xl transition-all duration-300 group">
+              <div className="bg-white rounded-2xl p-6 shadow-2xl border border-gray-300 transition-all duration-300 group">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 shadow-lg group-hover:scale-110 transition-transform">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-emerald-600 to-teal-600 shadow-lg group-hover:scale-110 transition-transform">
                     <Phone className="h-6 w-6 text-white" strokeWidth={2} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-teal-700 mb-2">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-700 mb-2">
                       Phone
                     </h3>
                     <a
                       href="tel:01254916167"
-                      className="block text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors mb-2"
+                      className="block text-sm font-medium text-gray-700 hover:text-emerald-600 transition-colors mb-2"
                     >
                       01254 916167
                     </a>
@@ -154,13 +148,13 @@ export default function ContactPage() {
               </div>
 
               {/* Office Card */}
-              <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-emerald-100 hover:shadow-xl transition-all duration-300 group">
+              <div className="bg-white rounded-2xl p-6 shadow-2xl border border-gray-300  transition-all duration-300 group">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 shadow-lg group-hover:scale-110 transition-transform">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-emerald-600 to-teal-600 shadow-lg group-hover:scale-110 transition-transform">
                     <MapPin className="h-6 w-6 text-white" strokeWidth={2} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-cyan-700 mb-2">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-700 mb-2">
                       Office
                     </h3>
                     <p className="text-sm text-gray-700 leading-relaxed">
@@ -178,17 +172,16 @@ export default function ContactPage() {
             </div>
 
             {/* Contact Form */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-2xl p-8 md:p-10 shadow-xl border-2 border-emerald-100">
+            <div className="lg:col-span-2 ">
+              <div className="bg-white rounded-2xl p-8 md:p-10 shadow-2xl border border-gray-300">
                 <div className="flex items-center gap-2 mb-8">
-                  <div className="h-1 w-1 rounded-full bg-emerald-500"></div>
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
                     Send us a Message
                   </h2>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid gap-6 md:grid-cols-2">
+                <form onSubmit={handleSubmit} className="space-y-6 ">
+                  <div className="grid gap-6 md:grid-cols-2 ">
                     <div className="space-y-2">
                       <Label
                         htmlFor="name"
@@ -201,8 +194,8 @@ export default function ContactPage() {
                         name="name"
                         type="text"
                         required
-                        placeholder="John Doe"
-                        className="h-11 border-2 border-emerald-200 bg-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                        placeholder="Alex Smith"
+                        className="h-11 border border-gray-300 focus:border-border-300 bg-transparent focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
                       />
                     </div>
 
@@ -219,7 +212,7 @@ export default function ContactPage() {
                         type="email"
                         required
                         placeholder="your.email@example.com"
-                        className="h-11 border-2 border-emerald-200 bg-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                        className="h-11 border border-gray-300 focus:border-border-300 bg-transparent focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
                       />
                     </div>
                   </div>
@@ -237,7 +230,7 @@ export default function ContactPage() {
                         name="company"
                         type="text"
                         placeholder="Your company"
-                        className="h-11 border-2 border-emerald-200 bg-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                        className="h-11 border border-gray-300 focus:border-border-300 bg-transparent focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
                       />
                     </div>
 
@@ -253,7 +246,7 @@ export default function ContactPage() {
                         name="phone"
                         type="tel"
                         placeholder="01254 916167"
-                        className="h-11 border-2 border-emerald-200 bg-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                        className="h-11 border border-gray-300 focus:border-border-300 bg-transparent focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
                       />
                     </div>
                   </div>
@@ -271,7 +264,7 @@ export default function ContactPage() {
                       type="text"
                       required
                       placeholder="What's this about?"
-                      className="h-11 border-2 border-emerald-200 bg-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                      className="h-11 border border-gray-300 focus:border-border-300 bg-transparent focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
                     />
                   </div>
 
@@ -288,13 +281,13 @@ export default function ContactPage() {
                       required
                       rows={6}
                       placeholder="Tell us how we can help..."
-                      className="resize-none border-2 border-emerald-200 bg-transparent focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                      className="h-11 border border-gray-300 focus:border-border-300 bg-transparent focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
                     />
                   </div>
 
                   {submitStatus === "success" && (
                     <div className="border-2 border-emerald-200 bg-emerald-50 p-4 rounded-xl flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="h-5 w-5 text-emerald-600 mt-0.5 shrink-0" />
                       <p className="text-sm font-medium text-emerald-800">
                         Thank you! Your message has been sent successfully.
                         We&apos;ll get back to you soon.
@@ -313,7 +306,7 @@ export default function ContactPage() {
                     type="submit"
                     size="lg"
                     disabled={isSubmitting}
-                    className="h-12 w-full md:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 px-8 text-base font-semibold text-white hover:shadow-lg transition-all duration-300 hover:scale-105"
+                    className="h-12 w-full md:w-auto bg-linear-to-r from-emerald-600 to-teal-600 px-8 text-base font-semibold text-white hover:shadow-lg transition-all duration-300 hover:scale-105"
                   >
                     {isSubmitting ? (
                       "Sending..."

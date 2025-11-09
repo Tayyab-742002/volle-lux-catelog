@@ -71,6 +71,18 @@ export async function middleware(request: NextRequest) {
   // Define admin routes that require admin role
   const adminRoutes = ["/admin"];
 
+  // Define routes that should skip all auth checks (like callback handlers)
+  const publicAuthRoutes = ["/auth/callback", "/auth/reset-password", "/auth/forgot-password", "/auth/verify-email"];
+
+  // Skip auth checks for public auth routes
+  const isPublicAuthRoute = publicAuthRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  if (isPublicAuthRoute) {
+    return supabaseResponse;
+  }
+
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );

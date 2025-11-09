@@ -11,10 +11,19 @@ import Link from "next/link";
 
 interface Banner {
   id: string;
-  title: string;
-  description: string;
-  image: string;
-  alt: string;
+  title?: string;
+  description?: string;
+  mediaType?: "image" | "video";
+  image?: string;
+  alt?: string;
+  video?: string;
+  videoPoster?: string;
+  videoSettings?: {
+    autoplay: boolean;
+    loop: boolean;
+    muted: boolean;
+    showControls: boolean;
+  };
 }
 
 interface HeroCarouselProps {
@@ -73,55 +82,79 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
       >
         <div className="relative h-[280px] sm:h-[380px] md:h-[500px] lg:h-[600px] xl:h-[700px] overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl">
           {/* Slides */}
-          {banners.map((banner, index) => (
-            <div
-              key={banner.id}
-              className={`absolute inset-0 transition-all duration-1000 ease-out ${
-                index === currentSlide
-                  ? "opacity-100 scale-100"
-                  : "opacity-0 scale-105"
-              }`}
-            >
-              <Image
-                src={banner.image}
-                alt={banner.alt}
-                fill
-                className="w-full h-full object-cover"
-                quality={95}
-                sizes="100vw"
-                priority={index === 0}
-              />
+          {banners.map((banner, index) => {
+            const isVideo = banner.mediaType === "video" && banner.video;
+            
+            return (
+              <div
+                key={banner.id}
+                className={`absolute inset-0 transition-all duration-1000 ease-out ${
+                  index === currentSlide
+                    ? "opacity-100 scale-100"
+                    : "opacity-0 scale-105"
+                }`}
+              >
+                {/* Background Media - Image or Video */}
+                {isVideo ? (
+                  <video
+                    src={banner.video}
+                    poster={banner.videoPoster}
+                    autoPlay={banner.videoSettings?.autoplay !== false}
+                    loop={banner.videoSettings?.loop !== false}
+                    muted={banner.videoSettings?.muted !== false}
+                    playsInline
+                    controls={banner.videoSettings?.showControls === true}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Image
+                    src={banner.image || ""}
+                    alt={banner.alt || `Banner ${index + 1}`}
+                    fill
+                    className="w-full h-full object-cover"
+                    quality={95}
+                    sizes="100vw"
+                    priority={index === 0}
+                  />
+                )}
 
-              {/* Dynamic Gradient Overlay - Eco colors */}
-              <div className="absolute inset-0 bg-linear-to-br from-emerald-600/10 via-teal-600/10 to-transparent" />
+                {/* Dynamic Gradient Overlay - Eco colors */}
+                <div className="absolute inset-0 bg-linear-to-br from-emerald-600/10 via-teal-600/10 to-transparent" />
 
-              {/* Content */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center px-3 sm:px-4 md:px-6">
-                <div className="text-center w-full max-w-4xl">
-                  <div
-                    className={`transform transition-all duration-1000 delay-300 ${
-                      index === currentSlide
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-10 opacity-0"
-                    }`}
-                  >
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2 sm:mb-3 md:mb-4 lg:mb-6 drop-shadow-2xl tracking-tight leading-tight sm:leading-none">
-                      {banner.title}
-                    </h2>
-                    <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-white font-light drop-shadow-lg px-2 sm:px-0 mb-4 sm:mb-5 md:mb-6 lg:mb-8">
-                      {banner.description}
-                    </p>
+                {/* Content - Only show if title or description exists */}
+                {(banner.title || banner.description) && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center px-3 sm:px-4 md:px-6">
+                    <div className="text-center w-full max-w-4xl">
+                      <div
+                        className={`transform transition-all duration-1000 delay-300 ${
+                          index === currentSlide
+                            ? "translate-y-0 opacity-100"
+                            : "translate-y-10 opacity-0"
+                        }`}
+                      >
+                        {banner.title && (
+                          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2 sm:mb-3 md:mb-4 lg:mb-6 drop-shadow-2xl tracking-tight leading-tight sm:leading-none">
+                            {banner.title}
+                          </h2>
+                        )}
+                        {banner.description && (
+                          <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-white font-light drop-shadow-lg px-2 sm:px-0 mb-4 sm:mb-5 md:mb-6 lg:mb-8">
+                            {banner.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <Link
+                      href={"/products"}
+                      className="mt-4 sm:mt-5 md:mt-6 lg:mt-8 px-6 sm:px-7 md:px-8 lg:px-10 xl:px-12 py-2 sm:py-2 md:py-3 cursor-pointer bg-white text-emerald-600 rounded-full font-semibold text-sm sm:text-base md:text-lg hover:bg-emerald-50 active:bg-emerald-100 transform hover:scale-105 active:scale-95 transition-all shadow-xl sm:shadow-2xl border-2 border-emerald-700/50 min-h-[44px] min-w-[120px] touch-manipulation"
+                    >
+                      Shop Now
+                    </Link>
                   </div>
-                </div>
-                <Link
-                  href={"/products"}
-                  className="mt-4 sm:mt-5 md:mt-6 lg:mt-8 px-6 sm:px-7 md:px-8 lg:px-10 xl:px-12 py-2 sm:py-2 md:py-3 cursor-pointer bg-white text-emerald-600 rounded-full font-semibold text-sm sm:text-base md:text-lg hover:bg-emerald-50 active:bg-emerald-100 transform hover:scale-105 active:scale-95 transition-all shadow-xl sm:shadow-2xl border-2 border-emerald-700/50 min-h-[44px] min-w-[120px] touch-manipulation"
-                >
-                  Shop Now
-                </Link>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Navigation Arrows - Touch-friendly on mobile (min 44x44px) */}
           {banners.length > 1 && (
@@ -177,43 +210,40 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
           </p>
         </div>
 
-        {/* Search Bar - Responsive layout: stacks on mobile, horizontal on tablet+ */}
-        <div className="max-w-3xl mx-auto mb-10 sm:mb-12 md:mb-14 lg:mb-16">
-          <div className="relative group">
-            <div className="absolute inset-0 bg-linear-to-r from-emerald-600 to-teal-600 rounded-xl sm:rounded-2xl blur-xl opacity-15 sm:opacity-20 group-hover:opacity-25 sm:group-hover:opacity-30 transition-opacity"></div>
-            <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center bg-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl border border-emerald-600 overflow-hidden">
-              <div className="relative flex items-center flex-1">
-                <div className="pl-4 sm:pl-5 md:pl-6 shrink-0">
-                  <Search className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-gray-400" />
-                </div>
-                <form
-                  onSubmit={handleSearch}
-                  className="flex-1 flex items-center min-w-0"
-                >
+        {/* Search Bar - Improved Mobile UI */}
+        <div className="max-w-3xl mx-auto mb-10 sm:mb-12 md:mb-14 lg:mb-16 px-4 sm:px-0">
+          <form onSubmit={handleSearch}>
+            <div className="relative group">
+              {/* Glow Effect */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity" />
+              
+              {/* Search Container */}
+              <div className="relative bg-white rounded-2xl shadow-xl border-2 border-emerald-100 hover:border-emerald-300 transition-colors overflow-hidden">
+                {/* Input Wrapper */}
+                <div className="flex items-center gap-3 px-4 sm:px-6">
+                  {/* Search Icon */}
+                  <Search className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600 flex-shrink-0" />
+                  
+                  {/* Input Field */}
                   <input
                     type="search"
                     placeholder="Search for products..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1 py-3.5 sm:py-4 md:py-5 px-3 sm:px-4 md:px-6 text-sm sm:text-base md:text-lg text-gray-900 placeholder:text-gray-400 focus:outline-none bg-transparent min-w-0"
+                    className="flex-1 py-4 sm:py-5 text-base sm:text-lg text-gray-900 placeholder:text-gray-400 focus:outline-none bg-transparent min-w-0"
                   />
-                </form>
+                  
+                  {/* Search Button */}
+                  <button
+                    type="submit"
+                    className="flex-shrink-0 px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl active:shadow-md transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 min-h-[44px] touch-manipulation"
+                  >
+                    Search
+                  </button>
+                </div>
               </div>
-
-              <button
-                type="submit"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const formEvent =
-                    e as unknown as React.FormEvent<HTMLFormElement>;
-                  handleSearch(formEvent);
-                }}
-                className="cursor-pointer m-2 px-6 sm:px-8 py-3 sm:py-3.5 bg-linear-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all"
-              >
-                Search
-              </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
