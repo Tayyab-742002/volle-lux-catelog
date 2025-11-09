@@ -129,24 +129,32 @@ export const useCartStore = create<CartStore>()((set, get) => ({
   syncCart: async (userId?: string) => {
     const { items, isLoading } = get();
     if (isLoading) {
-      console.log("Cart sync skipped: cart is loading");
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Cart sync skipped: cart is loading");
+      }
       return;
     }
 
     try {
       if (userId) {
         // Sync authenticated user cart to Supabase
-        console.log("Syncing cart to Supabase:", {
-          itemCount: items.length,
-          userId,
-        });
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Syncing cart to Supabase:", {
+            itemCount: items.length,
+            userId,
+          });
+        }
 
         await saveCartToSupabase(items, userId);
-        console.log("Cart synced successfully to Supabase");
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Cart synced successfully to Supabase");
+        }
       } else {
         // Sync guest cart to localStorage
         saveGuestCartToLocalStorage(items);
-        console.log("Guest cart synced to localStorage");
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Guest cart synced to localStorage");
+        }
       }
     } catch (error) {
       console.error("Failed to sync cart:", error);
@@ -154,12 +162,15 @@ export const useCartStore = create<CartStore>()((set, get) => ({
   },
 
   addItem: async (product, variant, quantity = 1, userId) => {
-    console.log("Adding item to cart:", {
-      productId: product.id,
-      variantId: variant?.id,
-      quantity,
-      userId,
-    });
+    // PERFORMANCE: Remove console.logs in production
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Adding item to cart:", {
+        productId: product.id,
+        variantId: variant?.id,
+        quantity,
+        userId,
+      });
+    }
 
     set({ isLoading: true });
 
@@ -218,20 +229,26 @@ export const useCartStore = create<CartStore>()((set, get) => ({
       }
     });
 
-    console.log("Cart items updated. New item count:", updatedItems.length);
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Cart items updated. New item count:", updatedItems.length);
+    }
 
     // Sync to storage after state update
     await get().syncCart(userId);
   },
 
   removeItem: async (itemId, userId) => {
-    console.log("Removing item from cart:", { itemId, userId });
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Removing item from cart:", { itemId, userId });
+    }
 
     set({ isLoading: true });
 
     set((state) => {
       const filteredItems = state.items.filter((item) => item.id !== itemId);
-      console.log("Item removed. New cart item count:", filteredItems.length);
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Item removed. New cart item count:", filteredItems.length);
+      }
       return {
         items: filteredItems,
         isLoading: false,
@@ -243,10 +260,14 @@ export const useCartStore = create<CartStore>()((set, get) => ({
   },
 
   updateQuantity: async (itemId, quantity, userId) => {
-    console.log("Updating item quantity:", { itemId, quantity, userId });
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Updating item quantity:", { itemId, quantity, userId });
+    }
 
     if (quantity <= 0) {
-      console.log("Quantity is 0 or less, removing item instead");
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Quantity is 0 or less, removing item instead");
+      }
       await get().removeItem(itemId, userId);
       return;
     }
@@ -266,12 +287,14 @@ export const useCartStore = create<CartStore>()((set, get) => ({
             item.product.pricingTiers
           );
 
-          console.log("Updated item:", {
-            itemId,
-            oldQuantity: item.quantity,
-            newQuantity: quantity,
-            newPricePerUnit: pricePerUnit,
-          });
+          if (process.env.NODE_ENV === 'development') {
+            console.log("Updated item:", {
+              itemId,
+              oldQuantity: item.quantity,
+              newQuantity: quantity,
+              newPricePerUnit: pricePerUnit,
+            });
+          }
 
           return {
             ...item,
@@ -294,7 +317,9 @@ export const useCartStore = create<CartStore>()((set, get) => ({
   },
 
   clearCart: async (userId) => {
-    console.log("Clearing cart for userId:", userId);
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Clearing cart for userId:", userId);
+    }
     set({ isLoading: true });
 
     try {
@@ -303,11 +328,17 @@ export const useCartStore = create<CartStore>()((set, get) => ({
 
       // Delete cart from storage
       if (userId) {
-        console.log("Deleting cart from Supabase for user:", userId);
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Deleting cart from Supabase for user:", userId);
+        }
         await saveCartToSupabase([], userId);
-        console.log("Cart cleared from Supabase successfully");
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Cart cleared from Supabase successfully");
+        }
       } else {
-        console.log("Guest cart cleared from localStorage");
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Guest cart cleared from localStorage");
+        }
         clearGuestCartFromLocalStorage();
       }
     } catch (error) {

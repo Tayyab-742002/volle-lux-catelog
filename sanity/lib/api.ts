@@ -41,7 +41,7 @@ export async function getAllProducts() {
   return safeQuery(async () => {
     const { data } = await sanityFetch({
       query: ALL_PRODUCTS_QUERY,
-      tags: ["products:all"],
+      tags: ["products:all"], // PERFORMANCE: Use tags for cache revalidation
     });
     return (data as SanityProduct[]).map(transformSanityProduct);
   });
@@ -72,7 +72,7 @@ export async function getProductBySlug(slug: string) {
     const { data: product } = await sanityFetch({
       query: PRODUCT_BY_SLUG_QUERY,
       params: { slug },
-      tags: [`product:${slug}`],
+      tags: [`product:${slug}`], // PERFORMANCE: Use tags for cache revalidation
     });
     return product ? transformSanityProduct(product) : null;
   });
@@ -144,7 +144,7 @@ export async function getAllCategories() {
   return safeQuery(async () => {
     const { data } = await sanityFetch({
       query: ALL_CATEGORIES_QUERY,
-      tags: ["categories:all"],
+      tags: ["categories:all"], // PERFORMANCE: Use tags for cache revalidation
     });
     return (data as SanityCategory[]).map(transformSanityCategory);
   });
@@ -154,19 +154,23 @@ export async function getCategoriesWithFeaturedProducts() {
   return safeQuery(async () => {
     const { data } = await sanityFetch({
       query: CATEGORIES_WITH_FEATURED_PRODUCTS_QUERY,
-      tags: ["categories:all"],
+      tags: ["categories:all"], // PERFORMANCE: Use tags for cache revalidation
     });
     if (!data) return null;
-    
-    return (data as Array<SanityCategory & { featuredProducts?: SanityProduct[] }>).map((item) => ({
+
+    return (
+      data as Array<SanityCategory & { featuredProducts?: SanityProduct[] }>
+    ).map((item) => ({
       ...transformSanityCategory(item),
-      products: item.featuredProducts?.map((p) => transformSanityProduct(p)).map((p) => ({
-        id: p.id,
-        name: p.name,
-        slug: p.slug,
-        image: p.image,
-        price: p.basePrice,
-      })),
+      products: item.featuredProducts
+        ?.map((p) => transformSanityProduct(p))
+        .map((p) => ({
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          image: p.image,
+          price: p.basePrice,
+        })),
     }));
   });
 }
@@ -210,7 +214,9 @@ export async function getActiveAnnouncement() {
       query: ACTIVE_ANNOUNCEMENT_QUERY,
       tags: ["announcement:active"],
     });
-    return data ? transformSanityAnnouncement(data as SanityAnnouncement) : null;
+    return data
+      ? transformSanityAnnouncement(data as SanityAnnouncement)
+      : null;
   });
 }
 

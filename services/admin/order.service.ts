@@ -159,7 +159,9 @@ export async function getAllOrders(
  * Get single order by ID for admin
  * Returns full order details including all admin fields
  */
-export async function getOrderById(orderId: string): Promise<AdminOrder | null> {
+export async function getOrderById(
+  orderId: string
+): Promise<AdminOrder | null> {
   try {
     const supabase = createServiceRoleClient();
 
@@ -171,7 +173,6 @@ export async function getOrderById(orderId: string): Promise<AdminOrder | null> 
 
     if (error) {
       if (error.code === "PGRST116") {
-        console.log("Order not found:", orderId);
         return null;
       }
       console.error("Error fetching order:", error);
@@ -234,7 +235,7 @@ export async function updateOrderStatus(
 
     if (updates.status) {
       updateData.status = updates.status;
-      
+
       // Set timestamp fields based on status
       if (updates.status === "shipped") {
         updateData.shipped_at = new Date().toISOString();
@@ -302,12 +303,10 @@ export async function getOrderStats(): Promise<{
 
     // Calculate statistics
     const total = counts.length || 0;
-    const pending =
-      counts.filter((o) => o.status === "pending").length || 0;
+    const pending = counts.filter((o) => o.status === "pending").length || 0;
     const processing =
       counts.filter((o) => o.status === "processing").length || 0;
-    const shipped =
-      counts.filter((o) => o.status === "shipped").length || 0;
+    const shipped = counts.filter((o) => o.status === "shipped").length || 0;
     const delivered =
       counts.filter((o) => o.status === "delivered").length || 0;
     const cancelled =
@@ -321,14 +320,18 @@ export async function getOrderStats(): Promise<{
       orderDate.setHours(0, 0, 0, 0);
       return orderDate.getTime() === today.getTime();
     });
-    
-    const todayRevenue =
-      todayOrders.reduce((sum, order) => sum + parseFloat(order.total_amount || 0), 0);
+
+    const todayRevenue = todayOrders.reduce(
+      (sum, order) => sum + parseFloat(order.total_amount || 0),
+      0
+    );
 
     // Calculate average order value
     const totalRevenue =
-      counts.reduce((sum, order) => sum + parseFloat(order.total_amount || 0), 0) ||
-      0;
+      counts.reduce(
+        (sum, order) => sum + parseFloat(order.total_amount || 0),
+        0
+      ) || 0;
     const averageOrderValue = total > 0 ? totalRevenue / total : 0;
 
     return {
@@ -346,4 +349,3 @@ export async function getOrderStats(): Promise<{
     throw error;
   }
 }
-

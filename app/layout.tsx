@@ -7,16 +7,16 @@ import { AnnouncementBannerWrapper } from "@/components/common/announcement-bann
 import { SanityLiveWrapper } from "@/components/common/sanity-live-wrapper";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
-import {
-  getCategoriesWithFeaturedProducts,
-  getAllProducts,
-} from "@/sanity/lib";
+import { getAllCategories } from "@/sanity/lib";
 import Chatbot from "@/components/common/Chatbot";
+// PERFORMANCE: Vercel Speed Insights & Analytics
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 const roboto = Roboto({
   subsets: ["latin"],
-  variable: "--font-roboto", // 3. Set the CSS variable
+  variable: "--font-roboto",
   display: "swap",
-  weight: ["300", "400", "500", "700"], // Load the weights you need
+  weight: ["300", "400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -25,18 +25,18 @@ export const metadata: Metadata = {
     "Professional packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options.",
 };
 
-// Make layout dynamic to prevent issues with SanityLive during static generation
-// This ensures defineLive is only called in a proper Server Component context
-export const dynamic = "force-dynamic";
+// PERFORMANCE: Removed force-dynamic to enable static generation
+// SanityLive is only used in specific dynamic pages that need real-time updates
+// Static pages (home, products, etc.) will use ISR with revalidation
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch categories with featured products for header mega menu
-  const categories = await getCategoriesWithFeaturedProducts();
-  const products = await getAllProducts();
+  // PERFORMANCE: Only fetch categories for header (not all products)
+  // Products are loaded on-demand by search/category pages
+  const categories = await getAllCategories();
 
   return (
     <html lang="en" className={roboto.variable} suppressHydrationWarning>
@@ -86,7 +86,7 @@ export default async function RootLayout({
           <CartProvider>
             {/* Announcement Banner - Above Header */}
             <AnnouncementBannerWrapper />
-            <Header categories={categories || []} products={products || null} />
+            <Header categories={categories || []} />
             <main className="flex-1">{children}</main>
             <Footer />
 
@@ -95,6 +95,9 @@ export default async function RootLayout({
             <SanityLiveWrapper />
           </CartProvider>
         </AuthProvider>
+        {/* PERFORMANCE: Real-time performance monitoring */}
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );

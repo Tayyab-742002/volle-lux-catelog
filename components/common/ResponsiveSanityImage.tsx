@@ -1,5 +1,4 @@
-"use client";
-
+// PERFORMANCE: Converted to Server Component (no client-side interactivity needed)
 import Image from "next/image";
 import type { Image as SanityImage } from "sanity";
 import { buildSanityImage, getBlurDataURL } from "@/sanity/lib/image";
@@ -11,6 +10,7 @@ type Props = {
   height?: number;
   priority?: boolean;
   className?: string;
+  loading?: "lazy" | "eager";
 };
 
 export default function ResponsiveSanityImage({
@@ -20,6 +20,7 @@ export default function ResponsiveSanityImage({
   height,
   priority,
   className,
+  loading = "lazy", // PERFORMANCE: Default to lazy loading
 }: Props) {
   const src = buildSanityImage(image, { width });
   
@@ -39,6 +40,7 @@ export default function ResponsiveSanityImage({
       placeholder={priority && blur ? "blur" : "empty"}
       blurDataURL={blur}
       priority={priority}
+      loading={priority ? "eager" : loading} // PERFORMANCE: Lazy load non-priority images
       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
     />
   );

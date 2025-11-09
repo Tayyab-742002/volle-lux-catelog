@@ -75,10 +75,6 @@ export async function sendOrderConfirmationEmail(
       };
     }
 
-    console.log(
-      `✅ Order confirmation email sent to ${customerEmail} (ID: ${result.data?.id})`
-    );
-
     return {
       success: true,
       messageId: result.data?.id,
@@ -159,10 +155,6 @@ export async function sendContactFormEmail(data: {
       };
     }
 
-    console.log(
-      `✅ Contact form email sent for ${data.name} (ID: ${result.data?.id})`
-    );
-
     return {
       success: true,
       messageId: result.data?.id,
@@ -227,10 +219,6 @@ export async function sendOrderShippedEmail(
         error: result.error.message,
       };
     }
-
-    console.log(
-      `✅ Order shipped email sent to ${customerEmail} (ID: ${result.data?.id})`
-    );
 
     return {
       success: true,

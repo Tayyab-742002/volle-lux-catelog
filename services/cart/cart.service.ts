@@ -47,8 +47,6 @@ export async function saveCartToSupabase(
         throw new Error("User ID mismatch - authentication error");
       }
 
-      console.log("Session verified successfully");
-
       // Authenticated user cart - check if cart exists
 
       const { data: existingCart, error: checkError } = await supabase
@@ -83,7 +81,7 @@ export async function saveCartToSupabase(
           .update({
             items: cartData.items,
             updated_at: cartData.updated_at,
-          } as any)
+          } as Record<string, unknown>)
           .eq("user_id", userId);
 
         if (error) {
@@ -93,7 +91,6 @@ export async function saveCartToSupabase(
       } else {
         // If no items, nothing to persist
         if (cartItems.length === 0) {
-          console.log("Empty cart - skipping insert for user");
           return;
         }
         // Insert new car
@@ -102,7 +99,7 @@ export async function saveCartToSupabase(
           session_id: null,
           items: cartData.items,
           updated_at: cartData.updated_at,
-        } as any);
+        } as Record<string, unknown>);
 
         if (error) {
           console.error("Error creating authenticated cart:", error);
@@ -142,7 +139,7 @@ export async function saveCartToSupabase(
           .update({
             items: cartData.items,
             updated_at: cartData.updated_at,
-          } as any)
+          } as Record<string, unknown>)
           .eq("session_id", sessionId);
 
         if (error) {
@@ -152,7 +149,6 @@ export async function saveCartToSupabase(
       } else {
         // If no items, nothing to persist
         if (cartItems.length === 0) {
-          console.log("Empty guest cart - skipping insert");
           return;
         }
         // Insert new guest cart
@@ -161,7 +157,7 @@ export async function saveCartToSupabase(
           session_id: sessionId,
           items: cartData.items,
           updated_at: cartData.updated_at,
-        } as any);
+        } as Record<string, unknown>);
 
         if (error) {
           console.error("Error creating guest cart:", error);
@@ -186,7 +182,7 @@ export async function loadCartFromSupabase(
   sessionId?: string
 ): Promise<CartItem[]> {
   try {
-    const supabase = createClient() as any;
+    const supabase = createClient() as SupabaseClient;
 
     if (userId) {
       // Load authenticated user cart - verify session first
@@ -254,7 +250,7 @@ export async function loadCartFromSupabase(
  */
 export async function storeOrder(order: Order): Promise<void> {
   try {
-    const supabase = createClient() as any;
+    const supabase = createClient() as SupabaseClient;
 
     const { error } = await supabase.from("orders").insert({
       user_id: order.userId || null,
@@ -286,7 +282,7 @@ export async function storeOrder(order: Order): Promise<void> {
  */
 export async function getOrderById(orderId: string): Promise<Order | null> {
   try {
-    const supabase = createClient() as any;
+    const supabase = createClient() as SupabaseClient;
 
     const { data, error } = await supabase
       .from("orders")
@@ -332,7 +328,7 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
  */
 export async function getUserOrders(userId: string): Promise<Order[]> {
   try {
-    const supabase = createClient() as any;
+    const supabase = createClient() as SupabaseClient;
 
     const { data, error } = await supabase
       .from("orders")
@@ -378,7 +374,7 @@ export async function updateOrderStatus(
   status: Order["status"]
 ): Promise<void> {
   try {
-    const supabase = createClient() as any;
+    const supabase = createClient() as SupabaseClient;
 
     const { error } = await supabase
       .from("orders")
@@ -407,7 +403,7 @@ export async function mergeGuestCartWithUserCart(
   userId: string
 ): Promise<void> {
   try {
-    const supabase = createClient() as any;
+    const supabase = createClient() as SupabaseClient;
 
     // Get guest cart
     const { data: guestCart, error: guestError } = await supabase

@@ -55,12 +55,12 @@ export async function createOrder(orderData: {
 
     // Extract customer info from addresses
     const customerName =
-      (orderData.shippingAddress as any)?.fullName ||
-      (orderData.billingAddress as any)?.fullName ||
+      (orderData.shippingAddress as Record<string, unknown>)?.fullName ||
+      (orderData.billingAddress as Record<string, unknown>)?.fullName ||
       "Customer";
     const customerPhone =
-      (orderData.shippingAddress as any)?.phone ||
-      (orderData.billingAddress as any)?.phone ||
+      (orderData.shippingAddress as Record<string, unknown>)?.phone ||
+      (orderData.billingAddress as Record<string, unknown>)?.phone ||
       null;
 
     const { data, error } = await supabase
@@ -95,7 +95,6 @@ export async function createOrder(orderData: {
       throw error;
     }
 
-    console.log("Order created successfully with ID:", data.id);
     return data.id;
   } catch (error) {
     console.error("Failed to create order:", error);
@@ -121,7 +120,6 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
 
     if (error) {
       if (error.code === "PGRST116") {
-        console.log("Order not found");
         return null;
       }
       console.error("Error fetching order:", error);
@@ -166,8 +164,6 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
     // Use service role client for server-side access
     const supabase = createServiceRoleClient();
 
-    console.log("Fetching orders for user:", userId);
-
     const { data, error } = await supabase
       .from("orders")
       .select("*")
@@ -180,7 +176,6 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
     }
 
     if (!data || data.length === 0) {
-      console.log("No orders found for user");
       return [];
     }
 
@@ -201,7 +196,6 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
       paymentIntentId: orderData.stripe_payment_intent_id,
     }));
 
-    console.log(`Fetched ${orders.length} orders for user`);
     return orders;
   } catch (error) {
     console.error("Failed to fetch user orders:", error);
@@ -223,8 +217,6 @@ export async function updateOrderStatus(
     // Use service role client for admin operations
     const supabase = createServiceRoleClient();
 
-    console.log("Updating order status:", { orderId, status });
-
     const { error } = await supabase
       .from("orders")
       .update({
@@ -237,8 +229,6 @@ export async function updateOrderStatus(
       console.error("Error updating order status:", error);
       throw error;
     }
-
-    console.log("Order status updated successfully");
   } catch (error) {
     console.error("Failed to update order status:", error);
     throw error;
@@ -284,8 +274,6 @@ export async function getOrderByStripeSessionId(
     // Use service role client to bypass RLS policies
     const supabase = createServiceRoleClient();
 
-    console.log("Fetching order by Stripe session ID:", sessionId);
-
     const { data, error } = await supabase
       .from("orders")
       .select("*")
@@ -294,7 +282,6 @@ export async function getOrderByStripeSessionId(
 
     if (error) {
       if (error.code === "PGRST116") {
-        console.log("Order not found for session:", sessionId);
         return null;
       }
       console.error("Error fetching order:", error);
@@ -322,7 +309,6 @@ export async function getOrderByStripeSessionId(
       paymentIntentId: data.stripe_payment_intent_id,
     };
 
-    console.log("Order fetched successfully");
     return order;
   } catch (error) {
     console.error("Failed to fetch order by session ID:", error);

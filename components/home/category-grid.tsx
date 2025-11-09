@@ -54,6 +54,7 @@ export async function CategoryGrid() {
                             className="object-cover p-4 transition-transform duration-300 group-hover:scale-110"
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
                             placeholder="empty"
+                            loading="lazy" // PERFORMANCE: Lazy load category images
                           />
                         ) : (
                           <div className="flex h-full items-center justify-center bg-linear-to-br from-emerald-50 to-teal-50">

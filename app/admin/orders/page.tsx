@@ -1,10 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { OrdersTable } from "@/components/admin/orders-table";
+// PERFORMANCE: Dynamic import for heavy OrdersTable component
+import dynamic from "next/dynamic";
+import { AdminTableSkeleton } from "@/components/admin/admin-table-loader";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AdminOrder } from "@/services/admin/order.service";
+
+// PERFORMANCE: Code split OrdersTable (large component with filtering/sorting)
+const OrdersTable = dynamic(
+  () => import("@/components/admin/orders-table").then((mod) => ({ default: mod.OrdersTable })),
+  {
+    loading: () => <AdminTableSkeleton />,
+    ssr: false, // Client-only component with interactivity
+  }
+);
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
