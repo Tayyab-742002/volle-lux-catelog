@@ -20,7 +20,7 @@ import Image from "next/image";
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { updatePassword, loading } = useAuth();
+  const { updatePassword, loading, user } = useAuth();
 
   const [formData, setFormData] = useState({
     password: "",
@@ -33,15 +33,13 @@ function ResetPasswordForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const accessToken = searchParams.get("access_token");
-    const refreshToken = searchParams.get("refresh_token");
-
-    if (!accessToken || !refreshToken) {
+    // Check if user is authenticated (session was set by callback)
+    if (!loading && !user) {
       setError(
-        "Invalid or expired reset link. Please request a new password reset."
+        "Auth session missing! Please click the reset link from your email again."
       );
     }
-  }, [searchParams]);
+  }, [loading, user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

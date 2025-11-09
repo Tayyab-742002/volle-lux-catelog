@@ -5,6 +5,7 @@ import "./globals.css";
 import { Header, Footer } from "@/components/common";
 import { AnnouncementBannerWrapper } from "@/components/common/announcement-banner-wrapper";
 import { SanityLiveWrapper } from "@/components/common/sanity-live-wrapper";
+import { WhatsAppButton } from "@/components/common/whatsapp-button";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { getAllCategories } from "@/sanity/lib";
@@ -93,6 +94,13 @@ export default async function RootLayout({
             {/* Enable real-time Sanity content updates */}
             <Chatbot />
             <SanityLiveWrapper />
+
+            {/* Floating WhatsApp Button */}
+            <WhatsAppButton
+              phoneNumber="+447882851632"
+              message="Hi! I'm interested in your packaging products."
+              position="left"
+            />
           </CartProvider>
         </AuthProvider>
         {/* PERFORMANCE: Real-time performance monitoring */}

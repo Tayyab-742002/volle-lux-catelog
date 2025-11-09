@@ -71,6 +71,7 @@ export default function SignUpPage() {
     }
 
     try {
+      console.log("Starting signup process...");
       const result = await signUp({
         email: formData.email,
         password: formData.password,
@@ -79,17 +80,23 @@ export default function SignUpPage() {
         company: formData.company || undefined,
       });
 
+      console.log("Signup result:", result);
+
       if (result.success) {
+        console.log("Signup successful, redirecting to verify-email page...");
         setError("");
-        router.push(
-          "/auth/login?message=Account created successfully. Please check your email to verify your account."
+        // Redirect to verify email page with user's email
+        router.replace(
+          `/auth/verify-email?email=${encodeURIComponent(formData.email)}`
         );
       } else {
+        console.error("Signup failed:", result.error);
         setError(result.error || "Failed to create account");
+        setIsSubmitting(false);
       }
     } catch (err) {
+      console.error("Signup exception:", err);
       setError("An unexpected error occurred");
-    } finally {
       setIsSubmitting(false);
     }
   };

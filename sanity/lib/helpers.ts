@@ -111,11 +111,12 @@ export interface SanityCategory {
 export interface SanityBanner {
   _id: string;
   _type: string;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   index: number;
   isActive: boolean;
-  backgroundImage: {
+  mediaType: "image" | "video";
+  backgroundImage?: {
     asset: {
       _id: string;
       url: string;
@@ -126,7 +127,27 @@ export interface SanityBanner {
         };
       };
     };
-    alt: string;
+    alt?: string;
+  };
+  backgroundVideo?: {
+    asset: {
+      _id: string;
+      url: string;
+    };
+  };
+  videoUrl?: string;
+  videoPoster?: {
+    asset: {
+      _id: string;
+      url: string;
+    };
+    alt?: string;
+  };
+  videoSettings?: {
+    autoplay: boolean;
+    loop: boolean;
+    muted: boolean;
+    showControls: boolean;
   };
 }
 
@@ -198,11 +219,20 @@ export function transformSanityCategory(sanityCategory: SanityCategory) {
 export function transformSanityBanner(sanityBanner: SanityBanner) {
   return {
     id: sanityBanner._id,
-    title: sanityBanner.title,
-    description: sanityBanner.description,
+    title: sanityBanner.title || "",
+    description: sanityBanner.description || "",
     index: sanityBanner.index,
+    mediaType: sanityBanner.mediaType || "image",
     image: sanityBanner.backgroundImage?.asset?.url || "",
-    alt: sanityBanner.backgroundImage?.alt || sanityBanner.title,
+    alt: sanityBanner.backgroundImage?.alt || sanityBanner.title || `Banner ${sanityBanner.index}`,
+    video: sanityBanner.backgroundVideo?.asset?.url || sanityBanner.videoUrl || "",
+    videoPoster: sanityBanner.videoPoster?.asset?.url || "",
+    videoSettings: sanityBanner.videoSettings || {
+      autoplay: true,
+      loop: true,
+      muted: true,
+      showControls: false,
+    },
   };
 }
 

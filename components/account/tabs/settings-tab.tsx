@@ -1,158 +1,144 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { User, Lock, Loader2, CheckCircle } from "lucide-react";
-import { useAuth } from "@/components/auth/auth-provider";
-import { cn } from "@/lib/utils";
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { User, Lock, Loader2, CheckCircle } from 'lucide-react'
+import { useAuth } from '@/components/auth/auth-provider'
+import { cn } from '@/lib/utils'
 
-export default function AccountSettingsPage() {
-  const router = useRouter();
-  const { user, loading, updateProfile, updatePassword } = useAuth();
-  const [activeTab, setActiveTab] = useState<"profile" | "password">("profile");
+interface SettingsTabProps {
+  userId: string
+}
+
+export function SettingsTab({ userId }: SettingsTabProps) {
+  const { user, loading, updateProfile, updatePassword } = useAuth()
+  const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile')
   const [profile, setProfile] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    company: "",
-  });
+    fullName: '',
+    email: '',
+    phone: '',
+    company: '',
+  })
 
   const [passwordForm, setPasswordForm] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [profileMessage, setProfileMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
+    type: 'success' | 'error'
+    text: string
+  } | null>(null)
   const [passwordMessage, setPasswordMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
+    type: 'success' | 'error'
+    text: string
+  } | null>(null)
 
   // Load user profile on mount
   useEffect(() => {
     if (!loading && user) {
       setProfile({
-        fullName: user.fullName || "",
-        email: user.email || "",
-        phone: user.phone || "",
-        company: user.company || "",
-      });
+        fullName: user.fullName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        company: user.company || '',
+      })
     }
-  }, [loading, user]);
-
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/auth/login");
-    }
-  }, [loading, user, router]);
+  }, [loading, user])
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setProfileMessage(null);
+    e.preventDefault()
+    setIsSubmitting(true)
+    setProfileMessage(null)
 
     try {
       const result = await updateProfile({
         fullName: profile.fullName,
         phone: profile.phone,
         company: profile.company,
-      });
+      })
 
       if (result.success) {
         setProfileMessage({
-          type: "success",
-          text: "Profile updated successfully!",
-        });
+          type: 'success',
+          text: 'Profile updated successfully!',
+        })
       } else {
         setProfileMessage({
-          type: "error",
-          text: result.error || "Failed to update profile",
-        });
+          type: 'error',
+          text: result.error || 'Failed to update profile',
+        })
       }
     } catch {
       setProfileMessage({
-        type: "error",
-        text: "An unexpected error occurred",
-      });
+        type: 'error',
+        text: 'An unexpected error occurred',
+      })
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setPasswordMessage(null);
+    e.preventDefault()
+    setIsSubmitting(true)
+    setPasswordMessage(null)
 
-    // Validate passwords match
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordMessage({ type: "error", text: "New passwords do not match" });
-      setIsSubmitting(false);
-      return;
+      setPasswordMessage({ type: 'error', text: 'New passwords do not match' })
+      setIsSubmitting(false)
+      return
     }
 
-    // Validate password length
     if (passwordForm.newPassword.length < 6) {
       setPasswordMessage({
-        type: "error",
-        text: "Password must be at least 6 characters",
-      });
-      setIsSubmitting(false);
-      return;
+        type: 'error',
+        text: 'Password must be at least 6 characters',
+      })
+      setIsSubmitting(false)
+      return
     }
 
     try {
-      const result = await updatePassword(passwordForm.newPassword);
+      const result = await updatePassword(passwordForm.newPassword)
 
       if (result.success) {
         setPasswordMessage({
-          type: "success",
-          text: "Password updated successfully!",
-        });
+          type: 'success',
+          text: 'Password updated successfully!',
+        })
         setPasswordForm({
-          currentPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        })
       } else {
         setPasswordMessage({
-          type: "error",
-          text: result.error || "Failed to update password",
-        });
+          type: 'error',
+          text: result.error || 'Failed to update password',
+        })
       }
     } catch {
       setPasswordMessage({
-        type: "error",
-        text: "An unexpected error occurred",
-      });
+        type: 'error',
+        text: 'An unexpected error occurred',
+      })
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2
-          className="h-8 w-8 animate-spin text-emerald-600"
-          strokeWidth={2}
-        />
-      </div>
-    );
   }
 
-  if (!user) {
-    return null;
+  if (loading || !user) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" strokeWidth={2} />
+      </div>
+    )
   }
 
   return (
@@ -162,24 +148,24 @@ export default function AccountSettingsPage() {
         <div className="overflow-x-auto">
           <nav className="flex min-w-max">
             <button
-              onClick={() => setActiveTab("profile")}
+              onClick={() => setActiveTab('profile')}
               className={cn(
-                "flex flex-1 items-center justify-center gap-2 px-6 py-3 text-sm font-medium transition-all whitespace-nowrap border-b-2",
-                activeTab === "profile"
-                  ? "border-emerald-600 bg-linear-to-r from-emerald-50 to-teal-50 text-emerald-700"
-                  : "border-transparent text-gray-600 hover:bg-emerald-50/50 hover:text-emerald-700"
+                'flex flex-1 items-center justify-center gap-2 px-6 py-3 text-sm font-medium transition-all whitespace-nowrap border-b-2',
+                activeTab === 'profile'
+                  ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
+                  : 'border-transparent text-gray-600 hover:bg-emerald-50/50 hover:text-emerald-700'
               )}
             >
               <User className="h-4 w-4" strokeWidth={2} />
               Profile
             </button>
             <button
-              onClick={() => setActiveTab("password")}
+              onClick={() => setActiveTab('password')}
               className={cn(
-                "flex flex-1 items-center justify-center gap-2 px-6 py-3 text-sm font-medium transition-all whitespace-nowrap border-b-2",
-                activeTab === "password"
-                  ? "border-emerald-600 bg-linear-to-r from-emerald-50 to-teal-50 text-emerald-700"
-                  : "border-transparent text-gray-600 hover:bg-emerald-50/50 hover:text-emerald-700"
+                'flex flex-1 items-center justify-center gap-2 px-6 py-3 text-sm font-medium transition-all whitespace-nowrap border-b-2',
+                activeTab === 'password'
+                  ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
+                  : 'border-transparent text-gray-600 hover:bg-emerald-50/50 hover:text-emerald-700'
               )}
             >
               <Lock className="h-4 w-4" strokeWidth={2} />
@@ -190,16 +176,16 @@ export default function AccountSettingsPage() {
       </div>
 
       {/* Profile Tab */}
-      {activeTab === "profile" && (
+      {activeTab === 'profile' && (
         <div className="rounded-2xl border border-gray-300 bg-white shadow-lg overflow-hidden">
           <div className="border-b border-gray-200 p-4 sm:p-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-emerald-100 to-teal-100">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
                 <User className="h-5 w-5 text-emerald-600" strokeWidth={2} />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-gray-900 tracking-tight flex items-center gap-3">
-                  <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+                  <div className="h-1 w-8 bg-emerald-600 rounded-full" />
                   Profile Information
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-600">
@@ -212,7 +198,7 @@ export default function AccountSettingsPage() {
           <form onSubmit={handleProfileSubmit} className="p-4 sm:p-6">
             {profileMessage && (
               <Alert
-                className={`mb-6 ${profileMessage.type === "success" ? "bg-green-50 text-green-900 border-green-200" : "bg-red-50 text-red-900 border-red-200"}`}
+                className={`mb-6 ${profileMessage.type === 'success' ? 'bg-green-50 text-green-900 border-green-200' : 'bg-red-50 text-red-900 border-red-200'}`}
               >
                 <CheckCircle className="h-4 w-4" strokeWidth={2} />
                 <AlertDescription>{profileMessage.text}</AlertDescription>
@@ -225,9 +211,7 @@ export default function AccountSettingsPage() {
                 <Input
                   id="fullName"
                   value={profile.fullName}
-                  onChange={(e) =>
-                    setProfile({ ...profile, fullName: e.target.value })
-                  }
+                  onChange={(e) => setProfile({ ...profile, fullName: e.target.value })}
                   className="mt-2 border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                   disabled={isSubmitting}
                 />
@@ -253,9 +237,7 @@ export default function AccountSettingsPage() {
                   id="phone"
                   type="tel"
                   value={profile.phone}
-                  onChange={(e) =>
-                    setProfile({ ...profile, phone: e.target.value })
-                  }
+                  onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                   className="mt-2 border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                   disabled={isSubmitting}
                   placeholder="Enter your phone number"
@@ -267,9 +249,7 @@ export default function AccountSettingsPage() {
                 <Input
                   id="company"
                   value={profile.company}
-                  onChange={(e) =>
-                    setProfile({ ...profile, company: e.target.value })
-                  }
+                  onChange={(e) => setProfile({ ...profile, company: e.target.value })}
                   className="mt-2 border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                   disabled={isSubmitting}
                   placeholder="Enter your company name"
@@ -280,14 +260,9 @@ export default function AccountSettingsPage() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+                  className="bg-emerald-600 text-white hover:bg-emerald-700"
                 >
-                  {isSubmitting && (
-                    <Loader2
-                      className="mr-2 h-4 w-4 animate-spin"
-                      strokeWidth={2}
-                    />
-                  )}
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" strokeWidth={2} />}
                   Save Changes
                 </Button>
                 <Button
@@ -297,13 +272,13 @@ export default function AccountSettingsPage() {
                   onClick={() => {
                     if (user) {
                       setProfile({
-                        fullName: user.fullName || "",
-                        email: user.email || "",
-                        phone: user.phone || "",
-                        company: user.company || "",
-                      });
+                        fullName: user.fullName || '',
+                        email: user.email || '',
+                        phone: user.phone || '',
+                        company: user.company || '',
+                      })
                     }
-                    setProfileMessage(null);
+                    setProfileMessage(null)
                   }}
                   className="border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
                 >
@@ -316,16 +291,16 @@ export default function AccountSettingsPage() {
       )}
 
       {/* Password Tab */}
-      {activeTab === "password" && (
+      {activeTab === 'password' && (
         <div className="rounded-2xl border border-gray-300 bg-white shadow-lg overflow-hidden">
           <div className="border-b border-gray-200 p-4 sm:p-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-emerald-100 to-teal-100">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
                 <Lock className="h-5 w-5 text-emerald-600" strokeWidth={2} />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-gray-900 tracking-tight flex items-center gap-3">
-                  <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+                  <div className="h-1 w-8 bg-emerald-600 rounded-full" />
                   Change Password
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-600">
@@ -338,7 +313,7 @@ export default function AccountSettingsPage() {
           <form onSubmit={handlePasswordSubmit} className="p-4 sm:p-6">
             {passwordMessage && (
               <Alert
-                className={`mb-6 ${passwordMessage.type === "success" ? "bg-green-50 text-green-900 border-green-200" : "bg-red-50 text-red-900 border-red-200"}`}
+                className={`mb-6 ${passwordMessage.type === 'success' ? 'bg-green-50 text-green-900 border-green-200' : 'bg-red-50 text-red-900 border-red-200'}`}
               >
                 <CheckCircle className="h-4 w-4" strokeWidth={2} />
                 <AlertDescription>{passwordMessage.text}</AlertDescription>
@@ -380,9 +355,7 @@ export default function AccountSettingsPage() {
                   className="mt-2 border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                   disabled={isSubmitting}
                 />
-                <p className="mt-1 text-xs text-gray-600">
-                  Minimum 6 characters
-                </p>
+                <p className="mt-1 text-xs text-gray-600">Minimum 6 characters</p>
               </div>
 
               <div>
@@ -407,14 +380,9 @@ export default function AccountSettingsPage() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+                  className="bg-emerald-600 text-white hover:bg-emerald-700"
                 >
-                  {isSubmitting && (
-                    <Loader2
-                      className="mr-2 h-4 w-4 animate-spin"
-                      strokeWidth={2}
-                    />
-                  )}
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" strokeWidth={2} />}
                   Update Password
                 </Button>
                 <Button
@@ -423,11 +391,11 @@ export default function AccountSettingsPage() {
                   disabled={isSubmitting}
                   onClick={() => {
                     setPasswordForm({
-                      currentPassword: "",
-                      newPassword: "",
-                      confirmPassword: "",
-                    });
-                    setPasswordMessage(null);
+                      currentPassword: '',
+                      newPassword: '',
+                      confirmPassword: '',
+                    })
+                    setPasswordMessage(null)
                   }}
                   className="border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
                 >
@@ -439,5 +407,7 @@ export default function AccountSettingsPage() {
         </div>
       )}
     </div>
-  );
+  )
 }
+
+

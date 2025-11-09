@@ -5,7 +5,19 @@
  */
 
 import { createClient } from "@/lib/supabase/client";
-import { User, AuthError } from "@supabase/supabase-js";
+
+// Type for user profile from database
+type UserProfile = {
+  id: string;
+  email: string;
+  full_name: string | null;
+  phone: string | null;
+  company: string | null;
+  avatar_url: string | null;
+  role: "customer" | "admin";
+  created_at: string;
+  updated_at: string;
+};
 
 // Types for authentication
 export interface SignUpData {
@@ -88,7 +100,11 @@ export async function signUp(data: SignUpData): Promise<AuthResult> {
     }
 
     // Create user profile using API route (bypasses RLS)
+    // Add timeout to prevent hanging
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
       const response = await fetch("/api/auth/create-profile", {
         method: "POST",
         headers: {
@@ -101,61 +117,95 @@ export async function signUp(data: SignUpData): Promise<AuthResult> {
           phone: data.phone,
           company: data.company,
         }),
+        signal: controller.signal,
       });
 
-      const profileResult = await response.json();
-      if (!response.ok && profileResult.created !== false) {
-        console.error("Error creating user profile:", profileResult.error);
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const profileResult = await response.json();
+        console.log("Profile creation result:", profileResult);
+      } else {
+        console.warn(
+          "Profile creation failed, but continuing (trigger might create it)"
+        );
       }
     } catch (error) {
-      console.error("Error calling create-profile API:", error);
+      if (error instanceof Error && error.name === "AbortError") {
+        console.warn("Profile creation timed out - continuing anyway");
+      } else {
+        console.error("Error calling create-profile API:", error);
+      }
       // Continue anyway - trigger might have created it or user can update profile later
     }
 
-    // Fetch the profile to return
-    const { data: profile, error: profileError } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", authData.user.id)
-      .single();
+    // Wait a moment for any database triggers to complete
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    if (profileError) {
-      console.error("Error fetching user profile:", profileError);
-      // Return basic user info even if profile doesn't exist
-      return {
-        success: true,
-        user: {
+    // Fetch the profile to return (with retry)
+    let profile = null;
+
+    // Try to fetch profile with retry
+    for (let i = 0; i < 2; i++) {
+      const { data: fetchedProfile, error: fetchError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", authData.user.id)
+        .single();
+
+      if (fetchedProfile) {
+        profile = fetchedProfile;
+        break;
+      }
+
+      if (fetchError) {
+        console.log(
+          `Profile fetch attempt ${i + 1} failed:`,
+          fetchError.message
+        );
+      }
+
+      // Wait before retry
+      if (i === 0) await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
+    // Build user object from profile or fallback to signup data
+    const typedProfile = profile as UserProfile | null;
+
+    const userResult: AuthUser = typedProfile
+      ? {
+          id: typedProfile.id,
+          email: typedProfile.email,
+          fullName: typedProfile.full_name || data.fullName,
+          phone: typedProfile.phone || data.phone,
+          company: typedProfile.company || data.company,
+          avatarUrl: typedProfile.avatar_url || undefined,
+          role: typedProfile.role || "customer",
+          createdAt: typedProfile.created_at || new Date().toISOString(),
+          updatedAt: typedProfile.updated_at || new Date().toISOString(),
+        }
+      : {
           id: authData.user.id,
           email: authData.user.email!,
           fullName: data.fullName,
           phone: data.phone,
           company: data.company,
-          role: "customer",
+          role: "customer" as const,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        },
-        message:
-          "Account created successfully. Please check your email to verify your account.",
-      };
-    }
+        };
 
+    console.log("Signup successful, returning user:", userResult.email);
+
+    // Return success - auth account is created
     return {
       success: true,
-      user: {
-        id: (profile as any).id,
-        email: (profile as any).email,
-        fullName: (profile as any).full_name,
-        phone: (profile as any).phone,
-        company: (profile as any).company,
-        avatarUrl: (profile as any).avatar_url,
-        role: (profile as any).role || "customer",
-        createdAt: (profile as any).created_at,
-        updatedAt: (profile as any).updated_at,
-      },
+      user: userResult,
       message:
         "Account created successfully. Please check your email to verify your account.",
     };
   } catch (error) {
+    console.error("Signup error:", error);
     return {
       success: false,
       error:
@@ -207,18 +257,20 @@ export async function signIn(data: SignInData): Promise<AuthResult> {
       };
     }
 
+    const typedProfile = profile as UserProfile;
+
     return {
       success: true,
       user: {
-        id: (profile as any).id,
-        email: (profile as any).email,
-        fullName: (profile as any).full_name,
-        phone: (profile as any).phone,
-        company: (profile as any).company,
-        avatarUrl: (profile as any).avatar_url,
-        role: (profile as any).role || "customer",
-        createdAt: (profile as any).created_at,
-        updatedAt: (profile as any).updated_at,
+        id: typedProfile.id,
+        email: typedProfile.email,
+        fullName: typedProfile.full_name || undefined,
+        phone: typedProfile.phone || undefined,
+        company: typedProfile.company || undefined,
+        avatarUrl: typedProfile.avatar_url || undefined,
+        role: typedProfile.role || "customer",
+        createdAt: typedProfile.created_at,
+        updatedAt: typedProfile.updated_at,
       },
       message: "Signed in successfully",
     };
@@ -272,7 +324,7 @@ export async function resetPassword(
     const supabase = createClient();
 
     const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password`,
+      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/auth/reset-password`,
     });
 
     if (error) {
@@ -351,6 +403,7 @@ export async function updateProfile(
     }
 
     // Update profile in database
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: profile, error: profileError } = await (supabase as any)
       .from("users")
       .update({
@@ -371,18 +424,20 @@ export async function updateProfile(
       };
     }
 
+    const typedProfile = profile as UserProfile;
+
     return {
       success: true,
       user: {
-        id: (profile as any).id,
-        email: (profile as any).email,
-        fullName: (profile as any).full_name,
-        phone: (profile as any).phone,
-        company: (profile as any).company,
-        avatarUrl: (profile as any).avatar_url,
-        role: (profile as any).role || "customer",
-        createdAt: (profile as any).created_at,
-        updatedAt: (profile as any).updated_at,
+        id: typedProfile.id,
+        email: typedProfile.email,
+        fullName: typedProfile.full_name || undefined,
+        phone: typedProfile.phone || undefined,
+        company: typedProfile.company || undefined,
+        avatarUrl: typedProfile.avatar_url || undefined,
+        role: typedProfile.role || "customer",
+        createdAt: typedProfile.created_at,
+        updatedAt: typedProfile.updated_at,
       },
       message: "Profile updated successfully",
     };
@@ -430,18 +485,20 @@ export async function getCurrentUser(): Promise<AuthResult> {
       };
     }
 
+    const typedProfile = profile as UserProfile;
+
     return {
       success: true,
       user: {
-        id: (profile as any).id,
-        email: (profile as any).email,
-        fullName: (profile as any).full_name,
-        phone: (profile as any).phone,
-        company: (profile as any).company,
-        avatarUrl: (profile as any).avatar_url,
-        role: (profile as any).role || "customer",
-        createdAt: (profile as any).created_at,
-        updatedAt: (profile as any).updated_at,
+        id: typedProfile.id,
+        email: typedProfile.email,
+        fullName: typedProfile.full_name || undefined,
+        phone: typedProfile.phone || undefined,
+        company: typedProfile.company || undefined,
+        avatarUrl: typedProfile.avatar_url || undefined,
+        role: typedProfile.role || "customer",
+        createdAt: typedProfile.created_at,
+        updatedAt: typedProfile.updated_at,
       },
     };
   } catch (error) {

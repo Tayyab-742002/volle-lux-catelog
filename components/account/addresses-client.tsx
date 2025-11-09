@@ -1,84 +1,39 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Plus, Edit, Trash2, Check, MapPin, Loader2 } from "lucide-react";
-import { useAuth } from "@/components/auth/auth-provider";
+import { useState, useOptimistic } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Plus, Edit, Trash2, Check, MapPin } from 'lucide-react'
 import {
   createSavedAddress,
   deleteSavedAddress,
-  getSavedAddresses,
   setDefaultSavedAddress,
   updateSavedAddress,
   type SavedAddress,
-} from "@/services/users/user.service";
-import Loading from "./loading";
+} from '@/services/users/user.service'
 
-export default function SavedAddressesPage() {
-  const { user } = useAuth();
-  const [addresses, setAddresses] = useState<SavedAddress[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [isAdding, setIsAdding] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+interface AddressesClientProps {
+  initialAddresses: SavedAddress[]
+  userId: string
+}
 
-  useEffect(() => {
-    if (!user?.id) {
-      setLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    const timeoutId = setTimeout(() => {
-      if (!cancelled) {
-        setLoading(false);
-      }
-    }, 5000);
-
-    (async () => {
-      try {
-        setLoading(true);
-        const result = await getSavedAddresses(user.id);
-        if (!cancelled) {
-          setAddresses(result);
-        }
-      } catch {
-        // Handle error silently, will show empty state
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-        clearTimeout(timeoutId);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timeoutId);
-    };
-  }, [user?.id]);
+export function AddressesClient({
+  initialAddresses,
+  userId,
+}: AddressesClientProps) {
+  const [addresses, setAddresses] = useState<SavedAddress[]>(initialAddresses)
+  const [isAdding, setIsAdding] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   const handleDelete = async (id: string) => {
-    if (!user?.id) return;
-    await deleteSavedAddress(user.id, id);
-    setAddresses((prev) => prev.filter((addr) => addr.id !== id));
-  };
+    await deleteSavedAddress(userId, id)
+    setAddresses((prev) => prev.filter((addr) => addr.id !== id))
+  }
 
   const handleSetDefault = async (id: string) => {
-    if (!user?.id) return;
-    await setDefaultSavedAddress(user.id, id);
-    setAddresses((prev) =>
-      prev.map((a) => ({ ...a, is_default: a.id === id }))
-    );
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loading />
-      </div>
-    );
+    await setDefaultSavedAddress(userId, id)
+    setAddresses((prev) => prev.map((a) => ({ ...a, is_default: a.id === id })))
   }
 
   return (
@@ -87,7 +42,7 @@ export default function SavedAddressesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl flex items-center gap-3">
-            <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+            <div className="h-1 w-8 bg-emerald-600 rounded-full" />
             Saved Addresses
           </h2>
           <p className="mt-2 text-sm text-gray-600">
@@ -96,7 +51,7 @@ export default function SavedAddressesPage() {
         </div>
         <Button
           onClick={() => setIsAdding(true)}
-          className="self-start sm:self-auto bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+          className="self-start sm:self-auto bg-emerald-600 text-white hover:bg-emerald-700"
         >
           <Plus className="mr-2 h-5 w-5" strokeWidth={2} />
           Add Address
@@ -108,7 +63,7 @@ export default function SavedAddressesPage() {
         <div className="flex items-center justify-center py-12 sm:py-16 rounded-2xl border border-gray-300 bg-white shadow-lg">
           <div className="text-center space-y-4 max-w-md px-4">
             <div className="flex justify-center">
-              <div className="rounded-full bg-linear-to-br from-emerald-100 to-teal-100 p-4 border border-emerald-200">
+              <div className="rounded-full bg-emerald-100 p-4 border border-emerald-200">
                 <MapPin className="h-8 w-8 text-emerald-600" strokeWidth={2} />
               </div>
             </div>
@@ -122,7 +77,7 @@ export default function SavedAddressesPage() {
             </div>
             <Button
               onClick={() => setIsAdding(true)}
-              className="bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+              className="bg-emerald-600 text-white hover:bg-emerald-700"
             >
               <Plus className="mr-2 h-4 w-4" strokeWidth={2} />
               Add Your First Address
@@ -138,19 +93,18 @@ export default function SavedAddressesPage() {
                 className="rounded-2xl border-2 border-dashed border-emerald-300 bg-white p-4 sm:p-6 shadow-lg"
               >
                 <h3 className="mb-4 text-lg font-bold text-gray-900 flex items-center gap-3">
-                  <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+                  <div className="h-1 w-8 bg-emerald-600 rounded-full" />
                   Edit Address
                 </h3>
                 <AddressForm
                   initial={address}
                   onCancel={() => setEditingId(null)}
                   onSubmit={async (payload) => {
-                    if (!user?.id) return;
                     const updated = await updateSavedAddress(
-                      user.id,
+                      userId,
                       address.id,
                       payload
-                    );
+                    )
                     setAddresses((prev) =>
                       prev.map((a) =>
                         a.id === address.id
@@ -162,8 +116,8 @@ export default function SavedAddressesPage() {
                                 : a.is_default,
                             }
                       )
-                    );
-                    setEditingId(null);
+                    )
+                    setEditingId(null)
                   }}
                 />
               </div>
@@ -182,26 +136,25 @@ export default function SavedAddressesPage() {
           {isAdding && (
             <div className="rounded-2xl border-2 border-dashed border-emerald-300 bg-white p-4 sm:p-6 shadow-lg">
               <h3 className="mb-4 text-lg font-bold text-gray-900 flex items-center gap-3">
-                <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+                <div className="h-1 w-8 bg-emerald-600 rounded-full" />
                 Add New Address
               </h3>
               <AddressForm
                 onCancel={() => setIsAdding(false)}
                 onSubmit={async (payload) => {
-                  if (!user?.id) return;
                   const created = await createSavedAddress(
-                    user.id,
+                    userId,
                     payload,
                     payload.is_default
-                  );
+                  )
                   setAddresses((prev) => [
                     created,
                     ...prev.map((a) => ({
                       ...a,
                       is_default: created.is_default ? false : a.is_default,
                     })),
-                  ]);
-                  setIsAdding(false);
+                  ])
+                  setIsAdding(false)
                 }}
               />
             </div>
@@ -209,7 +162,7 @@ export default function SavedAddressesPage() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 // Address Card Component
@@ -219,10 +172,10 @@ function AddressCard({
   onDelete,
   onSetDefault,
 }: {
-  address: SavedAddress;
-  onEdit: () => void;
-  onDelete: () => void;
-  onSetDefault: () => void;
+  address: SavedAddress
+  onEdit: () => void
+  onDelete: () => void
+  onSetDefault: () => void
 }) {
   return (
     <div className="group rounded-2xl border border-gray-300 bg-white p-4 sm:p-6 shadow-lg transition-all hover:border-emerald-300 hover:shadow-xl">
@@ -233,7 +186,7 @@ function AddressCard({
               {address.name}
             </span>
             {address.is_default && (
-              <span className="inline-flex items-center rounded-full bg-linear-to-r from-emerald-200 to-teal-200 px-2 py-0.5 text-xs font-medium text-emerald-700 border border-emerald-200">
+              <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 border border-emerald-200">
                 Default
               </span>
             )}
@@ -265,7 +218,7 @@ function AddressCard({
       <div className="mb-4 text-sm text-gray-600 space-y-1">
         <p>
           {address.address_line_1}
-          {address.address_line_2 ? `, ${address.address_line_2}` : ""}
+          {address.address_line_2 ? `, ${address.address_line_2}` : ''}
         </p>
         <p>
           {address.city}, {address.state} {address.postal_code}
@@ -286,56 +239,56 @@ function AddressCard({
         </Button>
       )}
     </div>
-  );
+  )
 }
 
 // Address Form Component
 interface AddressFormProps {
-  initial?: Partial<SavedAddress>;
+  initial?: Partial<SavedAddress>
   onSubmit: (payload: {
-    name: string;
-    first_name: string;
-    last_name: string;
-    company?: string | null;
-    address_line_1: string;
-    address_line_2?: string | null;
-    city: string;
-    state: string;
-    postal_code: string;
-    country?: string;
-    phone?: string | null;
-    is_default?: boolean;
-  }) => void | Promise<void>;
-  onCancel: () => void;
+    name: string
+    first_name: string
+    last_name: string
+    company?: string | null
+    address_line_1: string
+    address_line_2?: string | null
+    city: string
+    state: string
+    postal_code: string
+    country?: string
+    phone?: string | null
+    is_default?: boolean
+  }) => void | Promise<void>
+  onCancel: () => void
 }
 
 function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
   const [form, setForm] = useState({
-    name: initial?.name || "Home",
-    first_name: initial?.first_name || "",
-    last_name: initial?.last_name || "",
-    company: initial?.company || "",
-    address_line_1: initial?.address_line_1 || "",
-    address_line_2: initial?.address_line_2 || "",
-    city: initial?.city || "",
-    state: initial?.state || "",
-    postal_code: initial?.postal_code || "",
-    country: initial?.country || "US",
-    phone: initial?.phone || "",
+    name: initial?.name || 'Home',
+    first_name: initial?.first_name || '',
+    last_name: initial?.last_name || '',
+    company: initial?.company || '',
+    address_line_1: initial?.address_line_1 || '',
+    address_line_2: initial?.address_line_2 || '',
+    city: initial?.city || '',
+    state: initial?.state || '',
+    postal_code: initial?.postal_code || '',
+    country: initial?.country || 'US',
+    phone: initial?.phone || '',
     is_default: Boolean(initial?.is_default) || false,
-  });
+  })
 
   return (
     <form
       className="space-y-4"
       onSubmit={async (e) => {
-        e.preventDefault();
+        e.preventDefault()
         await onSubmit({
           ...form,
           company: form.company || null,
           address_line_2: form.address_line_2 || null,
           phone: form.phone || null,
-        });
+        })
       }}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -380,6 +333,7 @@ function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
             }
             placeholder="John"
             className="mt-1.5 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+            required
           />
         </div>
         <div>
@@ -394,6 +348,7 @@ function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
             }
             placeholder="Doe"
             className="mt-1.5 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+            required
           />
         </div>
       </div>
@@ -410,6 +365,7 @@ function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
           }
           placeholder="123 Business Street"
           className="mt-1.5 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+          required
         />
       </div>
 
@@ -419,7 +375,7 @@ function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
         </Label>
         <Input
           id="address_line_2"
-          value={form.address_line_2 || ""}
+          value={form.address_line_2 || ''}
           onChange={(e) =>
             setForm((f) => ({ ...f, address_line_2: e.target.value }))
           }
@@ -428,7 +384,7 @@ function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
           <Label htmlFor="city" className="text-sm">
             City
@@ -439,6 +395,7 @@ function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
             onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
             placeholder="New York"
             className="mt-1.5 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+            required
           />
         </div>
         <div>
@@ -451,14 +408,12 @@ function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
             onChange={(e) => setForm((f) => ({ ...f, state: e.target.value }))}
             placeholder="NY"
             className="mt-1.5 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+            required
           />
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="postal_code" className="text-sm">
-            ZIP Code
+            ZIP
           </Label>
           <Input
             id="postal_code"
@@ -468,20 +423,7 @@ function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
             }
             placeholder="10001"
             className="mt-1.5 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
-          />
-        </div>
-        <div>
-          <Label htmlFor="country" className="text-sm">
-            Country
-          </Label>
-          <Input
-            id="country"
-            value={form.country}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, country: e.target.value }))
-            }
-            placeholder="US"
-            className="mt-1.5 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+            required
           />
         </div>
       </div>
@@ -492,7 +434,7 @@ function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
         </Label>
         <Input
           id="phone"
-          value={form.phone || ""}
+          value={form.phone || ''}
           onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
           placeholder="(555) 555-5555"
           className="mt-1.5 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
@@ -502,7 +444,7 @@ function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
       <div className="flex gap-3 pt-2">
         <Button
           type="submit"
-          className="flex-1 bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+          className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700"
         >
           Save Address
         </Button>
@@ -516,5 +458,7 @@ function AddressForm({ initial, onSubmit, onCancel }: AddressFormProps) {
         </Button>
       </div>
     </form>
-  );
+  )
 }
+
+

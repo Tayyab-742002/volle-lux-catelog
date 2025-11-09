@@ -224,6 +224,7 @@ export const BANNER_QUERY = `
   description,
   index,
   isActive,
+  mediaType,
   backgroundImage {
     asset-> {
       _id,
@@ -236,6 +237,26 @@ export const BANNER_QUERY = `
       }
     },
     alt
+  },
+  backgroundVideo {
+    asset-> {
+      _id,
+      url
+    }
+  },
+  videoUrl,
+  videoPoster {
+    asset-> {
+      _id,
+      url
+    },
+    alt
+  },
+  videoSettings {
+    autoplay,
+    loop,
+    muted,
+    showControls
   }
 `;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, memo } from "react";
 import Link from "next/link";
 import {
   Package,
@@ -32,36 +32,38 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
   const [sortBy, setSortBy] = useState<string>("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  // Filter and sort orders
-  const filteredOrders = orders
-    .filter((order) => {
-      if (searchTerm) {
-        const searchLower = searchTerm.toLowerCase();
-        return order.orderNumber.toLowerCase().includes(searchLower);
-      }
-      return true;
-    })
-    .filter((order) => {
-      if (statusFilter === "all") return true;
-      return order.status === statusFilter;
-    })
-    .sort((a, b) => {
-      let comparison = 0;
-      switch (sortBy) {
-        case "date":
-          comparison = a.createdAt.getTime() - b.createdAt.getTime();
-          break;
-        case "total":
-          comparison = a.total - b.total;
-          break;
-        case "status":
-          comparison = a.status.localeCompare(b.status);
-          break;
-        default:
-          return 0;
-      }
-      return sortOrder === "asc" ? comparison : -comparison;
-    });
+  // Memoize filtered and sorted orders for better performance
+  const filteredOrders = useMemo(() => {
+    return orders
+      .filter((order) => {
+        if (searchTerm) {
+          const searchLower = searchTerm.toLowerCase();
+          return order.orderNumber.toLowerCase().includes(searchLower);
+        }
+        return true;
+      })
+      .filter((order) => {
+        if (statusFilter === "all") return true;
+        return order.status === statusFilter;
+      })
+      .sort((a, b) => {
+        let comparison = 0;
+        switch (sortBy) {
+          case "date":
+            comparison = a.createdAt.getTime() - b.createdAt.getTime();
+            break;
+          case "total":
+            comparison = a.total - b.total;
+            break;
+          case "status":
+            comparison = a.status.localeCompare(b.status);
+            break;
+          default:
+            return 0;
+        }
+        return sortOrder === "asc" ? comparison : -comparison;
+      });
+  }, [orders, searchTerm, statusFilter, sortBy, sortOrder]);
 
   if (loading) {
     return <OrdersTableSkeleton />;
@@ -244,8 +246,13 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
   );
 }
 
-// Mobile Card Component
-function OrderCard({ order }: { order: Order }) {
+// Mobile Card Component - Memoized for performance
+const OrderCard = memo(function OrderCard({ order }: { order: Order }) {
+  const itemCount = useMemo(
+    () => order.items.reduce((sum, item) => sum + item.quantity, 0),
+    [order.items]
+  );
+
   return (
     <Link
       href={`/account/orders/${order.id}`}
@@ -264,19 +271,17 @@ function OrderCard({ order }: { order: Order }) {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="flex items-center gap-2">
-          <div className="rounded-lg bg-linear-to-br from-emerald-100 to-teal-100 p-1.5">
+          <div className="rounded-lg bg-emerald-100 p-1.5">
             <Package className="h-3.5 w-3.5 text-emerald-600" strokeWidth={2} />
           </div>
           <div className="min-w-0">
             <p className="text-xs text-gray-600">Items</p>
-            <p className="text-sm font-semibold text-gray-900">
-              {order.items.reduce((sum, item) => sum + item.quantity, 0)}
-            </p>
+            <p className="text-sm font-semibold text-gray-900">{itemCount}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="rounded-lg bg-linear-to-br from-emerald-100 to-teal-100 p-1.5">
+          <div className="rounded-lg bg-emerald-100 p-1.5">
             <DollarSign
               className="h-3.5 w-3.5 text-emerald-600"
               strokeWidth={2}
@@ -297,10 +302,15 @@ function OrderCard({ order }: { order: Order }) {
       </div>
     </Link>
   );
-}
+});
 
-// Desktop Table Row Component
-function OrderRow({ order }: { order: Order }) {
+// Desktop Table Row Component - Memoized for performance
+const OrderRow = memo(function OrderRow({ order }: { order: Order }) {
+  const itemCount = useMemo(
+    () => order.items.reduce((sum, item) => sum + item.quantity, 0),
+    [order.items]
+  );
+
   return (
     <tr className="hover:bg-emerald-50/50 border-b border-gray-200 transition-colors bg-white">
       <td className="py-3 px-4">
@@ -315,9 +325,7 @@ function OrderRow({ order }: { order: Order }) {
         </Link>
       </td>
       <td className="py-3 px-4">
-        <p className="text-sm text-gray-600">
-          {order.items.reduce((sum, item) => sum + item.quantity, 0)} items
-        </p>
+        <p className="text-sm text-gray-600">{itemCount} items</p>
       </td>
       <td className="py-3 px-4">
         <p className="text-sm font-medium text-gray-900">
@@ -336,7 +344,7 @@ function OrderRow({ order }: { order: Order }) {
       </td>
     </tr>
   );
-}
+});
 
 // Loading Skeleton
 function OrdersTableSkeleton() {
@@ -427,8 +435,12 @@ function OrdersTableSkeleton() {
   );
 }
 
-// Status Badge Component
-function StatusBadge({ status }: { status: Order["status"] }) {
+// Status Badge Component - Memoized for performance
+const StatusBadge = memo(function StatusBadge({
+  status,
+}: {
+  status: Order["status"];
+}) {
   const config = ORDER_STATUS_CONFIG[status];
 
   return (
@@ -438,7 +450,7 @@ function StatusBadge({ status }: { status: Order["status"] }) {
       {config.label}
     </span>
   );
-}
+});
 
 // Helper function
 function formatDate(date: Date): string {
