@@ -16,7 +16,7 @@ const faqData = [
       {
         question: "What are your shipping options?",
         answer:
-          "We offer standard shipping (3-5 business days) and express shipping (1-2 business days). Orders over $100 qualify for free standard shipping. Express shipping is available for an additional fee.",
+          "We offer standard shipping (3-5 business days) and express shipping (1-2 business days). Orders over £100 qualify for free standard shipping. Express shipping is available for an additional fee.",
       },
       {
         question: "Do you ship internationally?",

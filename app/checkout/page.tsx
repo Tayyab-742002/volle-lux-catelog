@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useAuth } from "@/components/auth/auth-provider";
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,9 @@ export default function CheckoutPage() {
     phone: "",
   });
 
+  // Guest email for checkout
+  const [guestEmail, setGuestEmail] = useState("");
+
   const summary = getCartSummaryWithShipping();
 
   useEffect(() => {
@@ -78,12 +82,8 @@ export default function CheckoutPage() {
     }
   }, [items, router]);
 
-  useEffect(() => {
-    if (!user?.id) {
-      const redirect = encodeURIComponent("/checkout");
-      router.push(`/auth/login?redirect=${redirect}`);
-    }
-  }, [user?.id, router]);
+  // REMOVED: No longer redirect guests to login
+  // Guests can now checkout without an account
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -92,9 +92,11 @@ export default function CheckoutPage() {
     async function loadAddresses() {
       const userId = user?.id;
 
+      // If no user (guest), skip loading addresses
       if (!userId) {
         setIsLoadingAddresses(false);
         addressesLoadedRef.current = true;
+        setUseNewAddress(true); // Auto-use new address form for guests
         return;
       }
 
@@ -151,6 +153,13 @@ export default function CheckoutPage() {
     setIsLoading(true);
 
     try {
+      // Validate guest email if not logged in
+      if (!user?.id) {
+        if (!guestEmail || !guestEmail.includes("@")) {
+          throw new Error("Please enter a valid email address");
+        }
+      }
+
       let shippingAddress;
 
       if (user?.id && selectedAddressId && !useNewAddress) {
@@ -197,6 +206,9 @@ export default function CheckoutPage() {
         throw new Error("Please select or enter a shipping address");
       }
 
+      // Use guest email or user email
+      const checkoutEmail = user?.email || guestEmail;
+
       const response = await fetchWithRetry("/api/checkout", {
         method: "POST",
         headers: {
@@ -210,6 +222,7 @@ export default function CheckoutPage() {
           vatAmount: summary.vatAmount,
           subtotal: summary.subtotal,
           total: summary.total,
+          email: checkoutEmail, // Add email for guest orders
         }),
       });
 
@@ -338,6 +351,56 @@ export default function CheckoutPage() {
                   </>
                 ) : (
                   <>
+                    {/* Guest Email Section */}
+                    {!user?.id && (
+                      <div className="mb-6 p-4 bg-linear-to-r from-emerald-50 to-teal-50 rounded-xl border-2 border-emerald-200">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600">
+                            <span className="text-white text-sm font-bold">
+                              📧
+                            </span>
+                          </div>
+                          <h3 className="text-base font-bold text-gray-900">
+                            Guest Checkout
+                          </h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Enter your email to receive order confirmation and
+                          updates.
+                        </p>
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="guest_email"
+                            className="text-sm font-semibold"
+                          >
+                            Email Address *
+                          </Label>
+                          <Input
+                            id="guest_email"
+                            type="email"
+                            value={guestEmail}
+                            onChange={(e) => setGuestEmail(e.target.value)}
+                            placeholder="your.email@example.com"
+                            required
+                            className="h-11 border border-gray-300 focus:border-emerald-500 bg-white focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
+                          />
+                        </div>
+                        <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
+                          <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                          <span>
+                            Have an account?{" "}
+                            <Link
+                              href="/auth/login?redirect=/checkout"
+                              className="text-emerald-600 hover:text-emerald-700 font-semibold underline"
+                            >
+                              Sign in
+                            </Link>{" "}
+                            to use saved addresses
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
                     {user?.id && savedAddresses.length > 0 && (
                       <Button
                         type="button"

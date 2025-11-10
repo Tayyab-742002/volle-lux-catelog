@@ -63,7 +63,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // Define protected routes that require authentication
-  const protectedRoutes = ["/account", "/checkout"];
+  // Note: /checkout is NOT protected to allow guest checkout
+  const protectedRoutes = ["/account"];
 
   // Define auth routes that should redirect if already authenticated
   const authRoutes = ["/auth/login", "/auth/signup"];

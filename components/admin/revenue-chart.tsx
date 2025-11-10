@@ -209,7 +209,7 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
           color: "rgb(148, 163, 184)",
           callback: function (value: number | string) {
             if (typeof value === "number") {
-              return "$" + value.toFixed(0);
+              return "£" + value.toFixed(0);
             }
             return value;
           },

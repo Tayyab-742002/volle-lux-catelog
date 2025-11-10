@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
           escapeCSV(order.customerName || ''),
           escapeCSV(order.email || ''),
           escapeCSV(order.status || ''),
-          escapeCSV(`$${order.total.toFixed(2)}`),
+          escapeCSV(`£${order.total.toFixed(2)}`),
           escapeCSV('paid'),
           escapeCSV(items),
           escapeCSV(shippingAddress),

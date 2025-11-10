@@ -14,14 +14,14 @@ export function OrderSummary({ summary, showTitle = true }: OrderSummaryProps) {
         {/* Subtotal */}
         <div className="flex justify-between">
           <span className="text-muted-foreground">Subtotal</span>
-          <span className="font-medium">${summary.subtotal.toFixed(2)}</span>
+          <span className="font-medium">£{summary.subtotal.toFixed(2)}</span>
         </div>
 
         {/* Discount */}
         {summary.discount > 0 && (
           <div className="flex justify-between text-primary">
             <span>Discount</span>
-            <span>-${summary.discount.toFixed(2)}</span>
+            <span>-£{summary.discount.toFixed(2)}</span>
           </div>
         )}
 
@@ -32,7 +32,7 @@ export function OrderSummary({ summary, showTitle = true }: OrderSummaryProps) {
             {summary.shipping === 0 ? (
               <span className="text-primary">Free</span>
             ) : (
-              `$${summary.shipping.toFixed(2)}`
+              `£${summary.shipping.toFixed(2)}`
             )}
           </span>
         </div>
@@ -43,7 +43,7 @@ export function OrderSummary({ summary, showTitle = true }: OrderSummaryProps) {
         {/* Total */}
         <div className="flex justify-between text-base font-semibold">
           <span>Total</span>
-          <span>${summary.total.toFixed(2)}</span>
+          <span>£{summary.total.toFixed(2)}</span>
         </div>
       </div>
     </div>

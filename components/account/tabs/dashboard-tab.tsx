@@ -50,13 +50,13 @@ export function DashboardTab({ orders }: DashboardTabProps) {
         <StatCard
           icon={<DollarSign className="h-5 w-5" strokeWidth={2} />}
           label="Total Spent"
-          value={`$${totalSpent.toFixed(2)}`}
+          value={`£${totalSpent.toFixed(2)}`}
           color="secondary"
         />
         <StatCard
           icon={<TrendingUp className="h-5 w-5" strokeWidth={2} />}
           label="Average Order"
-          value={`$${averageOrder.toFixed(2)}`}
+          value={`£${averageOrder.toFixed(2)}`}
           color="tertiary"
         />
         <StatCard
@@ -240,7 +240,7 @@ function OrderCard({ order }: { order: Order }) {
         </div>
         <div className="flex items-center justify-between sm:justify-end sm:flex-col sm:items-end gap-2 sm:gap-1">
           <div className="text-base sm:text-lg font-semibold text-gray-900">
-            ${order.total.toFixed(2)}
+            £{order.total.toFixed(2)}
           </div>
           <span className="text-xs sm:text-sm text-emerald-600 hover:text-emerald-700 hover:underline font-medium">
             View Details
