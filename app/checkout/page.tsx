@@ -20,6 +20,7 @@ import {
   Leaf,
   ShieldCheck,
   Truck,
+  ArrowLeft,
 } from "lucide-react";
 import {
   getSavedAddresses,
@@ -252,6 +253,18 @@ export default function CheckoutPage() {
     <div className="min-h-screenrelative overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-12">
         <div className="mx-auto max-w-6xl">
+          {/* Back Button */}
+          <Link href="/cart">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mb-6 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 -ml-2"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" strokeWidth={2} />
+              Back to Cart
+            </Button>
+          </Link>
+
           {/* Page Header */}
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">

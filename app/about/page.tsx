@@ -9,6 +9,7 @@ import {
   Award,
   TrendingUp,
   Heart,
+  ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -48,6 +49,18 @@ export default function AboutPage() {
       {/* Content Section */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-16 md:py-20 lg:py-24">
         <div className="mx-auto max-w-4xl">
+          {/* Back Button */}
+          <Link href="/">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mb-8 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 -ml-2"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" strokeWidth={2} />
+              Back to Home
+            </Button>
+          </Link>
+
           {/* Main Content */}
           <div className="mb-20 bg-white rounded-xl p-6 shadow-lg border border-gray-300">
             <div className="flex items-center gap-2 mb-6">
