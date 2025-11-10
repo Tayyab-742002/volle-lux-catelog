@@ -7,6 +7,7 @@ import { getOrderById } from "@/services/orders/order.service";
 import { getCurrentUserServer } from "@/services/auth/auth-server.service";
 import { notFound } from "next/navigation";
 import { ORDER_STATUS_CONFIG } from "@/lib/constants";
+import { SHIPPING_OPTIONS } from "@/types/shipping";
 
 // Force fresh data on every request - no caching
 export const dynamic = "force-dynamic";
@@ -30,9 +31,7 @@ export default async function OrderDetailsPage({
   if (!authResult.success || !authResult.user) {
     return (
       <div className="rounded-2xl border border-gray-300 bg-white shadow-lg p-12 text-center">
-        <p className="text-gray-600">
-          Please sign in to view order details
-        </p>
+        <p className="text-gray-600">Please sign in to view order details</p>
         <Link href="/auth/login">
           <Button className="mt-4 bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700">
             Sign In
@@ -92,6 +91,8 @@ async function OrderDetailContent({
     subtotal: order.subtotal,
     discount: order.discount,
     shipping: order.shipping,
+    shippingMethod: order.shippingMethod || null,
+    vatAmount: order.vatAmount || 0,
     shippingAddress: {
       name: order.shippingAddress?.fullName || "N/A",
       street: order.shippingAddress?.address || "N/A",
@@ -123,15 +124,15 @@ async function OrderDetailContent({
           <p className="mt-2 text-gray-600">Order #{displayOrder.id}</p>
         </div>
         <div className="flex gap-3">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="lg"
             className="border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
           >
             <Download className="mr-2 h-5 w-5" strokeWidth={2} />
             Download Invoice
           </Button>
-          <Button 
+          <Button
             size="lg"
             className="bg-linear-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
           >
@@ -149,7 +150,9 @@ async function OrderDetailContent({
               <Package className="h-4 w-4" strokeWidth={2} />
               Order Date
             </div>
-            <div className="font-semibold text-gray-900">{displayOrder.date}</div>
+            <div className="font-semibold text-gray-900">
+              {displayOrder.date}
+            </div>
           </div>
           <div>
             <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
@@ -176,7 +179,7 @@ async function OrderDetailContent({
               Total
             </div>
             <div className="text-2xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              ${displayOrder.total.toFixed(2)}
+              £{displayOrder.total.toFixed(2)}
             </div>
           </div>
         </div>
@@ -226,22 +229,27 @@ async function OrderDetailContent({
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">
-                    <Package className="h-8 w-8 text-gray-400" strokeWidth={2} />
+                    <Package
+                      className="h-8 w-8 text-gray-400"
+                      strokeWidth={2}
+                    />
                   </div>
                 )}
               </div>
               <div className="flex-1">
-                <h4 className="mb-1 font-semibold text-gray-900">{item.name}</h4>
+                <h4 className="mb-1 font-semibold text-gray-900">
+                  {item.name}
+                </h4>
                 <p className="text-sm text-gray-600">
                   Variant: {item.variant} • Quantity: {item.quantity}
                 </p>
                 <p className="mt-2 text-sm text-gray-600">
-                  ${item.pricePerUnit.toFixed(2)} / unit
+                  £{item.pricePerUnit.toFixed(2)} / unit
                 </p>
               </div>
               <div className="text-right">
                 <div className="text-lg font-semibold text-gray-900">
-                  ${item.total.toFixed(2)}
+                  £{item.total.toFixed(2)}
                 </div>
               </div>
             </div>
@@ -258,23 +266,55 @@ async function OrderDetailContent({
         <div className="space-y-3">
           <div className="flex justify-between text-gray-600">
             <span>Subtotal</span>
-            <span className="text-gray-900">${displayOrder.subtotal.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <span>Discount</span>
-            <span className="text-emerald-600">
-              -${displayOrder.discount.toFixed(2)}
+            <span className="text-gray-900">
+              £{displayOrder.subtotal.toFixed(2)}
             </span>
           </div>
+          {displayOrder.discount > 0 && (
+            <div className="flex justify-between text-gray-600">
+              <span>Discount</span>
+              <span className="text-emerald-600">
+                -£{displayOrder.discount.toFixed(2)}
+              </span>
+            </div>
+          )}
           <div className="flex justify-between text-gray-600">
-            <span>Shipping</span>
-            <span className="text-gray-900">${displayOrder.shipping.toFixed(2)}</span>
+            <span>
+              Shipping
+              {displayOrder.shippingMethod && (
+                <>
+                  {" "}
+                  <span className="text-xs">
+                    (
+                    {SHIPPING_OPTIONS.find(
+                      (opt) => opt.id === displayOrder.shippingMethod
+                    )?.name || displayOrder.shippingMethod}
+                    )
+                  </span>
+                </>
+              )}
+            </span>
+            <span className="text-gray-900">
+              {displayOrder.shipping === 0
+                ? "Free"
+                : `£${displayOrder.shipping.toFixed(2)}`}
+            </span>
           </div>
+          {displayOrder.vatAmount > 0 && (
+            <div className="flex justify-between text-gray-600">
+              <span>VAT (20%)</span>
+              <span className="text-gray-900">
+                £{displayOrder.vatAmount.toFixed(2)}
+              </span>
+            </div>
+          )}
           <div className="border-t border-gray-300 pt-3">
             <div className="flex justify-between text-lg font-bold">
-              <span className="bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Total</span>
               <span className="bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                ${displayOrder.total.toFixed(2)}
+                Total
+              </span>
+              <span className="bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                £{displayOrder.total.toFixed(2)}
               </span>
             </div>
           </div>

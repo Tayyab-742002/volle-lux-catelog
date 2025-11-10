@@ -14,10 +14,20 @@ export async function POST(request: NextRequest) {
       items,
       shippingAddress,
       billingAddress,
+      shippingMethodId,
+      shippingCost,
+      vatAmount,
+      subtotal,
+      total,
     }: {
       items: CartItem[];
       shippingAddress?: any;
       billingAddress?: any;
+      shippingMethodId?: string;
+      shippingCost?: number;
+      vatAmount?: number;
+      subtotal?: number;
+      total?: number;
     } = body;
 
     // Validate cart items
@@ -45,6 +55,11 @@ export async function POST(request: NextRequest) {
       userEmail: user.email,
       shippingAddress,
       billingAddress,
+      shippingMethodId,
+      shippingCost,
+      vatAmount,
+      subtotal,
+      total,
     });
 
     // Store checkout session in Supabase for order tracking

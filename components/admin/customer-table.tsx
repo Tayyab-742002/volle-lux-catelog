@@ -300,7 +300,7 @@ function CustomerCard({ customer }: { customer: AdminCustomer }) {
           <div className="min-w-0">
             <p className="text-xs text-gray-600">Spent</p>
             <p className="text-sm font-semibold truncate text-gray-900">
-              ${customer.totalSpent?.toFixed(2) || "0.00"}
+              £{customer.totalSpent?.toFixed(2) || "0.00"}
             </p>
           </div>
         </div>

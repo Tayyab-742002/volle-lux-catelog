@@ -156,7 +156,7 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
             }
             if (context.parsed.y !== null) {
               if (label.includes("Revenue")) {
-                label += `$${context.parsed.y.toFixed(2)}`;
+                label += `£${context.parsed.y.toFixed(2)}`;
               } else {
                 label += context.parsed.y.toFixed(0);
               }
@@ -273,7 +273,7 @@ export function RevenueChart({ initialData = [] }: RevenueChartProps) {
             Total Revenue
           </div>
           <div className="mt-2 text-3xl font-bold text-gray-900">
-            ${totalRevenue.toFixed(2)}
+            £{totalRevenue.toFixed(2)}
           </div>
         </div>
         <div className="rounded-lg border border-gray-300 bg-linear-to-br from-teal-50 to-cyan-50 p-4">

@@ -43,6 +43,10 @@ export async function createOrder(orderData: {
   subtotal: number;
   discount: number;
   shipping: number;
+  shippingMethod?: string;
+  shippingCost?: number;
+  vatAmount?: number;
+  vatRate?: number;
   tax?: number;
   total: number;
   status: Order["status"];
@@ -72,9 +76,13 @@ export async function createOrder(orderData: {
         subtotal: orderData.subtotal,
         discount: orderData.discount,
         shipping: orderData.shipping,
+        shipping_method: orderData.shippingMethod || null,
+        shipping_cost: orderData.shippingCost || orderData.shipping || 0,
+        vat_amount: orderData.vatAmount || 0,
+        vat_rate: orderData.vatRate || 0.2,
         tax: orderData.tax || 0, // Tax amount from Stripe if enabled
         total_amount: orderData.total,
-        currency: "USD",
+        currency: "GBP",
         stripe_session_id: orderData.stripeSessionId || null,
         stripe_payment_intent_id: orderData.paymentIntentId || null,
         shipping_address: orderData.shippingAddress,

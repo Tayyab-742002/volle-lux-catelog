@@ -56,7 +56,7 @@ export function DashboardTab({ stats }: DashboardTabProps) {
         <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8 md:mb-10">
           <StatsCard
             title="Today's Revenue"
-            value={`$${stats.todayRevenue.toLocaleString('en-US', {
+            value={`£${stats.todayRevenue.toLocaleString('en-GB', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}`}
@@ -71,7 +71,7 @@ export function DashboardTab({ stats }: DashboardTabProps) {
           />
           <StatsCard
             title="Average Order Value"
-            value={`$${stats.averageOrderValue.toFixed(2)}`}
+            value={`£${stats.averageOrderValue.toFixed(2)}`}
             icon={<TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />}
             color="tertiary"
           />

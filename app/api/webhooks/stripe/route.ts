@@ -324,18 +324,38 @@ async function handleCheckoutSessionCompleted(
       ? fullSession.total_details.amount_discount / 100
       : 0;
 
-    // Extract shipping cost if any
-    const shippingCost = fullSession.total_details?.amount_shipping
+    // Extract shipping information from metadata (more reliable than Stripe total_details)
+    const shippingMethodId = fullSession.metadata?.shipping_method || null;
+    const shippingCost = fullSession.metadata?.shipping_cost
+      ? parseFloat(fullSession.metadata.shipping_cost)
+      : fullSession.total_details?.amount_shipping
       ? fullSession.total_details.amount_shipping / 100
       : 0;
 
-    // Extract tax if any
+    // Extract VAT from metadata
+    const vatAmount = fullSession.metadata?.vat_amount
+      ? parseFloat(fullSession.metadata.vat_amount)
+      : 0;
+
+    // Extract tax if any (different from VAT - Stripe automatic tax)
     const taxAmount = fullSession.total_details?.amount_tax
       ? fullSession.total_details.amount_tax / 100
       : 0;
 
-    // Calculate subtotal (before tax, shipping, and discounts)
-    const subtotal = totalAmount - shippingCost - taxAmount + discountAmount;
+    // Extract subtotal from metadata (more accurate than calculation)
+    const subtotal = fullSession.metadata?.subtotal
+      ? parseFloat(fullSession.metadata.subtotal)
+      : totalAmount - shippingCost - taxAmount - vatAmount + discountAmount;
+
+    console.log("💰 Extracted order totals:", {
+      subtotal,
+      shippingMethod: shippingMethodId,
+      shippingCost,
+      vatAmount,
+      discount: discountAmount,
+      tax: taxAmount,
+      total: totalAmount,
+    });
 
     // Create order in Supabase with full details
     // Note: orderItems structure is compatible with CartItem but TypeScript needs explicit cast
@@ -363,6 +383,10 @@ async function handleCheckoutSessionCompleted(
       subtotal,
       discount: discountAmount,
       shipping: shippingCost,
+      shippingMethod: shippingMethodId || undefined, // Added
+      shippingCost: shippingCost, // Added (explicit)
+      vatAmount: vatAmount, // Added
+      vatRate: 0.2, // Added (20% UK VAT)
       tax: taxAmount,
       total: totalAmount,
       status: "processing" as const,

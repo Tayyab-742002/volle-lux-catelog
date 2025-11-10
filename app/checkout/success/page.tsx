@@ -16,6 +16,7 @@ import { useCartStore } from "@/lib/stores/cart-store";
 import { useAuth } from "@/components/auth/auth-provider";
 import { useEffect, useState } from "react";
 import type { Order } from "@/types/cart";
+import { SHIPPING_OPTIONS } from "@/types/shipping";
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
@@ -362,10 +363,10 @@ function CheckoutSuccessContent() {
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-gray-900">
-                        ${(pricePerUnit * quantity).toFixed(2)}
+                        £{(pricePerUnit * quantity).toFixed(2)}
                       </p>
                       <p className="text-sm text-gray-600">
-                        ${pricePerUnit.toFixed(2)} each
+                        £{pricePerUnit.toFixed(2)} each
                       </p>
                     </div>
                   </div>
@@ -373,13 +374,53 @@ function CheckoutSuccessContent() {
               })}
             </div>
 
-            {/* Order Total */}
-            <div className="border-t border-gray-300 pt-6 mt-6">
-              <div className="flex justify-between items-center">
-                <span className="text-xl font-bold text-gray-900">Total</span>
-                <span className="text-2xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                  ${orderData.total.toFixed(2)}
+            {/* Order Summary */}
+            <div className="border-t border-gray-300 pt-6 mt-6 space-y-3">
+              <div className="flex justify-between text-gray-600">
+                <span>Subtotal</span>
+                <span className="text-gray-900">
+                  £{orderData.subtotal.toFixed(2)}
                 </span>
+              </div>
+              {orderData.discount > 0 && (
+                <div className="flex justify-between text-gray-600">
+                  <span>Discount</span>
+                  <span className="text-emerald-600">
+                    -£{orderData.discount.toFixed(2)}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between text-gray-600">
+                <span>
+                  Shipping
+                  {orderData.shippingMethod && (
+                    <>
+                      {" "}
+                      <span className="text-xs">
+                        ({SHIPPING_OPTIONS.find(opt => opt.id === orderData.shippingMethod)?.name || orderData.shippingMethod})
+                      </span>
+                    </>
+                  )}
+                </span>
+                <span className="text-gray-900">
+                  {orderData.shipping === 0 ? 'Free' : `£${orderData.shipping.toFixed(2)}`}
+                </span>
+              </div>
+              {orderData.vatAmount && orderData.vatAmount > 0 && (
+                <div className="flex justify-between text-gray-600">
+                  <span>VAT (20%)</span>
+                  <span className="text-gray-900">
+                    £{orderData.vatAmount.toFixed(2)}
+                  </span>
+                </div>
+              )}
+              <div className="border-t border-gray-300 pt-3 mt-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-xl font-bold text-gray-900">Total</span>
+                  <span className="text-2xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                    £{orderData.total.toFixed(2)}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

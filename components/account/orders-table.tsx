@@ -290,7 +290,7 @@ const OrderCard = memo(function OrderCard({ order }: { order: Order }) {
           <div className="min-w-0">
             <p className="text-xs text-gray-600">Total</p>
             <p className="text-sm font-semibold truncate text-gray-900">
-              ${order.total.toFixed(2)}
+              £{order.total.toFixed(2)}
             </p>
           </div>
         </div>

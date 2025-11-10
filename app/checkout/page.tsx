@@ -18,18 +18,26 @@ import {
   Check,
   Leaf,
   ShieldCheck,
+  Truck,
 } from "lucide-react";
 import {
   getSavedAddresses,
   type SavedAddress as SavedAddressType,
 } from "@/services/users/user.service";
 import { fetchWithRetry } from "@/lib/utils/retry";
+import { ShippingSelector } from "@/components/checkout/shipping-selector";
+import { OrderSummaryWithVAT } from "@/components/cart/order-summary-with-vat";
 
 type SavedAddress = SavedAddressType;
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, getCartSummary } = useCartStore();
+  const {
+    items,
+    getCartSummaryWithShipping,
+    selectedShippingId,
+    setShippingMethod,
+  } = useCartStore();
   const { user } = useAuth();
 
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
@@ -53,11 +61,11 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     postal_code: "",
-    country: "US",
+    country: "GB",
     phone: "",
   });
 
-  const summary = getCartSummary();
+  const summary = getCartSummaryWithShipping();
 
   useEffect(() => {
     addressesLoadedRef.current = false;
@@ -197,6 +205,11 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           items,
           shippingAddress,
+          shippingMethodId: selectedShippingId,
+          shippingCost: summary.shippingCost,
+          vatAmount: summary.vatAmount,
+          subtotal: summary.subtotal,
+          total: summary.total,
         }),
       });
 
@@ -531,6 +544,23 @@ export default function CheckoutPage() {
                 )}
               </Card>
 
+              {/* Shipping Method Selection */}
+              <Card className="p-6 md:p-8 bg-white rounded-2xl shadow-2xl border border-gray-300">
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-emerald-600 to-teal-600 shadow-lg">
+                    <Truck className="h-6 w-6 text-white" strokeWidth={2} />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Shipping Method
+                  </h2>
+                </div>
+
+                <ShippingSelector
+                  selectedShippingId={selectedShippingId}
+                  onShippingChange={setShippingMethod}
+                />
+              </Card>
+
               {/* Billing Note */}
               <Card className="p-6 bg-white rounded-xl shadow-2xl border border-gray-300">
                 <div className="flex items-start gap-3">
@@ -556,71 +586,45 @@ export default function CheckoutPage() {
             {/* Right Column - Order Summary */}
             <div className="lg:col-span-1">
               <Card className="sticky top-24 p-6 bg-white rounded-2xl shadow-2xl border border-gray-300">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 shadow-lg">
-                    <Package className="h-5 w-5 text-white" strokeWidth={2} />
-                  </div>
-                  <h2 className="text-lg font-bold text-gray-900">
-                    Order Summary
-                  </h2>
-                </div>
-
-                <Separator className="my-4 bg-emerald-100" />
-
                 {/* Cart Items */}
-                <div className="mb-4 space-y-3 max-h-60 overflow-y-auto">
-                  {items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex gap-3 p-2 rounded-lg hover:bg-emerald-50"
-                    >
-                      <div className="flex-1">
-                        <p className="font-semibold text-sm text-gray-900">
-                          {item.product.name}
-                        </p>
-                        {item.variant && (
-                          <p className="text-xs text-gray-500">
-                            {item.variant.name}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Cart Items
+                  </h3>
+                  <div className="space-y-3 max-h-60 overflow-y-auto">
+                    {items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex gap-3 p-2 rounded-lg hover:bg-emerald-50 transition-colors"
+                      >
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm text-gray-900">
+                            {item.product.name}
                           </p>
-                        )}
-                        <p className="text-xs text-emerald-600 font-medium">
-                          Qty: {item.quantity}
-                        </p>
+                          {item.variant && (
+                            <p className="text-xs text-gray-500">
+                              {item.variant.name}
+                            </p>
+                          )}
+                          <p className="text-xs text-emerald-600 font-medium">
+                            Qty: {item.quantity}
+                          </p>
+                        </div>
+                        <div className="text-sm font-bold text-gray-900">
+                          £{(item.pricePerUnit * item.quantity).toFixed(2)}
+                        </div>
                       </div>
-                      <div className="text-sm font-bold text-gray-900">
-                        ${(item.pricePerUnit * item.quantity).toFixed(2)}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
 
-                <Separator className="my-4 bg-emerald-100" />
+                <Separator className="my-6 bg-gray-200" />
 
-                {/* Summary */}
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="font-semibold text-gray-900">
-                      ${summary.subtotal.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Shipping</span>
-                    <span className="font-medium text-emerald-600">
-                      Calculated at next step
-                    </span>
-                  </div>
-                  <Separator className="my-2 bg-emerald-100" />
-                  <div className="flex justify-between text-base">
-                    <span className="font-bold text-gray-900">Total</span>
-                    <span className="font-bold text-gray-900 text-lg">
-                      ${summary.total.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
+                {/* Order Summary with VAT */}
+                <OrderSummaryWithVAT summary={summary} showTitle={false} />
 
                 {/* Eco Badge */}
-                <div className="my-4 p-3 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-xl border-2 border-emerald-200">
+                <div className="mt-6 p-3 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-xl border-2 border-emerald-200">
                   <div className="flex items-center gap-2">
                     <Leaf className="h-4 w-4 text-emerald-600" />
                     <span className="text-xs font-semibold text-emerald-800">

@@ -79,7 +79,7 @@ export function AdminDashboardClient({
   }, [activeTab, initialStats, initialOrders, initialCustomers]);
 
   return (
-    <>
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
       {/* Mobile/Tablet Top Tabs (< 1024px) */}
       <div className="lg:hidden mb-6">
         <div className="rounded-xl border border-gray-300 bg-white shadow-lg overflow-hidden">
@@ -158,6 +158,6 @@ export function AdminDashboardClient({
 
       {/* Content Area - Instant switching */}
       <div className="lg:col-span-3">{renderTabContent}</div>
-    </>
+    </div>
   );
 }

@@ -7,9 +7,16 @@ import {
   saveCartToSupabase,
   loadCartFromSupabase,
 } from "@/services/cart/cart.service";
+import {
+  DEFAULT_SHIPPING_OPTION,
+  getShippingPrice,
+  type ShippingCalculation
+} from "@/types/shipping";
+import { calculateOrderTotal } from "@/services/pricing/pricing.service";
 
 interface CartStore {
   items: CartItem[];
+  selectedShippingId: string;
   isLoading: boolean;
   isInitialized: boolean;
   addItem: (
@@ -25,7 +32,9 @@ interface CartStore {
     userId?: string
   ) => Promise<void>;
   clearCart: (userId?: string) => Promise<void>;
+  setShippingMethod: (shippingId: string) => void;
   getCartSummary: () => Cart;
+  getCartSummaryWithShipping: () => ShippingCalculation & { items: CartItem[]; discount: number };
   getItemCount: () => number;
   initializeCart: (userId?: string) => Promise<void>;
   syncCart: (userId?: string) => Promise<void>;
@@ -94,6 +103,7 @@ function calculatePricePerUnit(
 
 export const useCartStore = create<CartStore>()((set, get) => ({
   items: [],
+  selectedShippingId: DEFAULT_SHIPPING_OPTION.id,
   isLoading: false,
   isInitialized: false,
 
@@ -323,8 +333,8 @@ export const useCartStore = create<CartStore>()((set, get) => ({
     set({ isLoading: true });
 
     try {
-      // Clear local state
-      set({ items: [], isLoading: false });
+      // Clear local state and reset shipping to default
+      set({ items: [], selectedShippingId: DEFAULT_SHIPPING_OPTION.id, isLoading: false });
 
       // Delete cart from storage
       if (userId) {
@@ -347,6 +357,13 @@ export const useCartStore = create<CartStore>()((set, get) => ({
     }
   },
 
+  setShippingMethod: (shippingId) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Setting shipping method:", shippingId);
+    }
+    set({ selectedShippingId: shippingId });
+  },
+
   getCartSummary: () => {
     const items = get().items;
     const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
@@ -362,8 +379,9 @@ export const useCartStore = create<CartStore>()((set, get) => ({
       return sum + discountPerItem * item.quantity;
     }, 0);
 
-    // Calculate shipping based on order value
-    const shipping = subtotal > 100 ? 0 : 15;
+    // Use selected shipping cost
+    const selectedShippingId = get().selectedShippingId;
+    const shipping = getShippingPrice(selectedShippingId);
 
     const total = subtotal - discount + shipping;
 
@@ -373,6 +391,36 @@ export const useCartStore = create<CartStore>()((set, get) => ({
       discount,
       shipping,
       total,
+    };
+  },
+
+  getCartSummaryWithShipping: () => {
+    const items = get().items;
+    const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
+
+    // Calculate discount based on pricing tiers
+    const discount = items.reduce((sum, item) => {
+      const variantAdjustment = item.variant?.price_adjustment || 0;
+      const basePrice = item.product.basePrice + variantAdjustment;
+      const tierPrice = item.pricePerUnit;
+
+      // Only count positive discounts (where tier price is less than base price)
+      const discountPerItem = Math.max(0, basePrice - tierPrice);
+      return sum + discountPerItem * item.quantity;
+    }, 0);
+
+    // Get selected shipping cost
+    const selectedShippingId = get().selectedShippingId;
+    const shippingCost = getShippingPrice(selectedShippingId);
+
+    // Calculate total with VAT
+    const calculation = calculateOrderTotal(subtotal - discount, shippingCost);
+    calculation.shippingMethod = selectedShippingId;
+
+    return {
+      ...calculation,
+      items,
+      discount
     };
   },
 

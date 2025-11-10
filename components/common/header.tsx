@@ -12,6 +12,7 @@ import {
   Package,
   Settings,
   MapPin,
+  ShieldCheck,
 } from "lucide-react";
 import { MiniCart } from "@/components/cart/mini-cart";
 import { useCartStore } from "@/lib/stores/cart-store";
@@ -193,6 +194,15 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                       </p>
                     </div>
                     <div className="p-1">
+                      {user?.role === "admin" && (
+                        <Link
+                          href="/admin"
+                          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm cursor-pointer text-white bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 transition-colors font-semibold shadow-md mb-1"
+                        >
+                          <ShieldCheck className="h-4 w-4" />
+                          Admin Dashboard
+                        </Link>
+                      )}
                       <Link
                         href="/account"
                         className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm cursor-pointer text-gray-900 hover:bg-emerald-50 transition-colors"
@@ -459,6 +469,16 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                 <>
                   <div className="my-4 border-t border-emerald-200" />
                   <nav className="space-y-1">
+                    {user?.role === "admin" && (
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-white bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 transition-colors font-semibold shadow-md mb-1"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <ShieldCheck className="h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    )}
                     <Link
                       href="/account"
                       className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-emerald-100 transition-colors"
