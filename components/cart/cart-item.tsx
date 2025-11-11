@@ -71,7 +71,7 @@ export function CartItem({ item }: CartItemProps) {
 
           {/* Price & Remove */}
           <div className="flex items-center gap-4">
-            <span className="font-semibold">${item.totalPrice.toFixed(2)}</span>
+            <span className="font-semibold">£{item.totalPrice.toFixed(2)}</span>
             <Button
               variant="ghost"
               size="icon"

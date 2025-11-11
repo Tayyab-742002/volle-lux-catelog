@@ -168,8 +168,8 @@ export async function GET(
       
       doc.text(itemLines, 20, yPos);
       doc.text(quantity.toString(), 120, yPos);
-      doc.text(`$${pricePerUnit.toFixed(2)}`, 150, yPos, { align: "right" });
-      doc.text(`$${totalPrice.toFixed(2)}`, 190, yPos, { align: "right" });
+      doc.text(`£${pricePerUnit.toFixed(2)}`, 150, yPos, { align: "right" });
+      doc.text(`£${totalPrice.toFixed(2)}`, 190, yPos, { align: "right" });
 
       yPos += itemLines.length * 6 + 5;
     });
@@ -181,17 +181,17 @@ export async function GET(
     yPos += 10;
 
     doc.text("Subtotal:", 120, yPos);
-    doc.text(`$${order.subtotal.toFixed(2)}`, 190, yPos, { align: "right" });
+    doc.text(`£${order.subtotal.toFixed(2)}`, 190, yPos, { align: "right" });
     yPos += 6;
 
     if (order.discount > 0) {
       doc.text("Discount:", 120, yPos);
-      doc.text(`-$${order.discount.toFixed(2)}`, 190, yPos, { align: "right" });
+      doc.text(`-£${order.discount.toFixed(2)}`, 190, yPos, { align: "right" });
       yPos += 6;
     }
 
     doc.text("Shipping:", 120, yPos);
-    doc.text(`$${order.shipping.toFixed(2)}`, 190, yPos, { align: "right" });
+    doc.text(`£${order.shipping.toFixed(2)}`, 190, yPos, { align: "right" });
     yPos += 6;
 
     doc.setFont("helvetica", "bold");
@@ -199,7 +199,7 @@ export async function GET(
     yPos += 6;
 
     doc.text("Total:", 120, yPos);
-    doc.text(`$${order.total.toFixed(2)}`, 190, yPos, { align: "right" });
+    doc.text(`£${order.total.toFixed(2)}`, 190, yPos, { align: "right" });
 
     // Footer
     doc.setFontSize(8);

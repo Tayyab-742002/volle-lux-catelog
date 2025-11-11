@@ -57,7 +57,7 @@ export function getBaseUrl(): string {
  * Stripe configuration constants
  */
 export const STRIPE_CONFIG = {
-  currency: "usd",
+  currency: "gbp",
   paymentMethodTypes: [
     "card",
   ] as Stripe.Checkout.SessionCreateParams.PaymentMethodType[],

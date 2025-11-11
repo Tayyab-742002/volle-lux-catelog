@@ -304,7 +304,7 @@ const OrderCard = memo(function OrderCard({ order }: { order: AdminOrder }) {
           <div className="min-w-0">
             <p className="text-xs text-gray-600">Total</p>
             <p className="text-sm font-semibold truncate text-gray-900">
-              ${(order.total || 0).toFixed(2)}
+              £{(order.total || 0).toFixed(2)}
             </p>
           </div>
         </div>
@@ -343,7 +343,7 @@ const OrderRow = memo(function OrderRow({ order }: { order: AdminOrder }) {
       </td>
       <td className="py-3 px-4">
         <p className="text-sm font-medium text-gray-900">
-          ${(order.total || 0).toFixed(2)}
+          £{(order.total || 0).toFixed(2)}
         </p>
       </td>
       <td className="py-3 px-4">

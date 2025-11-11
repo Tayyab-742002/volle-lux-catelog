@@ -1,5 +1,7 @@
 // PERFORMANCE: Dynamic import for heavy ProductGallery component
 import dynamic from "next/dynamic";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { ProductGallerySkeleton } from "@/components/products/product-gallery-loader";
 import {
   ProductHeader,
@@ -9,6 +11,7 @@ import {
 import { getProductBySlug } from "@/services/products/product.service";
 import { getProductSlugs } from "@/sanity/lib/api";
 import { notFound } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 // PERFORMANCE: Code split ProductGallery (heavy image component)
 const ProductGallery = dynamic(
@@ -34,6 +37,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="min-h-screen">
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-8 md:py-12 lg:py-16">
+        {/* Back Button */}
+        <Link href="/products">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mb-6 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 -ml-2"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" strokeWidth={2} />
+            Back to Products
+          </Button>
+        </Link>
+
         {/* Product Header */}
         <ProductHeader
           productName={product.name}

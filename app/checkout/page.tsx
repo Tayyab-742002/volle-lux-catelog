@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useAuth } from "@/components/auth/auth-provider";
 import { Button } from "@/components/ui/button";
@@ -18,18 +19,27 @@ import {
   Check,
   Leaf,
   ShieldCheck,
+  Truck,
+  ArrowLeft,
 } from "lucide-react";
 import {
   getSavedAddresses,
   type SavedAddress as SavedAddressType,
 } from "@/services/users/user.service";
 import { fetchWithRetry } from "@/lib/utils/retry";
+import { ShippingSelector } from "@/components/checkout/shipping-selector";
+import { OrderSummaryWithVAT } from "@/components/cart/order-summary-with-vat";
 
 type SavedAddress = SavedAddressType;
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, getCartSummary } = useCartStore();
+  const {
+    items,
+    getCartSummaryWithShipping,
+    selectedShippingId,
+    setShippingMethod,
+  } = useCartStore();
   const { user } = useAuth();
 
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
@@ -53,11 +63,14 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     postal_code: "",
-    country: "US",
+    country: "GB",
     phone: "",
   });
 
-  const summary = getCartSummary();
+  // Guest email for checkout
+  const [guestEmail, setGuestEmail] = useState("");
+
+  const summary = getCartSummaryWithShipping();
 
   useEffect(() => {
     addressesLoadedRef.current = false;
@@ -70,12 +83,8 @@ export default function CheckoutPage() {
     }
   }, [items, router]);
 
-  useEffect(() => {
-    if (!user?.id) {
-      const redirect = encodeURIComponent("/checkout");
-      router.push(`/auth/login?redirect=${redirect}`);
-    }
-  }, [user?.id, router]);
+  // REMOVED: No longer redirect guests to login
+  // Guests can now checkout without an account
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -84,9 +93,11 @@ export default function CheckoutPage() {
     async function loadAddresses() {
       const userId = user?.id;
 
+      // If no user (guest), skip loading addresses
       if (!userId) {
         setIsLoadingAddresses(false);
         addressesLoadedRef.current = true;
+        setUseNewAddress(true); // Auto-use new address form for guests
         return;
       }
 
@@ -143,6 +154,13 @@ export default function CheckoutPage() {
     setIsLoading(true);
 
     try {
+      // Validate guest email if not logged in
+      if (!user?.id) {
+        if (!guestEmail || !guestEmail.includes("@")) {
+          throw new Error("Please enter a valid email address");
+        }
+      }
+
       let shippingAddress;
 
       if (user?.id && selectedAddressId && !useNewAddress) {
@@ -189,6 +207,9 @@ export default function CheckoutPage() {
         throw new Error("Please select or enter a shipping address");
       }
 
+      // Use guest email or user email
+      const checkoutEmail = user?.email || guestEmail;
+
       const response = await fetchWithRetry("/api/checkout", {
         method: "POST",
         headers: {
@@ -197,6 +218,12 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           items,
           shippingAddress,
+          shippingMethodId: selectedShippingId,
+          shippingCost: summary.shippingCost,
+          vatAmount: summary.vatAmount,
+          subtotal: summary.subtotal,
+          total: summary.total,
+          email: checkoutEmail, // Add email for guest orders
         }),
       });
 
@@ -226,6 +253,18 @@ export default function CheckoutPage() {
     <div className="min-h-screenrelative overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-12">
         <div className="mx-auto max-w-6xl">
+          {/* Back Button */}
+          <Link href="/cart">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mb-6 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 -ml-2"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" strokeWidth={2} />
+              Back to Cart
+            </Button>
+          </Link>
+
           {/* Page Header */}
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
@@ -325,6 +364,56 @@ export default function CheckoutPage() {
                   </>
                 ) : (
                   <>
+                    {/* Guest Email Section */}
+                    {!user?.id && (
+                      <div className="mb-6 p-4 bg-linear-to-r from-emerald-50 to-teal-50 rounded-xl border-2 border-emerald-200">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600">
+                            <span className="text-white text-sm font-bold">
+                              📧
+                            </span>
+                          </div>
+                          <h3 className="text-base font-bold text-gray-900">
+                            Guest Checkout
+                          </h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Enter your email to receive order confirmation and
+                          updates.
+                        </p>
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="guest_email"
+                            className="text-sm font-semibold"
+                          >
+                            Email Address *
+                          </Label>
+                          <Input
+                            id="guest_email"
+                            type="email"
+                            value={guestEmail}
+                            onChange={(e) => setGuestEmail(e.target.value)}
+                            placeholder="your.email@example.com"
+                            required
+                            className="h-11 border border-gray-300 focus:border-emerald-500 bg-white focus-visible:ring-emerald-400! focus-visible:ring-1! transition-all"
+                          />
+                        </div>
+                        <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
+                          <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                          <span>
+                            Have an account?{" "}
+                            <Link
+                              href="/auth/login?redirect=/checkout"
+                              className="text-emerald-600 hover:text-emerald-700 font-semibold underline"
+                            >
+                              Sign in
+                            </Link>{" "}
+                            to use saved addresses
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
                     {user?.id && savedAddresses.length > 0 && (
                       <Button
                         type="button"
@@ -531,6 +620,23 @@ export default function CheckoutPage() {
                 )}
               </Card>
 
+              {/* Shipping Method Selection */}
+              <Card className="p-6 md:p-8 bg-white rounded-2xl shadow-2xl border border-gray-300">
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-emerald-600 to-teal-600 shadow-lg">
+                    <Truck className="h-6 w-6 text-white" strokeWidth={2} />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Shipping Method
+                  </h2>
+                </div>
+
+                <ShippingSelector
+                  selectedShippingId={selectedShippingId}
+                  onShippingChange={setShippingMethod}
+                />
+              </Card>
+
               {/* Billing Note */}
               <Card className="p-6 bg-white rounded-xl shadow-2xl border border-gray-300">
                 <div className="flex items-start gap-3">
@@ -556,71 +662,45 @@ export default function CheckoutPage() {
             {/* Right Column - Order Summary */}
             <div className="lg:col-span-1">
               <Card className="sticky top-24 p-6 bg-white rounded-2xl shadow-2xl border border-gray-300">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 shadow-lg">
-                    <Package className="h-5 w-5 text-white" strokeWidth={2} />
-                  </div>
-                  <h2 className="text-lg font-bold text-gray-900">
-                    Order Summary
-                  </h2>
-                </div>
-
-                <Separator className="my-4 bg-emerald-100" />
-
                 {/* Cart Items */}
-                <div className="mb-4 space-y-3 max-h-60 overflow-y-auto">
-                  {items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex gap-3 p-2 rounded-lg hover:bg-emerald-50"
-                    >
-                      <div className="flex-1">
-                        <p className="font-semibold text-sm text-gray-900">
-                          {item.product.name}
-                        </p>
-                        {item.variant && (
-                          <p className="text-xs text-gray-500">
-                            {item.variant.name}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Cart Items
+                  </h3>
+                  <div className="space-y-3 max-h-60 overflow-y-auto">
+                    {items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex gap-3 p-2 rounded-lg hover:bg-emerald-50 transition-colors"
+                      >
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm text-gray-900">
+                            {item.product.name}
                           </p>
-                        )}
-                        <p className="text-xs text-emerald-600 font-medium">
-                          Qty: {item.quantity}
-                        </p>
+                          {item.variant && (
+                            <p className="text-xs text-gray-500">
+                              {item.variant.name}
+                            </p>
+                          )}
+                          <p className="text-xs text-emerald-600 font-medium">
+                            Qty: {item.quantity}
+                          </p>
+                        </div>
+                        <div className="text-sm font-bold text-gray-900">
+                          £{(item.pricePerUnit * item.quantity).toFixed(2)}
+                        </div>
                       </div>
-                      <div className="text-sm font-bold text-gray-900">
-                        ${(item.pricePerUnit * item.quantity).toFixed(2)}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
 
-                <Separator className="my-4 bg-emerald-100" />
+                <Separator className="my-6 bg-gray-200" />
 
-                {/* Summary */}
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="font-semibold text-gray-900">
-                      ${summary.subtotal.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Shipping</span>
-                    <span className="font-medium text-emerald-600">
-                      Calculated at next step
-                    </span>
-                  </div>
-                  <Separator className="my-2 bg-emerald-100" />
-                  <div className="flex justify-between text-base">
-                    <span className="font-bold text-gray-900">Total</span>
-                    <span className="font-bold text-gray-900 text-lg">
-                      ${summary.total.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
+                {/* Order Summary with VAT */}
+                <OrderSummaryWithVAT summary={summary} showTitle={false} />
 
                 {/* Eco Badge */}
-                <div className="my-4 p-3 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-xl border-2 border-emerald-200">
+                <div className="mt-6 p-3 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-xl border-2 border-emerald-200">
                   <div className="flex items-center gap-2">
                     <Leaf className="h-4 w-4 text-emerald-600" />
                     <span className="text-xs font-semibold text-emerald-800">

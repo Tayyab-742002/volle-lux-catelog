@@ -112,7 +112,7 @@ export function ProductInfoAccordion({
                         Free Shipping
                       </p>
                       <p className="text-xs text-gray-600 mt-0.5">
-                        On orders over $100
+                        On orders over £100
                       </p>
                     </div>
                   </div>

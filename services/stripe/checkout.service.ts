@@ -56,10 +56,25 @@ export async function createCheckoutSession(params: {
   userEmail?: string;
   shippingAddress?: ShippingAddress;
   billingAddress?: BillingAddress;
+  shippingMethodId?: string;
+  shippingCost?: number;
+  vatAmount?: number;
+  subtotal?: number;
+  total?: number;
 }): Promise<{ sessionId: string; url: string }> {
   try {
-    const { items, userId, userEmail, shippingAddress, billingAddress } =
-      params;
+    const {
+      items,
+      userId,
+      userEmail,
+      shippingAddress,
+      billingAddress,
+      shippingMethodId,
+      shippingCost,
+      vatAmount,
+      subtotal,
+      total,
+    } = params;
 
     // Validate items
     if (!items || items.length === 0) {
@@ -69,13 +84,49 @@ export async function createCheckoutSession(params: {
     // Convert cart items to Stripe line items
     const lineItems = convertCartItemsToLineItems(items);
 
+    // ALWAYS add shipping as a line item (even if free) to show on checkout
+    if (shippingMethodId) {
+      const shippingAmount = shippingCost || 0;
+      lineItems.push({
+        price_data: {
+          currency: "gbp",
+          product_data: {
+            name: shippingAmount > 0 ? `Shipping - ${shippingMethodId}` : `Free Shipping - ${shippingMethodId}`,
+            description: shippingAmount > 0 
+              ? `Delivery: ${shippingMethodId}` 
+              : `Free delivery: ${shippingMethodId}`,
+          },
+          unit_amount: Math.round(shippingAmount * 100), // Convert to pence (0 for free)
+        },
+        quantity: 1,
+      });
+    }
+
+    // Add VAT as a line item if provided
+    if (vatAmount && vatAmount > 0) {
+      lineItems.push({
+        price_data: {
+          currency: "gbp",
+          product_data: {
+            name: "VAT (20%)",
+            description: "Value Added Tax",
+          },
+          unit_amount: Math.round(vatAmount * 100), // Convert to pence
+        },
+        quantity: 1,
+      });
+    }
+
     // Calculate total for metadata
-    const totalAmount = calculateTotalAmount(items);
+    const totalAmount = total || calculateTotalAmount(items);
 
     // Prepare session metadata
     const metadata: Record<string, string> = {
       total_amount: totalAmount.toFixed(2),
       item_count: items.length.toString(),
+      subtotal: (subtotal || calculateTotalAmount(items)).toFixed(2),
+      shipping_cost: (shippingCost || 0).toFixed(2),
+      vat_amount: (vatAmount || 0).toFixed(2),
     };
 
     if (userId) {
@@ -84,6 +135,10 @@ export async function createCheckoutSession(params: {
 
     if (userEmail) {
       metadata.user_email = userEmail;
+    }
+
+    if (shippingMethodId) {
+      metadata.shipping_method = shippingMethodId;
     }
 
     if (shippingAddress) {
@@ -150,7 +205,7 @@ export async function createCheckoutSession(params: {
       shipping_address_collection: shippingAddress
         ? undefined
         : {
-            allowed_countries: ["US", "CA", "GB", "AU"], // Add your supported countries
+            allowed_countries: ["GB", "US", "CA", "AU"], // UK first, then other countries
           },
       // IMPORTANT: Enable billing address collection on Stripe checkout
       billing_address_collection: "required",

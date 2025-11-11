@@ -1,5 +1,5 @@
 import { Breadcrumbs } from "@/components/common";
-import { Leaf, Recycle, Sprout, Earth, ArrowRight } from "lucide-react";
+import { Leaf, Recycle, Sprout, Earth, ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -18,6 +18,18 @@ export default function SustainabilityPage() {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1600px] py-16 md:py-20 lg:py-24">
         <div className="mx-auto max-w-4xl">
+          {/* Back Button */}
+          <Link href="/">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mb-8 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 -ml-2"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" strokeWidth={2} />
+              Back to Home
+            </Button>
+          </Link>
+
           {/* Page Header */}
           <div className="mb-16 md:mb-20 text-center">
             <h1 className="mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900">

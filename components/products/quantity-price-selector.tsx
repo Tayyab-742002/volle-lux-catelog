@@ -82,7 +82,7 @@ export function QuantityPriceSelector({
       <div className="space-y-2 rounded-lg border border-gray-300 bg-white p-6">
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-gray-900">
-            ${pricePerUnit.toFixed(2)}
+            £{pricePerUnit.toFixed(2)}
           </span>
           <span className="text-sm text-gray-600">per unit</span>
         </div>
@@ -90,7 +90,7 @@ export function QuantityPriceSelector({
           <div className="text-sm text-gray-600">
             Total:{" "}
             <span className="font-bold text-gray-900">
-              ${totalPrice.toFixed(2)}
+              £{totalPrice.toFixed(2)}
             </span>
           </div>
         )}

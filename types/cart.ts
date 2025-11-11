@@ -50,6 +50,8 @@ export interface Order {
   subtotal: number;
   discount: number;
   shipping: number;
+  shippingMethod?: string | null;
+  vatAmount?: number;
   total: number;
   status: OrderStatus;
   createdAt: Date;

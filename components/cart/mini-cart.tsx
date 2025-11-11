@@ -103,7 +103,7 @@ export function MiniCart({ children }: MiniCartProps) {
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Subtotal</span>
                 <span className="font-semibold text-gray-900">
-                  ${summary.subtotal.toFixed(2)}
+                  £{summary.subtotal.toFixed(2)}
                 </span>
               </div>
 
@@ -111,7 +111,7 @@ export function MiniCart({ children }: MiniCartProps) {
                 <div className="flex justify-between items-center text-emerald-600">
                   <span className="font-medium">Discount</span>
                   <span className="font-semibold">
-                    -${summary.discount.toFixed(2)}
+                    -£{summary.discount.toFixed(2)}
                   </span>
                 </div>
               )}
@@ -122,7 +122,7 @@ export function MiniCart({ children }: MiniCartProps) {
                   {summary.shipping === 0 ? (
                     <span className="text-emerald-600 font-bold">Free</span>
                   ) : (
-                    `$${summary.shipping.toFixed(2)}`
+                    `£${summary.shipping.toFixed(2)}`
                   )}
                 </span>
               </div>
@@ -130,7 +130,7 @@ export function MiniCart({ children }: MiniCartProps) {
               <div className="flex justify-between items-center border-t-2 border-emerald-100 pt-3 text-base">
                 <span className="font-bold text-gray-900">Total</span>
                 <span className="font-bold text-gray-900 text-lg">
-                  ${summary.total.toFixed(2)}
+                  £{summary.total.toFixed(2)}
                 </span>
               </div>
             </div>

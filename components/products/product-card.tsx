@@ -90,7 +90,7 @@ export function ProductCard({ product }: ProductCardProps) {
               {/* Price */}
               <div className="flex items-baseline gap-2">
                 <span className="text-base font-bold text-gray-900">
-                  ${product.basePrice.toFixed(2)}
+                  £{product.basePrice.toFixed(2)}
                 </span>
                 {hasVariants && (
                   <span className="text-xs font-medium text-emerald-600 group-hover:text-white">

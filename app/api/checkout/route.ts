@@ -14,10 +14,22 @@ export async function POST(request: NextRequest) {
       items,
       shippingAddress,
       billingAddress,
+      shippingMethodId,
+      shippingCost,
+      vatAmount,
+      subtotal,
+      total,
+      email, // Guest email for checkout
     }: {
       items: CartItem[];
       shippingAddress?: any;
       billingAddress?: any;
+      shippingMethodId?: string;
+      shippingCost?: number;
+      vatAmount?: number;
+      subtotal?: number;
+      total?: number;
+      email?: string; // Optional email for guest checkout
     } = body;
 
     // Validate cart items
@@ -25,30 +37,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
 
-    // Get user session (must be authenticated)
+    // Get user session (optional - supports both authenticated and guest checkout)
     const supabase = await createServerSupabaseClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user?.id) {
+    // For guest checkout: require email
+    // For authenticated checkout: use user email
+    const checkoutEmail = user?.email || email;
+    
+    if (!checkoutEmail) {
       return NextResponse.json(
-        { error: "You must be logged in to checkout" },
-        { status: 401 }
+        { error: "Email is required for checkout" },
+        { status: 400 }
       );
     }
 
     // Create Stripe checkout session
     const session = await createCheckoutSession({
       items,
-      userId: user.id,
-      userEmail: user.email,
+      userId: user?.id, // Optional for guest checkout
+      userEmail: checkoutEmail, // Use guest email or user email
       shippingAddress,
       billingAddress,
+      shippingMethodId,
+      shippingCost,
+      vatAmount,
+      subtotal,
+      total,
     });
 
-    // Store checkout session in Supabase for order tracking
-    if (user.id) {
+    // Store checkout session in Supabase for order tracking (authenticated users only)
+    if (user?.id) {
       // Store session metadata for tracking
       // This helps track abandoned carts and pending checkouts
       const { error: upsertError } = await supabase.from("carts").upsert(

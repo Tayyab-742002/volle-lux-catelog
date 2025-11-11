@@ -233,7 +233,7 @@ export const OrderConfirmationEmail: React.FC<
                           align="right"
                           style={{ padding: "5px 0" }}
                         >
-                          <strong>${order.subtotal.toFixed(2)}</strong>
+                          <strong>£{order.subtotal.toFixed(2)}</strong>
                         </td>
                       </tr>
                       {order.discount > 0 && (
@@ -248,7 +248,7 @@ export const OrderConfirmationEmail: React.FC<
                             align="right"
                             style={{ padding: "5px 0", color: "#22c55e" }}
                           >
-                            <strong>-${order.discount.toFixed(2)}</strong>
+                            <strong>-£{order.discount.toFixed(2)}</strong>
                           </td>
                         </tr>
                       )}
@@ -257,9 +257,19 @@ export const OrderConfirmationEmail: React.FC<
                           Shipping:
                         </td>
                         <td align="right" style={{ padding: "5px 0" }}>
-                          <strong>${order.shipping.toFixed(2)}</strong>
+                          <strong>£{order.shipping.toFixed(2)}</strong>
                         </td>
                       </tr>
+                      {(order as any).vatAmount && (order as any).vatAmount > 0 && (
+                        <tr>
+                          <td align="right" style={{ padding: "5px 0", color: "#666666" }}>
+                            VAT (20%):
+                          </td>
+                          <td align="right" style={{ padding: "5px 0" }}>
+                            <strong>£{((order as any).vatAmount).toFixed(2)}</strong>
+                          </td>
+                        </tr>
+                      )}
                       <tr>
                         <td
                           align="right"
@@ -279,7 +289,7 @@ export const OrderConfirmationEmail: React.FC<
                             borderTop: "2px solid #000000",
                           }}
                         >
-                          <strong>${order.total.toFixed(2)}</strong>
+                          <strong>£{order.total.toFixed(2)}</strong>
                         </td>
                       </tr>
                     </table>

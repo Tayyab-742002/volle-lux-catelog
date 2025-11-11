@@ -43,6 +43,10 @@ export async function createOrder(orderData: {
   subtotal: number;
   discount: number;
   shipping: number;
+  shippingMethod?: string;
+  shippingCost?: number;
+  vatAmount?: number;
+  vatRate?: number;
   tax?: number;
   total: number;
   status: Order["status"];
@@ -72,9 +76,13 @@ export async function createOrder(orderData: {
         subtotal: orderData.subtotal,
         discount: orderData.discount,
         shipping: orderData.shipping,
+        shipping_method: orderData.shippingMethod || null,
+        shipping_cost: orderData.shippingCost || orderData.shipping || 0,
+        vat_amount: orderData.vatAmount || 0,
+        vat_rate: orderData.vatRate || 0.2,
         tax: orderData.tax || 0, // Tax amount from Stripe if enabled
         total_amount: orderData.total,
-        currency: "USD",
+        currency: "GBP",
         stripe_session_id: orderData.stripeSessionId || null,
         stripe_payment_intent_id: orderData.paymentIntentId || null,
         shipping_address: orderData.shippingAddress,
@@ -140,7 +148,9 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
       billingAddress: data.billing_address || {},
       subtotal: parseFloat(data.subtotal || data.total_amount || 0),
       discount: parseFloat(data.discount || 0),
-      shipping: parseFloat(data.shipping || 0),
+      shipping: parseFloat(data.shipping || data.shipping_cost || 0),
+      shippingMethod: data.shipping_method || null,
+      vatAmount: parseFloat(data.vat_amount || 0),
       total: parseFloat(data.total_amount || 0),
       status: data.status || "pending",
       createdAt: new Date(data.created_at),
@@ -189,7 +199,9 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
       billingAddress: orderData.billing_address || {},
       subtotal: parseFloat(orderData.subtotal || orderData.total_amount || 0),
       discount: parseFloat(orderData.discount || 0),
-      shipping: parseFloat(orderData.shipping || 0),
+      shipping: parseFloat(orderData.shipping || orderData.shipping_cost || 0),
+      shippingMethod: orderData.shipping_method || null,
+      vatAmount: parseFloat(orderData.vat_amount || 0),
       total: parseFloat(orderData.total_amount || 0),
       status: orderData.status || "pending",
       createdAt: new Date(orderData.created_at),
@@ -302,7 +314,9 @@ export async function getOrderByStripeSessionId(
       billingAddress: data.billing_address || {},
       subtotal: parseFloat(data.subtotal || data.total_amount || 0),
       discount: parseFloat(data.discount || 0),
-      shipping: parseFloat(data.shipping || 0),
+      shipping: parseFloat(data.shipping || data.shipping_cost || 0),
+      shippingMethod: data.shipping_method || null,
+      vatAmount: parseFloat(data.vat_amount || 0),
       total: parseFloat(data.total_amount || 0),
       status: data.status || "pending",
       createdAt: new Date(data.created_at),

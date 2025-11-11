@@ -40,7 +40,7 @@ export function PricingTable({ tiers, basePrice }: PricingTableProps) {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-emerald-700">
-                      ${tier.pricePerUnit.toFixed(2)}
+                      £{tier.pricePerUnit.toFixed(2)}
                     </span>
                     {tier.label && (
                       <span className="text-xs font-medium text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">

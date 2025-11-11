@@ -40,7 +40,7 @@ export default function AccountLayout({
           </div>
 
           {/* Layout - Navigation is now handled by AccountDashboardClient */}
-          <div className="grid gap-6 lg:gap-8 lg:grid-cols-4">{children}</div>
+          <div className="grid gap-6 lg:gap-8">{children}</div>
         </div>
       </div>
     </div>

@@ -300,7 +300,7 @@ function CustomerCard({ customer }: { customer: AdminCustomer }) {
           <div className="min-w-0">
             <p className="text-xs text-gray-600">Spent</p>
             <p className="text-sm font-semibold truncate text-gray-900">
-              ${customer.totalSpent?.toFixed(2) || "0.00"}
+              £{customer.totalSpent?.toFixed(2) || "0.00"}
             </p>
           </div>
         </div>
@@ -382,7 +382,7 @@ function CustomerRow({ customer }: { customer: AdminCustomer }) {
       </td>
       <td className="py-3 px-4">
         <p className="text-sm font-medium text-gray-900">
-          ${customer.totalSpent?.toFixed(2) || "0.00"}
+          £{customer.totalSpent?.toFixed(2) || "0.00"}
         </p>
       </td>
       <td className="py-3 px-4">
