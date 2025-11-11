@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Roboto } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header, Footer } from "@/components/common";
 import { AnnouncementBannerWrapper } from "@/components/common/announcement-banner-wrapper";
@@ -13,17 +13,92 @@ import Chatbot from "@/components/common/Chatbot";
 // PERFORMANCE: Vercel Speed Insights & Analytics
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
-const roboto = Roboto({
+
+/**
+ * Inter Font Configuration
+ *
+ * Why Inter is the best choice for this e-commerce site:
+ * - Designed specifically for user interfaces and screens
+ * - Excellent readability at all sizes (critical for product descriptions, prices, checkout)
+ * - Professional and modern aesthetic (aligns with "Immersive Minimalism & Performant Luxury")
+ * - Versatile: works perfectly for headings, body text, and UI elements
+ * - Optimized for digital screens with high legibility
+ * - Used by many successful e-commerce platforms
+ * - Great performance with font-display: swap
+ */
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-roboto",
+  variable: "--font-inter",
   display: "swap",
-  weight: ["300", "400", "500", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Volle - Premium Packaging Supplies",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://volle.com"),
+  title: {
+    default: "Bubble Wrap Shop - Premium Packaging Supplies",
+    template: "%s | Bubble Wrap Shop",
+  },
   description:
     "Professional packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options.",
+  keywords: [
+    "packaging supplies",
+    "bubble wrap",
+    "packaging boxes",
+    "eco-friendly packaging",
+    "bulk packaging",
+    "wholesale packaging",
+    "next day delivery",
+    "protective packaging",
+  ],
+  authors: [{ name: "Bubble Wrap Shop" }],
+  creator: "Bubble Wrap Shop",
+  publisher: "Bubble Wrap Shop",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_GB",
+    url: process.env.NEXT_PUBLIC_APP_URL || "https://volle.com",
+    siteName: "Bubble Wrap Shop - Premium Packaging Supplies",
+    title: "Bubble Wrap Shop - Premium Packaging Supplies",
+    description:
+      "Professional packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options.",
+    images: [
+      {
+        url: "https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/hero-packaging.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Bubble Wrap Shop Premium Packaging Supplies",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bubble Wrap Shop - Premium Packaging Supplies",
+    description:
+      "Professional packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options.",
+    images: [
+      "https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/hero-packaging.jpg",
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    // Add Google Search Console verification code here when available
+    // google: "your-google-verification-code",
+  },
 };
 
 // PERFORMANCE: Removed force-dynamic to enable static generation
@@ -40,7 +115,11 @@ export default async function RootLayout({
   const categories = await getAllCategories();
 
   return (
-    <html lang="en" className={roboto.variable} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${inter.variable} font-sans`}
+      suppressHydrationWarning
+    >
       <head>
         {/* Preconnects for image/CDN origins to improve LCP */}
         <link

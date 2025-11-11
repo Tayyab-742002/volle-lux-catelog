@@ -29,4 +29,6 @@ export interface Product {
   pricingTiers?: PricingTier[]; // Tiered pricing for bulk orders
   specifications?: Record<string, string>; // Product specifications
   delivery?: string; // Delivery information
+  seoTitle?: string; // Custom SEO title
+  seoDescription?: string; // Custom SEO description
 }

@@ -18,7 +18,6 @@ import { MiniCart } from "@/components/cart/mini-cart";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useAuth } from "@/components/auth/auth-provider";
 import Image from "next/image";
-import { Product } from "@/types/product";
 import { Category } from "@/types/category";
 
 interface HeaderProps {
@@ -120,11 +119,11 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
             {/* Logo */}
             <Link href="/" className="shrink-0 cursor-pointer group">
               <Image
-                src="/bubble-wrap-shop.png"
-                alt="VOLLE"
+                src="logo.jpg"
+                alt="Logo"
                 width={100}
                 height={32}
-                className="h-8 w-auto transition-transform duration-300 group-hover:scale-105 brightness-0 invert"
+                className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
 

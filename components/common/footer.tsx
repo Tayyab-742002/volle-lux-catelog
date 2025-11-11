@@ -17,11 +17,11 @@ export function Footer() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <Image
-                src="/bubble-wrap-shop.png"
+                src="logo.jpg"
                 alt="Bubble Wrap Shop"
                 width={120}
                 height={40}
-                className="h-10 w-auto mb-4 brightness-0 invert"
+                className="h-12 w-auto mb-4"
               />
               <p className="text-sm text-emerald-200 max-w-md">
                 Your trusted partner for eco-friendly packaging solutions.

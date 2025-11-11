@@ -199,6 +199,8 @@ export function transformSanityProduct(sanityProduct: SanityProduct) {
         {} as Record<string, string>
       ) || {},
     delivery: sanityProduct.delivery,
+    seoTitle: sanityProduct.seoTitle,
+    seoDescription: sanityProduct.seoDescription,
   };
 }
 

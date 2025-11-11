@@ -327,7 +327,7 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                         color: "#999999",
                       }}
                     >
-                      This is an automated notification from the Volle contact
+                      This is an automated notification from the Bubble Wrap Shop contact
                       form.
                     </p>
                   </td>

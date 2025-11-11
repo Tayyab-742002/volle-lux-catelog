@@ -76,7 +76,7 @@ export const OrderConfirmationEmail: React.FC<
                         letterSpacing: "2px",
                       }}
                     >
-                      VOLLE
+                      BUBBLE WRAP SHOP
                     </h1>
                   </td>
                 </tr>
@@ -416,7 +416,7 @@ export const OrderConfirmationEmail: React.FC<
                         color: "#999999",
                       }}
                     >
-                      © {new Date().getFullYear()} Volle. All rights reserved.
+                      © {new Date().getFullYear()} Bubble Wrap Shop. All rights reserved.
                     </p>
                   </td>
                 </tr>

@@ -96,7 +96,7 @@ function VerifyEmailContent() {
                 </h3>
                 <ol className="space-y-2 text-slate-600 text-sm ml-7 list-decimal">
                   <li>Open your email inbox</li>
-                  <li>Look for an email from Volle</li>
+                  <li>Look for an email from Bubble Wrap Shop</li>
                   <li>Click the verification link in the email</li>
                   <li>You'll be redirected to login</li>
                 </ol>

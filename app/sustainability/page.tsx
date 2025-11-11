@@ -46,7 +46,7 @@ export default function SustainabilityPage() {
           {/* Intro */}
           <div className="mb-20 rounded-xl border bg-emerald-600 p-6 shadow-lg">
             <p className="text-base leading-relaxed text-white/90 md:text-lg">
-              At Volle, we believe exceptional packaging doesn&apos;t have to
+              At Bubble Wrap Shop, we believe exceptional packaging doesn&apos;t have to
               come at the expense of the environment. We&apos;re committed to
               reducing our environmental impact through sustainable materials
               and responsible manufacturing.

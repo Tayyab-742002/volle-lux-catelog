@@ -44,16 +44,16 @@ export const EMAIL_CONFIG = {
   from: {
     orders:
       process.env.NODE_ENV !== "production"
-        ? "Volle Orders <onboarding@resend.dev>"
-        : "Volle Orders <orders@volle.com>",
+        ? "Bubble Wrap Shop Orders <onboarding@resend.dev>"
+        : "Bubble Wrap Shop Orders <orders@volle.com>",
     support:
       process.env.NODE_ENV !== "production"
-        ? "Volle Support <onboarding@resend.dev>"
-        : "Volle Support <support@volle.com>",
+        ? "Bubble Wrap Shop Support <onboarding@resend.dev>"
+        : "Bubble Wrap Shop Support <support@volle.com>",
     noreply:
       process.env.NODE_ENV !== "production"
-        ? "Volle <onboarding@resend.dev>"
-        : "Volle <noreply@volle.com>",
+        ? "Bubble Wrap Shop <onboarding@resend.dev>"
+        : "Bubble Wrap Shop <noreply@volle.com>",
   },
 
   // Reply-to addresses
@@ -80,7 +80,7 @@ export const EMAIL_CONFIG = {
       `Your Order Has Been Delivered - #${orderNumber}`,
     contactFormSubmission: "New Contact Form Submission",
     passwordReset: "Reset Your Password",
-    welcome: "Welcome to Volle",
+    welcome: "Welcome to Bubble Wrap Shop",
   },
 
   // Default settings

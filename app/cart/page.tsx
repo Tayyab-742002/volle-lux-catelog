@@ -7,8 +7,9 @@ import { useCartStore } from "@/lib/stores/cart-store";
 import { useAuth } from "@/components/auth/auth-provider";
 import { CartItem } from "@/components/cart/cart-item";
 import { OrderSummary } from "@/components/cart/order-summary";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
-export default function CartPage() {
+function CartPageContent() {
   const { items, getCartSummary, clearCart } = useCartStore();
   const { user } = useAuth();
   const summary = getCartSummary();
@@ -146,5 +147,19 @@ export default function CartPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CartPage() {
+  return (
+    <ErrorBoundary
+      title="Cart Error"
+      description="We encountered an error while loading your cart. Please try again or continue shopping."
+      showBackButton
+      backUrl="/products"
+      showHomeButton
+    >
+      <CartPageContent />
+    </ErrorBoundary>
   );
 }
