@@ -203,6 +203,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   );
 }
 
+// Revalidate every 5 minutes, or use on-demand revalidation via webhook
 export const revalidate = 300;
 
 export async function generateStaticParams() {
