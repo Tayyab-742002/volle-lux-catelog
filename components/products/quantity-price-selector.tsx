@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PricingTier } from "@/types/product";
@@ -19,6 +19,7 @@ export function QuantityPriceSelector({
   onQuantityChange,
 }: QuantityPriceSelectorProps) {
   const [quantity, setQuantity] = useState(1);
+  const [quantityInput, setQuantityInput] = useState<string>("1");
 
   // Calculate the active tier and price based on quantity
   const { activeTier, pricePerUnit, totalPrice } = useMemo(() => {
@@ -50,14 +51,36 @@ export function QuantityPriceSelector({
     };
   }, [quantity, pricingTiers, basePrice, variantPriceAdjustment]);
 
+  // Sync input when quantity changes externally
+  useEffect(() => {
+    setQuantityInput(quantity.toString());
+  }, [quantity]);
+
   const handleQuantityChange = (value: string) => {
+    // Allow empty string for easier editing
+    setQuantityInput(value);
+    
+    // Only update if it's a valid number
+    if (value === "") {
+      return; // Allow empty temporarily
+    }
+    
     const numValue = parseInt(value, 10);
     if (!isNaN(numValue) && numValue > 0) {
       setQuantity(numValue);
       onQuantityChange?.(numValue);
-    } else if (value === "") {
+    }
+  };
+
+  const handleQuantityBlur = () => {
+    // When user leaves the field, ensure it has a valid value
+    const numValue = parseInt(quantityInput, 10);
+    if (isNaN(numValue) || numValue < 1) {
+      setQuantityInput("1");
       setQuantity(1);
       onQuantityChange?.(1);
+    } else {
+      setQuantityInput(numValue.toString());
     }
   };
 
@@ -70,10 +93,18 @@ export function QuantityPriceSelector({
         </Label>
         <Input
           id="quantity"
-          type="number"
+          type="text"
+          inputMode="numeric"
           min="1"
-          value={quantity}
-          onChange={(e) => handleQuantityChange(e.target.value)}
+          value={quantityInput}
+          onChange={(e) => {
+            const value = e.target.value;
+            // Only allow numbers and empty string
+            if (value === "" || /^\d+$/.test(value)) {
+              handleQuantityChange(value);
+            }
+          }}
+          onBlur={handleQuantityBlur}
           className="w-32 border border-gray-400 focus-visible:ring-emerald-600/50! focus-visible:ring-2!"
         />
       </div>

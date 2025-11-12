@@ -8,7 +8,6 @@ import {
   Download,
   Package,
   Truck,
-  MapPin,
   CreditCard,
   ArrowLeft,
   Save,
@@ -27,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge } from "@/components/admin/status-badge";
 import type { AdminOrder } from "@/services/admin/order.service";
+import { CartItem } from "@/types/cart";
 
 export default function AdminOrderDetailPage() {
   const params = useParams();
@@ -37,7 +37,7 @@ export default function AdminOrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
-  
+
   // Form state
   const [status, setStatus] = useState<string>("pending");
   const [trackingNumber, setTrackingNumber] = useState("");
@@ -51,7 +51,7 @@ export default function AdminOrderDetailPage() {
     try {
       setLoading(true);
       const response = await fetch(`/api/admin/orders?id=${orderId}`);
-      
+
       if (!response.ok) {
         if (response.status === 404) {
           setError("Order not found");
@@ -62,7 +62,7 @@ export default function AdminOrderDetailPage() {
         }
         return;
       }
-      
+
       const orderData = await response.json();
       // Convert dates from strings to Date objects
       const orderWithDates = {
@@ -112,7 +112,6 @@ export default function AdminOrderDetailPage() {
     }
   };
 
-
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
@@ -134,9 +133,7 @@ export default function AdminOrderDetailPage() {
     return (
       <div className="rounded-2xl border border-gray-300 bg-white p-12 text-center shadow-lg">
         <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-emerald-600 border-r-transparent" />
-        <p className="mt-4 text-sm text-gray-600">
-          Loading order details...
-        </p>
+        <p className="mt-4 text-sm text-gray-600">Loading order details...</p>
       </div>
     );
   }
@@ -154,7 +151,10 @@ export default function AdminOrderDetailPage() {
         </p>
         <div className="mt-4 flex justify-center gap-3">
           <Link href="/admin/orders">
-            <Button variant="outline" className="border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700">
+            <Button
+              variant="outline"
+              className="border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" strokeWidth={2} />
               Back to Orders
             </Button>
@@ -174,8 +174,12 @@ export default function AdminOrderDetailPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <Link href="/admin/orders">
-            <Button variant="ghost" size="sm" className="mb-2 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700">
+          <Link href="/admin?tab=orders">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mb-2 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" strokeWidth={2} />
               Back to Orders
             </Button>
@@ -185,22 +189,8 @@ export default function AdminOrderDetailPage() {
               <div className="h-1 w-8 bg-linear-to-r from-emerald-600 to-teal-600 rounded-full"></div>
               Order Details
             </h1>
-            <p className="mt-2 text-gray-600">
-              Order #{order.orderNumber}
-            </p>
+            <p className="mt-2 text-gray-600">Order #{order.orderNumber}</p>
           </div>
-        </div>
-        <div className="flex gap-3">
-          {order.paymentIntentId && (
-            <Button variant="outline" size="lg" className="border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700">
-              <ExternalLink className="mr-2 h-5 w-5" strokeWidth={2} />
-              View Stripe Payment
-            </Button>
-          )}
-          <Button variant="outline" size="lg" className="border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700">
-            <Download className="mr-2 h-5 w-5" strokeWidth={2} />
-            Download Invoice
-          </Button>
         </div>
       </div>
 
@@ -220,14 +210,18 @@ export default function AdminOrderDetailPage() {
                   <Package className="h-4 w-4" strokeWidth={2} />
                   Order Date
                 </div>
-                <div className="font-semibold text-gray-900">{formatDate(order.createdAt)}</div>
+                <div className="font-semibold text-gray-900">
+                  {formatDate(order.createdAt)}
+                </div>
               </div>
               <div>
                 <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
                   <Truck className="h-4 w-4" strokeWidth={2} />
                   Status
                 </div>
-                <div><StatusBadge status={order.status} /></div>
+                <div>
+                  <StatusBadge status={order.status} />
+                </div>
               </div>
               <div>
                 <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
@@ -249,9 +243,14 @@ export default function AdminOrderDetailPage() {
             </h3>
             <div className="space-y-6">
               <div>
-                <Label htmlFor="status" className="text-gray-700">Order Status</Label>
+                <Label htmlFor="status" className="text-gray-700">
+                  Order Status
+                </Label>
                 <Select value={status} onValueChange={setStatus}>
-                  <SelectTrigger id="status" className="mt-2 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
+                  <SelectTrigger
+                    id="status"
+                    className="mt-2 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -265,7 +264,9 @@ export default function AdminOrderDetailPage() {
               </div>
 
               <div>
-                <Label htmlFor="tracking" className="text-gray-700">Tracking Number</Label>
+                <Label htmlFor="tracking" className="text-gray-700">
+                  Tracking Number
+                </Label>
                 <Input
                   id="tracking"
                   value={trackingNumber}
@@ -276,7 +277,9 @@ export default function AdminOrderDetailPage() {
               </div>
 
               <div>
-                <Label htmlFor="notes" className="text-gray-700">Admin Notes</Label>
+                <Label htmlFor="notes" className="text-gray-700">
+                  Admin Notes
+                </Label>
                 <Textarea
                   id="notes"
                   value={notes}
@@ -319,13 +322,17 @@ export default function AdminOrderDetailPage() {
                 {order.shippingAddress?.fullName || "N/A"}
               </p>
               <p>{order.shippingAddress?.address || ""}</p>
-              {order.shippingAddress?.address2 && <p>{order.shippingAddress.address2}</p>}
+              {order.shippingAddress?.address2 && (
+                <p>{order.shippingAddress.address2}</p>
+              )}
               <p>
                 {order.shippingAddress?.city}, {order.shippingAddress?.state}{" "}
                 {order.shippingAddress?.zipCode}
               </p>
               <p>{order.shippingAddress?.country}</p>
-              {order.shippingAddress?.phone && <p>Phone: {order.shippingAddress.phone}</p>}
+              {order.shippingAddress?.phone && (
+                <p>Phone: {order.shippingAddress.phone}</p>
+              )}
             </div>
           </div>
 
@@ -338,7 +345,7 @@ export default function AdminOrderDetailPage() {
               </h3>
             </div>
             <div className="divide-y divide-gray-200">
-              {order.items.map((item: any, index: number) => (
+              {order.items.map((item: CartItem, index: number) => (
                 <div
                   key={index}
                   className="flex gap-6 p-6 transition-colors hover:bg-emerald-50/50"
@@ -396,7 +403,9 @@ export default function AdminOrderDetailPage() {
               {order.customerPhone && (
                 <div>
                   <div className="text-sm text-gray-600">Phone</div>
-                  <div className="mt-1 text-gray-900">{order.customerPhone}</div>
+                  <div className="mt-1 text-gray-900">
+                    {order.customerPhone}
+                  </div>
                 </div>
               )}
             </div>
@@ -411,7 +420,9 @@ export default function AdminOrderDetailPage() {
             <div className="space-y-3">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span className="text-gray-900">{formatCurrency(order.subtotal)}</span>
+                <span className="text-gray-900">
+                  {formatCurrency(order.subtotal)}
+                </span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Discount</span>
@@ -421,7 +432,9 @@ export default function AdminOrderDetailPage() {
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Shipping</span>
-                <span className="text-gray-900">{formatCurrency(order.shipping)}</span>
+                <span className="text-gray-900">
+                  {formatCurrency(order.shipping)}
+                </span>
               </div>
               <div className="border-t border-gray-300 pt-3">
                 <div className="flex justify-between text-lg font-bold">
@@ -444,9 +457,7 @@ export default function AdminOrderDetailPage() {
               <div className="flex items-center gap-2">
                 <Truck className="h-5 w-5 text-emerald-600" strokeWidth={2} />
                 <div>
-                  <div className="text-sm text-gray-600">
-                    Tracking Number
-                  </div>
+                  <div className="text-sm text-gray-600">Tracking Number</div>
                   <div className="mt-1 font-medium font-mono text-gray-900">
                     {order.trackingNumber}
                   </div>
@@ -459,4 +470,3 @@ export default function AdminOrderDetailPage() {
     </div>
   );
 }
-

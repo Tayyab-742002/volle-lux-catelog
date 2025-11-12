@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
@@ -16,11 +17,36 @@ interface CartItemProps {
 export function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeItem } = useCartStore();
   const { user } = useAuth();
+  const [quantityInput, setQuantityInput] = useState<string>(item.quantity.toString());
 
-  const handleQuantityChange = async (value: string) => {
+  // Sync input when item quantity changes externally
+  useEffect(() => {
+    setQuantityInput(item.quantity.toString());
+  }, [item.quantity]);
+
+  const handleQuantityChange = (value: string) => {
+    // Allow empty string for easier editing
+    setQuantityInput(value);
+    
+    // Only update if it's a valid number
+    if (value === "") {
+      return; // Allow empty temporarily
+    }
+    
     const numValue = parseInt(value, 10);
     if (!isNaN(numValue) && numValue > 0) {
-      await updateQuantity(item.id, numValue, user?.id);
+      updateQuantity(item.id, numValue, user?.id);
+    }
+  };
+
+  const handleQuantityBlur = () => {
+    // When user leaves the field, ensure it has a valid value
+    const numValue = parseInt(quantityInput, 10);
+    if (isNaN(numValue) || numValue < 1) {
+      setQuantityInput("1");
+      updateQuantity(item.id, 1, user?.id);
+    } else {
+      setQuantityInput(numValue.toString());
     }
   };
 
@@ -61,10 +87,18 @@ export function CartItem({ item }: CartItemProps) {
           {/* Quantity Selector */}
           <div className="flex items-center gap-2">
             <Input
-              type="number"
+              type="text"
+              inputMode="numeric"
               min="1"
-              value={item.quantity}
-              onChange={(e) => handleQuantityChange(e.target.value)}
+              value={quantityInput}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Only allow numbers and empty string
+                if (value === "" || /^\d+$/.test(value)) {
+                  handleQuantityChange(value);
+                }
+              }}
+              onBlur={handleQuantityBlur}
               className="w-16"
             />
           </div>

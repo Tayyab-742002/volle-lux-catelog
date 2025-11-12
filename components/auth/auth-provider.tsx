@@ -64,7 +64,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [supabase] = useState(() => createClient());
 
   // Load user profile from database
-  const loadUserProfile = useCallback(async () => {
+  const loadUserProfile = useCallback(async (retryCount = 0) => {
     try {
       // Get current user from auth
       const {
@@ -73,6 +73,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } = await supabase.auth.getUser();
 
       if (userError || !authUser) {
+        if (retryCount < 2) {
+          // Retry once if we get an error (might be a timing issue)
+          setTimeout(() => loadUserProfile(retryCount + 1), 500);
+          return;
+        }
         console.error("Failed to get auth user:", userError?.message);
         setUser(null);
         return;
@@ -86,6 +91,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         .single();
 
       if (profileError || !profile) {
+        if (retryCount < 2) {
+          // Retry once if we get an error (might be a timing issue)
+          setTimeout(() => loadUserProfile(retryCount + 1), 500);
+          return;
+        }
         console.error("Failed to fetch user profile:", profileError?.message);
         setUser(null);
         return;
@@ -116,6 +126,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         updatedAt: userProfile.updated_at,
       });
     } catch (error) {
+      if (retryCount < 2) {
+        // Retry once if we get an error (might be a timing issue)
+        setTimeout(() => loadUserProfile(retryCount + 1), 500);
+        return;
+      }
       console.error("Error loading user profile:", error);
       setUser(null);
     }
@@ -155,14 +170,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (mounted) {
-        if (session?.user) {
-          await loadUserProfile();
-        } else {
-          setUser(null);
-        }
-        setLoading(false);
+      if (!mounted) return;
+      
+      // Set loading to true when auth state changes
+      setLoading(true);
+      
+      if (session?.user) {
+        await loadUserProfile();
+      } else {
+        setUser(null);
       }
+      setLoading(false);
     });
 
     return () => {
@@ -316,12 +334,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   
-  if (typeof window === 'undefined') {
-    // During SSR, return a safe default to prevent errors
-    // The actual context will be available after hydration
+  if (context === undefined) {
+    // During SSR or before provider mounts, return a safe default
+    // This prevents errors but the actual context will be available after hydration
     return {
       user: null,
-      loading: true,
+      loading: true, // Keep loading true until context is available
       isAuthenticated: false,
       signIn: async () => ({ success: false, error: 'Not initialized' }),
       signUp: async () => ({ success: false, error: 'Not initialized' }),
@@ -333,9 +351,6 @@ export function useAuth(): AuthContextType {
     } as AuthContextType;
   }
   
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
   return context;
 }
 

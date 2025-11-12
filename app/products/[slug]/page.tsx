@@ -4,9 +4,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 import { ProductGallerySkeleton } from "@/components/products/product-gallery-loader";
-import {
-  ProductHeader,
-} from "@/components/products";
+import { ProductHeader } from "@/components/products";
 import ProductPageContent from "@/components/products/product-page-content";
 import { getProductBySlug } from "@/services/products/product.service";
 import { getProductSlugs } from "@/sanity/lib/api";
@@ -15,7 +13,10 @@ import { Button } from "@/components/ui/button";
 
 // PERFORMANCE: Code split ProductGallery (heavy image component)
 const ProductGallery = dynamic(
-  () => import("@/components/products").then((mod) => ({ default: mod.ProductGallery })),
+  () =>
+    import("@/components/products").then((mod) => ({
+      default: mod.ProductGallery,
+    })),
   {
     loading: () => <ProductGallerySkeleton />,
     ssr: true,
@@ -52,7 +53,9 @@ export async function generateMetadata({
     `Premium ${product.name} - Professional packaging supplies. Starting from £${productPrice}. Eco-friendly options available.`;
 
   // Use custom SEO fields if available, otherwise generate from product data
-  const seoTitle = product.seoTitle || `${product.name} - Premium Packaging Supplies | Bubble Wrap Shop`;
+  const seoTitle =
+    product.seoTitle ||
+    `${product.name} - Premium Packaging Supplies | Bubble Wrap Shop`;
   const seoDescription = product.seoDescription || productDescription;
 
   return {
@@ -67,7 +70,7 @@ export async function generateMetadata({
       "wholesale packaging",
     ],
     openGraph: {
-      type: "product",
+      type: "website",
       title: seoTitle,
       description: seoDescription,
       url: productUrl,
@@ -109,7 +112,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://volle.com";
   const productUrl = `${siteUrl}/products/${slug}`;
-  const productImage = product.images?.[0] || product.image;
   const productPrice = product.basePrice.toFixed(2);
 
   // Structured Data (JSON-LD) for SEO
@@ -117,7 +119,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.description || `${product.name} - Premium packaging supplies`,
+    description:
+      product.description || `${product.name} - Premium packaging supplies`,
     image: product.images || [product.image],
     sku: product.product_code,
     brand: {
@@ -129,7 +132,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
       url: productUrl,
       priceCurrency: "GBP",
       price: productPrice,
-      priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // 1 year from now
+      priceValidUntil: new Date(
+        new Date().getTime() + 365 * 24 * 60 * 60 * 1000
+      )
+        .toISOString()
+        .split("T")[0],
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/NewCondition",
       seller: {

@@ -17,7 +17,7 @@ export function Footer() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <Image
-                src="logo.jpg"
+                src="/logo.jpg"
                 alt="Bubble Wrap Shop"
                 width={120}
                 height={40}

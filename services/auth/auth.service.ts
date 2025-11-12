@@ -122,14 +122,14 @@ export async function signUp(data: SignUpData): Promise<AuthResult> {
 
       clearTimeout(timeoutId);
 
-      if (response.ok) {
-        const profileResult = await response.json();
-        console.log("Profile creation result:", profileResult);
-      } else {
-        console.warn(
-          "Profile creation failed, but continuing (trigger might create it)"
-        );
-      }
+      // if (response.ok) {
+      //   const profileResult = await response.json();
+      //   console.log("Profile creation result:", profileResult);
+      // } else {
+      //   console.warn(
+      //     "Profile creation failed, but continuing (trigger might create it)"
+      //   );
+      // }
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
         console.warn("Profile creation timed out - continuing anyway");
@@ -156,13 +156,6 @@ export async function signUp(data: SignUpData): Promise<AuthResult> {
       if (fetchedProfile) {
         profile = fetchedProfile;
         break;
-      }
-
-      if (fetchError) {
-        console.log(
-          `Profile fetch attempt ${i + 1} failed:`,
-          fetchError.message
-        );
       }
 
       // Wait before retry
@@ -194,8 +187,6 @@ export async function signUp(data: SignUpData): Promise<AuthResult> {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
-
-    console.log("Signup successful, returning user:", userResult.email);
 
     // Return success - auth account is created
     return {

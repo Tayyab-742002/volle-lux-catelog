@@ -69,7 +69,7 @@ async function OrderDetailContent({
         <p className="text-gray-600">
           You don&apos;t have access to this order
         </p>
-        <Link href="/account/orders">
+        <Link href="/account?tab=orders">
           <Button className="mt-4 border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700">
             Back to Orders
           </Button>
@@ -123,7 +123,7 @@ async function OrderDetailContent({
           </h2>
           <p className="mt-2 text-gray-600">Order #{displayOrder.id}</p>
         </div>
-        <div className="flex gap-3">
+        {/* <div className="flex gap-3">
           <Button
             variant="outline"
             size="lg"
@@ -139,7 +139,7 @@ async function OrderDetailContent({
             <ShoppingCart className="mr-2 h-5 w-5" strokeWidth={2} />
             Reorder
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {/* Order Info Card */}

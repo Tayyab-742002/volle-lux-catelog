@@ -1,9 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Briefcase, ArrowRight, TrendingUp, Package } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, TrendingUp, Package } from "lucide-react";
 import Image from "next/image";
 
 export default function B2BBanner() {
+  const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
   const [discountValue, setDiscountValue] = useState(0);
 
@@ -28,10 +30,10 @@ export default function B2BBanner() {
   }, []);
 
   return (
-    <div className="w-full px-4 py-6">
+    <div className="w-full px-3 sm:px-4 py-4 sm:py-6">
       <div className="max-w-6xl mx-auto">
         <div
-          className="relative overflow-hidden rounded-xl bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300"
+          className="relative overflow-hidden rounded-lg sm:rounded-xl bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -43,9 +45,9 @@ export default function B2BBanner() {
             }}
           ></div>
 
-          <div className="relative flex flex-col md:flex-row items-center justify-between gap-4 p-6 md:px-8 md:py-6">
+          <div className="relative flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 p-4 sm:p-6 md:px-8 md:py-6">
             {/* Left Side */}
-            <div className="flex items-center gap-5 flex-1">
+            <div className="flex items-center gap-3 sm:gap-4 md:gap-5 flex-1 w-full md:w-auto">
               {/* Icon with Pulse Animation */}
               <div className="shrink-0 relative">
                 <div
@@ -57,66 +59,71 @@ export default function B2BBanner() {
                   alt="B2B Banner Icon"
                   width={74}
                   height={74}
-                  className="rounded-full"
+                  className="rounded-full w-12 h-12 sm:w-16 sm:h-16 md:w-[74px] md:h-[74px] object-cover"
                   quality={95}
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  loading="lazy" // PERFORMANCE: Lazy load below-fold image
+                  sizes="(max-width: 640px) 48px, (max-width: 768px) 64px, 74px"
+                  loading="lazy"
                 />
               </div>
 
               {/* Text Content with Animations */}
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-white/90 font-semibold text-xs uppercase tracking-wider">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-1.5 flex-wrap">
+                  <span className="text-white/90 font-semibold text-[10px] sm:text-xs uppercase tracking-wider">
                     B2B Solutions
                   </span>
-                  <div className="h-1 w-1 bg-white/50 rounded-full"></div>
-                  <span className="text-white/70 text-xs">
+                  <div className="h-1 w-1 bg-white/50 rounded-full hidden sm:block"></div>
+                  <span className="text-white/70 text-[10px] sm:text-xs">
                     Wholesale Pricing
                   </span>
                 </div>
 
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-1.5 leading-tight">
+                <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white mb-1 sm:mb-1.5 leading-tight">
                   Need Bulk Packaging?
                   <span
-                    className={`inline-block ml-2 transition-all duration-500 ${isHovered ? "translate-x-1" : ""}`}
+                    className={`inline-block ml-1 sm:ml-2 transition-all duration-500 ${isHovered ? "translate-x-1" : ""}`}
                   >
                     📦
                   </span>
                 </h3>
 
-                <div className="flex flex-wrap items-center gap-3 text-sm">
-                  <div className="flex items-center gap-1.5">
-                    <TrendingUp className="w-4 h-4 text-red-200" />
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+                  <div className="flex items-center gap-1 sm:gap-1.5">
+                    <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-red-200 shrink-0" />
                     <span className="text-white/90">
                       Save up to{" "}
-                      <span className="font-bold text-white text-lg mx-1">
+                      <span className="font-bold text-white text-base sm:text-lg mx-0.5 sm:mx-1">
                         {discountValue}%
                       </span>{" "}
                       on bulk orders
                     </span>
                   </div>
                   <div className="hidden sm:block h-4 w-px bg-white/30"></div>
-                  <div className="flex items-center gap-1.5 text-white/80">
-                    <Package className="w-4 h-4 text-red-200" />
-                    <span>500+ Trusted Businesses</span>
+                  <div className="flex items-center gap-1 sm:gap-1.5 text-white/80">
+                    <Package className="w-3 h-3 sm:w-4 sm:h-4 text-red-200 shrink-0" />
+                    <span className="whitespace-nowrap">
+                      500+ Trusted Businesses
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Right Side - CTA Button */}
-            <div className="shrink-0">
-              <button className="group relative bg-white hover:bg-gray-50 font-bold cursor-pointer px-7 py-3.5 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2.5 overflow-hidden">
-                <span className="relative z-10 whitespace-nowrap block bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-700 bg-clip-text text-transparent ">
+            <div className="shrink-0 w-full md:w-auto mt-2 md:mt-0">
+              <button
+                onClick={() => router.push("/b2b-request")}
+                className="group relative bg-white hover:bg-gray-50 active:bg-gray-100 font-bold cursor-pointer w-full md:w-auto px-5 sm:px-6 md:px-7 py-2.5 sm:py-3 md:py-3.5 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 hover:shadow-lg flex items-center justify-center gap-2 sm:gap-2.5 overflow-hidden touch-manipulation"
+              >
+                <span className="relative z-10 whitespace-nowrap block bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-700 bg-clip-text text-transparent text-sm sm:text-base">
                   Get B2B Quote
                 </span>
                 <ArrowRight
-                  className={`relative z-10 w-5 h-5 text-indigo-600 transition-transform duration-300 ${isHovered ? "translate-x-1" : ""}`}
+                  className={`relative z-10 w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 transition-transform duration-300 shrink-0 ${isHovered ? "translate-x-1" : ""}`}
                 />
               </button>
 
-              <p className="text-center text-white/70 text-xs mt-2">
+              <p className="text-center text-white/70 text-[10px] sm:text-xs mt-1.5 sm:mt-2">
                 Min. order:{" "}
                 <span className="font-semibold text-white">£500</span>
               </p>

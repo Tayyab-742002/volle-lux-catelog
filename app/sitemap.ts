@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getAllProducts } from "@/services/products/product.service";
+import { getProducts } from "@/services/products/product.service";
 import { getAllCategories } from "@/sanity/lib";
 
 /**
@@ -84,7 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all products
   let productPages: MetadataRoute.Sitemap = [];
   try {
-    const products = await getAllProducts();
+    const products = await getProducts();
     productPages = products.map((product) => ({
       url: `${siteUrl}/products/${product.slug}`,
       lastModified: baseDate, // Could be enhanced with product._updatedAt if available
@@ -100,12 +100,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let categoryPages: MetadataRoute.Sitemap = [];
   try {
     const categories = await getAllCategories();
-    categoryPages = categories.map((category) => ({
-      url: `${siteUrl}/products?category=${category.slug}`,
-      lastModified: baseDate, // Could be enhanced with category._updatedAt if available
-      changeFrequency: "weekly" as const,
-      priority: 0.7, // Medium-high priority for category pages
-    }));
+    if (categories) {
+      categoryPages = categories.map((category) => ({
+        url: `${siteUrl}/products?category=${category.slug}`,
+        lastModified: baseDate, // Could be enhanced with category._updatedAt if available
+        changeFrequency: "weekly" as const,
+        priority: 0.7, // Medium-high priority for category pages
+      }));
+    }
   } catch (error) {
     console.error("Error fetching categories for sitemap:", error);
     // Continue without categories - don't break the sitemap
