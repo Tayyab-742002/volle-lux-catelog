@@ -122,10 +122,6 @@ export async function POST(request: NextRequest) {
     });
 
     if (emailResult.success) {
-      console.log(
-        `✅ Contact form email sent for ${name} (${email}) - Message ID: ${emailResult.messageId}`
-      );
-
       return NextResponse.json({
         success: true,
         message: "Your message has been sent successfully!",

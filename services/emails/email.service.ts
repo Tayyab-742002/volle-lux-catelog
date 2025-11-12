@@ -234,6 +234,102 @@ export async function sendOrderShippedEmail(
 }
 
 /**
+ * Send B2B request notification email
+ *
+ * @param request - B2B request data
+ * @returns Promise with email send result
+ */
+export async function sendB2BRequestEmail(request: {
+  id: string;
+  companyName: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  productsInterested: string;
+  estimatedQuantity: string;
+  createdAt: string;
+}): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  try {
+    // Check if Resend is configured
+    if (!isResendConfigured()) {
+      console.warn(
+        "Resend is not configured. Skipping email send. Set RESEND_API_KEY in .env.local"
+      );
+      return {
+        success: false,
+        error: "Resend not configured",
+      };
+    }
+
+    const resend = getResendClient();
+
+    // Determine where to send the email
+    const toEmail =
+      EMAIL_CONFIG.defaults.testEmail || EMAIL_CONFIG.replyTo.support;
+
+    // Create email HTML
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #059669;">New B2B Request Received</h1>
+        <p>A new B2B custom bulk order request has been submitted.</p>
+        
+        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <h2 style="margin-top: 0;">Request Details</h2>
+          <p><strong>Request ID:</strong> ${request.id}</p>
+          <p><strong>Company:</strong> ${request.companyName}</p>
+          <p><strong>Contact:</strong> ${request.contactName}</p>
+          <p><strong>Email:</strong> ${request.email}</p>
+          <p><strong>Phone:</strong> ${request.phone}</p>
+          <p><strong>Products Interested:</strong> ${request.productsInterested}</p>
+          <p><strong>Estimated Quantity:</strong> ${request.estimatedQuantity}</p>
+          <p><strong>Submitted:</strong> ${new Date(request.createdAt).toLocaleString()}</p>
+        </div>
+        
+        <p style="margin-top: 20px;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://volle.com"}/admin?tab=b2b-requests" 
+             style="background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+            View in Admin Dashboard
+          </a>
+        </p>
+        
+        <p style="color: #6b7280; font-size: 12px; margin-top: 30px;">
+          This is an automated notification from Bubble Wrap Shop.
+        </p>
+      </div>
+    `;
+
+    // Send email
+    const result = await resend.emails.send({
+      from: EMAIL_CONFIG.from.support,
+      to: toEmail,
+      replyTo: request.email, // Allow direct reply to customer
+      subject: `New B2B Request from ${request.companyName}`,
+      html: emailHtml,
+      bcc: EMAIL_CONFIG.bcc.contact,
+    });
+
+    if (result.error) {
+      console.error("Failed to send B2B request email:", result.error);
+      return {
+        success: false,
+        error: result.error.message,
+      };
+    }
+
+    return {
+      success: true,
+      messageId: result.data?.id,
+    };
+  } catch (error) {
+    console.error("Error sending B2B request email:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+/**
  * Test email configuration
  *
  * Sends a test email to verify Resend is properly configured

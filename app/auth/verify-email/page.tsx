@@ -46,7 +46,7 @@ function VerifyEmailContent() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-50">
+    <div className="min-h-screen relative overflow-hidden bg-linear-to-br from-slate-50 via-emerald-50 to-teal-50">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
       
@@ -57,7 +57,7 @@ function VerifyEmailContent() {
             <div className="flex justify-center mb-8">
               <div className="relative">
                 <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-xl" />
-                <div className="relative bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-full p-6">
+                <div className="relative bg-linear-to-br from-emerald-500 to-teal-600 text-white rounded-full p-6">
                   <Mail className="h-12 w-12" />
                 </div>
               </div>
@@ -69,7 +69,7 @@ function VerifyEmailContent() {
                 Check Your Email
               </h1>
               <p className="text-slate-600 text-lg">
-                We've sent a verification link to
+                We&apos;ve sent a verification link to
               </p>
               {email && (
                 <p className="text-emerald-600 font-semibold text-lg mt-2 break-all">
@@ -96,15 +96,15 @@ function VerifyEmailContent() {
                 </h3>
                 <ol className="space-y-2 text-slate-600 text-sm ml-7 list-decimal">
                   <li>Open your email inbox</li>
-                  <li>Look for an email from Volle</li>
+                  <li>Look for an email from Bubble Wrap Shop</li>
                   <li>Click the verification link in the email</li>
-                  <li>You'll be redirected to login</li>
+                  <li>You&apos;ll be redirected to login</li>
                 </ol>
               </div>
 
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                 <p className="text-amber-800 text-sm">
-                  <strong className="font-semibold">Can't find the email?</strong> Check your spam or junk folder.
+                  <strong className="font-semibold">Can&apos;t find the email?</strong> Check your spam or junk folder.
                 </p>
               </div>
             </div>
@@ -183,8 +183,8 @@ export default function VerifyEmailPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-50">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+        <div className="min-h-screen relative overflow-hidden bg-linear-to-br from-slate-50 via-emerald-50 to-teal-50">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size[24px_24px]" />
           <div className="relative z-10 container mx-auto flex min-h-screen items-center justify-center px-6 py-16">
             <div className="w-full max-w-lg">
               <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/50 p-8 md:p-12">

@@ -91,7 +91,7 @@ const faqData = [
       {
         question: "How can I contact customer support?",
         answer:
-          "You can reach us via email at support@volle.com, phone at 1-800-VOLLE-PKG, or through our contact form. Our support team is available Monday-Friday, 9 AM - 6 PM EST.",
+          "You can reach us via email at support@volle.com, phone at 1-800-BUBBLE-WRAP, or through our contact form. Our support team is available Monday-Friday, 9 AM - 6 PM EST.",
       },
       {
         question: "Can I cancel or modify my order?",

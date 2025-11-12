@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ProductFilters } from "@/components/products/product-filters";
 import { ProductSort } from "@/components/products/product-sort";
 import { Breadcrumbs } from "@/components/common/breadcrumbs";
@@ -5,6 +6,36 @@ import { ProductGridWrapper } from "@/components/products/product-grid-wrapper";
 import { getAllCategories } from "@/sanity/lib";
 
 export const revalidate = 60; // Reduce cache time for faster filter updates
+
+/**
+ * Products Page Metadata
+ * SEO optimization for the products listing page
+ */
+export const metadata: Metadata = {
+  title: "All Products - Premium Packaging Supplies | Volle",
+  description:
+    "Browse our complete range of premium packaging supplies. Bubble wrap, boxes, protective materials, and more. Automatic bulk pricing. Eco-friendly options available.",
+  keywords: [
+    "packaging products",
+    "bubble wrap",
+    "packaging boxes",
+    "protective packaging",
+    "eco-friendly packaging",
+    "bulk packaging",
+    "wholesale packaging",
+  ],
+  openGraph: {
+    type: "website",
+    title: "All Products - Premium Packaging Supplies | Bubble Wrap Shop",
+    description:
+      "Browse our complete range of premium packaging supplies. Automatic bulk pricing. Eco-friendly options available.",
+    url: `${process.env.NEXT_PUBLIC_APP_URL || "https://volle.com"}/products`,
+    siteName: "Bubble Wrap Shop - Premium Packaging Supplies",
+  },
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_APP_URL || "https://volle.com"}/products`,
+  },
+};
 
 export default async function ProductsPage({
   searchParams,

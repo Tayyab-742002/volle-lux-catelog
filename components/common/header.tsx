@@ -18,7 +18,6 @@ import { MiniCart } from "@/components/cart/mini-cart";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useAuth } from "@/components/auth/auth-provider";
 import Image from "next/image";
-import { Product } from "@/types/product";
 import { Category } from "@/types/category";
 
 interface HeaderProps {
@@ -61,7 +60,13 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
   const [mounted, setMounted] = useState(false);
 
   const { getItemCount } = useCartStore();
-  const { user, isAuthenticated, signOut, loading: authLoading } = useAuth();
+  const {
+    user,
+    isAuthenticated,
+    signOut,
+    loading: authLoading,
+    refreshUser,
+  } = useAuth();
   const cartItemCount = getItemCount();
   const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -74,6 +79,22 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
       }
     };
   }, []);
+
+  // Refresh user data on mount and when route changes
+  useEffect(() => {
+    // Small delay to ensure auth provider is ready
+    const timer = setTimeout(() => {
+      if (!authLoading && !user) {
+        // Try to refresh user data if we're not loading but have no user
+        // This handles cases where auth state might be stale
+        refreshUser().catch((err) => {
+          console.error("Failed to refresh user:", err);
+        });
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [authLoading, user, refreshUser]);
 
   const handleSignOut = useCallback(async () => {
     const result = await signOut();
@@ -120,11 +141,11 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
             {/* Logo */}
             <Link href="/" className="shrink-0 cursor-pointer group">
               <Image
-                src="/bubble-wrap-shop.png"
-                alt="VOLLE"
+                src="/logo.jpg"
+                alt="Logo"
                 width={100}
                 height={32}
-                className="h-8 w-auto transition-transform duration-300 group-hover:scale-105 brightness-0 invert"
+                className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
 
@@ -144,6 +165,12 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                 className="px-4 py-2 text-sm font-normal cursor-pointer text-white hover:bg-white/10 rounded-lg transition-all duration-300"
               >
                 Sustainability
+              </Link>
+              <Link
+                href="/b2b-request"
+                className="px-4 py-2 text-sm font-normal cursor-pointer text-white hover:bg-white/10 rounded-lg transition-all duration-300"
+              >
+                B2B Request
               </Link>
               <Link
                 href="/about"
@@ -179,7 +206,13 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
               </form>
 
               {/* Account */}
-              {!authLoading && isAuthenticated ? (
+              {authLoading ? (
+                <div className="hidden lg:block">
+                  <div className="p-2 text-white/50 rounded-lg">
+                    <User className="h-5 w-5" strokeWidth={2} />
+                  </div>
+                </div>
+              ) : isAuthenticated && user ? (
                 <div className="hidden lg:block relative group">
                   <button className="p-2 text-white hover:bg-white/10 rounded-lg transition-all duration-300">
                     <User className="h-5 w-5" strokeWidth={2} />
@@ -395,7 +428,11 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                 </div>
               </form>
 
-              {!authLoading && isAuthenticated ? (
+              {authLoading ? (
+                <div className="mb-6 flex h-10 items-center justify-center rounded-lg bg-gray-100 animate-pulse">
+                  <div className="h-4 w-24 bg-gray-300 rounded"></div>
+                </div>
+              ) : isAuthenticated && user ? (
                 <div className="mb-6 rounded-xl bg-linear-to-r from-emerald-50 to-teal-50 p-4 border border-emerald-200">
                   <p className="text-sm font-semibold text-gray-900 truncate">
                     {user?.fullName || "User"}
@@ -404,7 +441,7 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                     {user?.email}
                   </p>
                 </div>
-              ) : !authLoading ? (
+              ) : (
                 <Link
                   href="/auth/login"
                   className="mb-6 flex h-10 items-center justify-center rounded-lg bg-linear-to-r from-emerald-600 to-teal-600 text-sm font-semibold text-white hover:shadow-lg transition-all"
@@ -412,7 +449,7 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                 >
                   Sign In
                 </Link>
-              ) : null}
+              )}
 
               <nav className="space-y-1">
                 <Link
@@ -421,6 +458,13 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   All Products
+                </Link>
+                <Link
+                  href="/b2b-request"
+                  className="block rounded-lg px-3 py-2 text-sm font-medium hover:bg-emerald-100 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  B2B Request
                 </Link>
                 {categories.map((category) => (
                   <Link

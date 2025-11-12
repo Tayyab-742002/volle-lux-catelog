@@ -5,6 +5,8 @@ import {
   getDashboardStats,
   getAllOrders,
   getAllCustomers,
+  getAdminB2BRequests,
+  getAdminPendingB2BRequestsCount,
 } from "@/services/admin/admin-server.service";
 import { AdminDashboardClient } from "@/components/admin/admin-dashboard-client";
 
@@ -29,11 +31,14 @@ export default async function AdminDashboard() {
 // Fetch ALL admin data at once for instant tab switching
 async function AdminDashboardContent() {
   // Parallel data fetching for maximum performance
-  const [stats, orders, customers] = await Promise.all([
-    getDashboardStats(),
-    getAllOrders(),
-    getAllCustomers(),
-  ]);
+  const [stats, orders, customers, b2bRequests, pendingB2BCount] =
+    await Promise.all([
+      getDashboardStats(),
+      getAllOrders(),
+      getAllCustomers(),
+      getAdminB2BRequests(),
+      getAdminPendingB2BRequestsCount(),
+    ]);
 
   // Pass all data to client component for instant tab switching
   return (
@@ -41,6 +46,8 @@ async function AdminDashboardContent() {
       initialStats={stats}
       initialOrders={orders}
       initialCustomers={customers}
+      initialB2BRequests={b2bRequests}
+      pendingB2BRequestsCount={pendingB2BCount}
     />
   );
 }

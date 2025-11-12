@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  CheckCircle2,
   Package,
   Home,
   Loader2,
@@ -144,10 +143,6 @@ function CheckoutSuccessContent() {
             setCartCleared(true);
           } catch (cartError) {
             // Don't fail if cart clearing fails (it may already be cleared by webhook)
-            console.log(
-              "⚠️ Cart clearing skipped or already cleared:",
-              cartError
-            );
             setCartCleared(true); // Mark as cleared to prevent retries
           }
         }

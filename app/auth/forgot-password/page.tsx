@@ -10,8 +10,6 @@ import {
   Loader2,
   ArrowLeft,
   ArrowRight,
-  Mail,
-  CheckCircle,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -68,11 +66,11 @@ export default function ForgotPasswordPage() {
             <div className="mb-10 space-y-6 text-center">
               <Link href="/" className="inline-block group">
                 <Image
-                  src="/bubble-wrap-shop.png"
+                  src="/logo.jpg"
                   alt="Logo"
                   width={120}
                   height={40}
-                  className="h-10 w-auto transition-transform group-hover:scale-105 brightness-0 "
+                  className="h-10 w-auto transition-transform group-hover:scale-105"
                 />
               </Link>
               <div className="space-y-3">
@@ -144,11 +142,11 @@ export default function ForgotPasswordPage() {
           <div className="mb-10 space-y-6 text-center">
             <Link href="/" className="inline-block group">
               <Image
-                src="/bubble-wrap-shop.png"
+                src="/logo.jpg"
                 alt="Logo"
                 width={120}
                 height={40}
-                className="h-10 w-auto transition-transform group-hover:scale-105 brightness-0 "
+                className="h-10 w-auto transition-transform group-hover:scale-105 "
               />
             </Link>
             <div className="space-y-3">

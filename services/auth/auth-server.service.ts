@@ -5,7 +5,7 @@
  */
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { AuthUser, AuthResult } from "./auth.service";
+import { AuthResult } from "./auth.service";
 
 /**
  * Get current user (server-side)

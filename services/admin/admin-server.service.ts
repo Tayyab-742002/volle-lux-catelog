@@ -7,6 +7,11 @@
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import type { AdminOrder } from "./order.service";
 import type { AdminCustomer } from "./customer.service";
+import {
+  getAllB2BRequests,
+  getPendingB2BRequestsCount,
+} from "@/services/b2b/b2b-request.service";
+import type { AdminB2BRequest } from "@/types/b2b-request";
 
 /**
  * Dashboard Stats Interface
@@ -241,4 +246,20 @@ export async function getAllCustomers(): Promise<AdminCustomer[]> {
       updatedAt: new Date(user.updated_at),
     };
   });
+}
+
+/**
+ * Get all B2B requests (Server-side only)
+ * Re-export from b2b-request service for admin dashboard
+ */
+export async function getAdminB2BRequests(): Promise<AdminB2BRequest[]> {
+  return getAllB2BRequests();
+}
+
+/**
+ * Get pending B2B requests count (Server-side only)
+ * Re-export from b2b-request service for admin dashboard
+ */
+export async function getAdminPendingB2BRequestsCount(): Promise<number> {
+  return getPendingB2BRequestsCount();
 }

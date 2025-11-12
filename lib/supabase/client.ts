@@ -236,6 +236,77 @@ export type Database = {
           updated_at?: string;
         };
       };
+      b2b_requests: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          company_name: string;
+          contact_name: string;
+          email: string;
+          phone: string;
+          company_website: string | null;
+          vat_number: string | null;
+          products_interested: string;
+          estimated_quantity: string;
+          budget_range: string | null;
+          preferred_delivery_date: string | null;
+          delivery_address: any; // JSONB
+          additional_notes: string | null;
+          is_existing_customer: boolean;
+          status: "pending" | "reviewed" | "quoted" | "converted" | "rejected";
+          admin_notes: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          company_name: string;
+          contact_name: string;
+          email: string;
+          phone: string;
+          company_website?: string | null;
+          vat_number?: string | null;
+          products_interested: string;
+          estimated_quantity: string;
+          budget_range?: string | null;
+          preferred_delivery_date?: string | null;
+          delivery_address: any; // JSONB
+          additional_notes?: string | null;
+          is_existing_customer?: boolean;
+          status?: "pending" | "reviewed" | "quoted" | "converted" | "rejected";
+          admin_notes?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          company_name?: string;
+          contact_name?: string;
+          email?: string;
+          phone?: string;
+          company_website?: string | null;
+          vat_number?: string | null;
+          products_interested?: string;
+          estimated_quantity?: string;
+          budget_range?: string | null;
+          preferred_delivery_date?: string | null;
+          delivery_address?: any; // JSONB
+          additional_notes?: string | null;
+          is_existing_customer?: boolean;
+          status?: "pending" | "reviewed" | "quoted" | "converted" | "rejected";
+          admin_notes?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 };

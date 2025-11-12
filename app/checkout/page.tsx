@@ -29,10 +29,11 @@ import {
 import { fetchWithRetry } from "@/lib/utils/retry";
 import { ShippingSelector } from "@/components/checkout/shipping-selector";
 import { OrderSummaryWithVAT } from "@/components/cart/order-summary-with-vat";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
 type SavedAddress = SavedAddressType;
 
-export default function CheckoutPage() {
+function CheckoutPageContent() {
   const router = useRouter();
   const {
     items,
@@ -744,5 +745,19 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <ErrorBoundary
+      title="Checkout Error"
+      description="We encountered an error while loading the checkout page. Please try again or return to your cart."
+      showBackButton
+      backUrl="/cart"
+      showHomeButton
+    >
+      <CheckoutPageContent />
+    </ErrorBoundary>
   );
 }

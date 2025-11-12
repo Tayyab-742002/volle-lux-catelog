@@ -52,11 +52,6 @@ async function verifyWebhookSignature(
 async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session
 ) {
-  console.log(
-    "2222222🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣22222222Processing checkout.session.completed:",
-    session.id
-  );
-
   try {
     // Retrieve full session details with line items and customer details
     // Note: Using 'any' because Stripe types don't include shipping_details after expand
@@ -72,19 +67,6 @@ async function handleCheckoutSessionCompleted(
           "total_details",
         ],
       }
-    );
-
-    console.log(
-      "✅ Retrieved full session, line items:",
-      fullSession.line_items?.data.length || 0
-    );
-    console.log(
-      "✅ Session metadata:",
-      JSON.stringify(fullSession.metadata || {})
-    );
-    console.log(
-      "🔍 First line item structure:",
-      JSON.stringify(fullSession.line_items?.data[0] || {}, null, 2)
     );
 
     // Extract metadata from session
@@ -147,14 +129,12 @@ async function handleCheckoutSessionCompleted(
       // Fallback: billing address was passed in metadata (legacy)
       try {
         billingAddress = JSON.parse(fullSession.metadata.billing_address);
-        console.log("✅ Billing address from metadata:", billingAddress);
       } catch (e) {
         console.error("Failed to parse billing address from metadata:", e);
       }
     } else {
       // Last resort: Use shipping address as billing address
       billingAddress = shippingAddress;
-      console.log("⚠️ Using shipping as billing address (fallback)");
     }
 
     // Parse cart items from metadata
@@ -163,8 +143,6 @@ async function handleCheckoutSessionCompleted(
       cartItems = fullSession.metadata?.cart_items
         ? JSON.parse(fullSession.metadata.cart_items)
         : [];
-      console.log("✅ Parsed cart items from metadata:", cartItems.length);
-      console.log("🔍 Parsed cartItems:", JSON.stringify(cartItems, null, 2));
     } catch (e) {
       console.error("Failed to parse cart items from metadata:", e);
       console.error(
@@ -294,10 +272,6 @@ async function handleCheckoutSessionCompleted(
         }
       ) || [];
 
-    console.log(
-      `✅ Transformed ${orderItems.length} order items from ${fullSession.line_items?.data.length || 0} line items`
-    );
-
     // Validate order items before creating order
     if (orderItems.length === 0) {
       console.error("❌ No order items to create order");
@@ -329,8 +303,8 @@ async function handleCheckoutSessionCompleted(
     const shippingCost = fullSession.metadata?.shipping_cost
       ? parseFloat(fullSession.metadata.shipping_cost)
       : fullSession.total_details?.amount_shipping
-      ? fullSession.total_details.amount_shipping / 100
-      : 0;
+        ? fullSession.total_details.amount_shipping / 100
+        : 0;
 
     // Extract VAT from metadata
     const vatAmount = fullSession.metadata?.vat_amount
@@ -346,16 +320,6 @@ async function handleCheckoutSessionCompleted(
     const subtotal = fullSession.metadata?.subtotal
       ? parseFloat(fullSession.metadata.subtotal)
       : totalAmount - shippingCost - taxAmount - vatAmount + discountAmount;
-
-    console.log("💰 Extracted order totals:", {
-      subtotal,
-      shippingMethod: shippingMethodId,
-      shippingCost,
-      vatAmount,
-      discount: discountAmount,
-      tax: taxAmount,
-      total: totalAmount,
-    });
 
     // Create order in Supabase with full details
     // Note: orderItems structure is compatible with CartItem but TypeScript needs explicit cast
@@ -394,19 +358,9 @@ async function handleCheckoutSessionCompleted(
       paymentIntentId: fullSession.payment_intent as string,
     };
 
-    console.log("📦 Creating order with data:", {
-      userId: orderData.userId || "guest",
-      email: orderData.email,
-      itemCount: orderData.items.length,
-      subtotal: orderData.subtotal,
-      total: orderData.total,
-      sessionId: orderData.stripeSessionId,
-    });
-
     let orderId: string;
     try {
       orderId = await createOrder(orderData);
-      console.log("✅ Order created successfully with ID:", orderId);
     } catch (orderError) {
       console.error("❌ Failed to create order:", orderError);
       if (orderError instanceof Error) {
@@ -442,13 +396,11 @@ async function handleCheckoutSessionCompleted(
         if (deleteError) {
           console.error("⚠️ Failed to delete user cart:", deleteError);
         } else {
-          console.log("✅ Cart deleted successfully for user");
         }
       }
     } catch (cartError) {
       // Log error but don't fail the order
       console.error("⚠️ Error deleting cart:", cartError);
-      console.log("Order created successfully, but cart deletion failed");
     }
 
     // Send order confirmation email
@@ -466,9 +418,6 @@ async function handleCheckoutSessionCompleted(
         const emailResult = await sendOrderConfirmationEmail(order, userEmail);
 
         if (emailResult.success) {
-          console.log(
-            `✅ Order confirmation email sent to ${userEmail} (Message ID: ${emailResult.messageId})`
-          );
         } else {
           console.error(
             `⚠️ Failed to send order confirmation email: ${emailResult.error}`
@@ -480,7 +429,6 @@ async function handleCheckoutSessionCompleted(
     } catch (emailError) {
       // Log email error but don't fail the order
       console.error("⚠️ Error sending confirmation email:", emailError);
-      console.log("Order created successfully, but email failed to send");
     }
 
     return { orderId };
@@ -497,7 +445,6 @@ async function handleCheckoutSessionCompleted(
 async function handlePaymentIntentSucceeded(
   paymentIntent: Stripe.PaymentIntent
 ) {
-  console.log("Payment succeeded:", paymentIntent.id);
   // Most order creation is handled in checkout.session.completed
   // This can be used for additional processing or logging
 }
@@ -544,10 +491,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
 
-    console.log(
-      `11111111🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣111111 Received webhook event: ${event.type}, ID: ${event.id}`
-    );
-
     // Handle different event types
     switch (event.type) {
       case "checkout.session.completed": {
@@ -569,11 +512,9 @@ export async function POST(request: NextRequest) {
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
     }
 
     // Return 200 to acknowledge receipt
-    console.log("✅ Webhook processed successfully");
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error("❌ Webhook error:", error);

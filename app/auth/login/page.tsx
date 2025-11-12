@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Loader2, ArrowRight, Leaf } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import Image from "next/image";
 
 export default function LoginPage() {
@@ -60,11 +60,11 @@ export default function LoginPage() {
           <div className="mb-10 space-y-6 text-center">
             <Link href="/" className="inline-block group">
               <Image
-                src="/bubble-wrap-shop.png"
+                src="/logo.jpg"
                 alt="Logo"
                 width={120}
                 height={40}
-                className="h-10 w-auto transition-transform group-hover:scale-105 brightness-0 "
+                className="h-10 w-auto transition-transform group-hover:scale-105 "
               />
             </Link>
             <div className="space-y-3">

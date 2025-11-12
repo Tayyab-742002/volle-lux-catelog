@@ -263,8 +263,6 @@ export async function updateOrderStatus(
       console.error("Error updating order:", error);
       throw new Error(`Failed to update order: ${error.message}`);
     }
-
-    console.log("Order updated successfully:", orderId);
   } catch (error) {
     console.error("Failed to update order status:", error);
     throw error;
