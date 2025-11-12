@@ -33,7 +33,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://volle.com"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://volle-lux-catelog.vercel.app"
+  ),
   title: {
     default: "Bubble Wrap Shop - Premium Packaging Supplies",
     template: "%s | Bubble Wrap Shop",
@@ -61,14 +63,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_GB",
-    url: process.env.NEXT_PUBLIC_APP_URL || "https://volle.com",
+    url:
+      process.env.NEXT_PUBLIC_APP_URL || "https://volle-lux-catelog.vercel.app",
     siteName: "Bubble Wrap Shop - Premium Packaging Supplies",
     title: "Bubble Wrap Shop - Premium Packaging Supplies",
     description:
       "Professional packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options.",
     images: [
       {
-        url: "https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/hero-packaging.jpg",
+        url: `${process.env.NEXT_PUBLIC_APP_URL || "https://volle-lux-catelog.vercel.app"}/logo.jpg`,
         width: 1200,
         height: 630,
         alt: "Bubble Wrap Shop Premium Packaging Supplies",
@@ -81,7 +84,7 @@ export const metadata: Metadata = {
     description:
       "Professional packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options.",
     images: [
-      "https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/hero-packaging.jpg",
+      `${process.env.NEXT_PUBLIC_APP_URL || "https://volle-lux-catelog.vercel.app/"}/logo.jpg`,
     ],
   },
   robots: {
@@ -143,16 +146,6 @@ export default async function RootLayout({
           crossOrigin="anonymous"
         />
         <link rel="dns-prefetch" href="//images.unsplash.com" />
-
-        {/* Preload homepage hero image to improve LCP */}
-        <link
-          rel="preload"
-          as="image"
-          href="https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/hero-packaging.jpg"
-          imageSrcSet="https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/hero-packaging.jpg 1200w"
-          imageSizes="100vw"
-          fetchPriority="high"
-        />
       </head>
       <body
         className="min-h-screen bg-background font-sans antialiased"

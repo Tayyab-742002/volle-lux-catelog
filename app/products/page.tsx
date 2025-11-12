@@ -30,11 +30,11 @@ export const metadata: Metadata = {
     title: "All Products - Premium Packaging Supplies | Bubble Wrap Shop",
     description:
       "Browse our complete range of premium packaging supplies. Automatic bulk pricing. Eco-friendly options available.",
-    url: `${process.env.NEXT_PUBLIC_APP_URL || "https://volle.com"}/products`,
+    url: `${process.env.NEXT_PUBLIC_APP_URL || "https://volle-lux-catelog.vercel.app"}/products`,
     siteName: "Bubble Wrap Shop - Premium Packaging Supplies",
   },
   alternates: {
-    canonical: `${process.env.NEXT_PUBLIC_APP_URL || "https://volle.com"}/products`,
+    canonical: `${process.env.NEXT_PUBLIC_APP_URL || "https://volle-lux-catelog.vercel.app"}/products`,
   },
 };
 
