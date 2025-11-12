@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import {
   HeroSection,
-  TrustBar,
   CategoryGrid,
   FeaturedProducts,
   SustainabilityBlock,
   NewArrivals,
   FinalCTA,
+  B2BBanner,
 } from "@/components/home";
 
 // Revalidate every 60 seconds to ensure fresh category data
@@ -100,6 +100,7 @@ export default function Home() {
         }}
       />
 
+      <B2BBanner />
       <HeroSection />
       {/* <TrustBar /> */}
       <CategoryGrid />
