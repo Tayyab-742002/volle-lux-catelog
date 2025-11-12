@@ -63,7 +63,7 @@ export function Footer() {
                   Categories
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/products/featured"
                   className="text-sm text-gray-300 transition-colors hover:text-emerald-400 flex items-center gap-2 group"
@@ -80,7 +80,7 @@ export function Footer() {
                   <span className="w-0 group-hover:w-2 h-0.5 bg-emerald-400 transition-all duration-300"></span>
                   New Arrivals
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
@@ -100,7 +100,7 @@ export function Footer() {
                   FAQ
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/delivery"
                   className="text-sm text-gray-300 transition-colors hover:text-emerald-400 flex items-center gap-2 group"
@@ -108,7 +108,7 @@ export function Footer() {
                   <span className="w-0 group-hover:w-2 h-0.5 bg-emerald-400 transition-all duration-300"></span>
                   Delivery Information
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   href="/refund-policy"

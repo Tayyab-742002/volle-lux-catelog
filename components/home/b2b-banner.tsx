@@ -55,7 +55,7 @@ export default function B2BBanner() {
                 ></div>
 
                 <Image
-                  src="/gift.jpg"
+                  src="https://pub-20f982007aa54df4849bcd969b89a1bf.r2.dev/gift.jpg"
                   alt="B2B Banner Icon"
                   width={74}
                   height={74}
