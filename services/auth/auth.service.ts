@@ -37,6 +37,12 @@ export interface ResetPasswordData {
   email: string;
 }
 
+export interface VerifyOTPData {
+  email: string;
+  token: string;
+  type?: "signup" | "email" | "recovery";
+}
+
 export interface UpdateProfileData {
   fullName?: string;
   phone?: string;
@@ -71,7 +77,7 @@ export async function signUp(data: SignUpData): Promise<AuthResult> {
   try {
     const supabase = createClient();
 
-    // Sign up the user
+    // Sign up the user with OTP verification (no email link)
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
@@ -81,7 +87,7 @@ export async function signUp(data: SignUpData): Promise<AuthResult> {
           phone: data.phone || "",
           company: data.company || "",
         },
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/auth/login`,
+        // Don't use emailRedirectTo - we'll use OTP instead
       },
     });
 
@@ -188,12 +194,23 @@ export async function signUp(data: SignUpData): Promise<AuthResult> {
           updatedAt: new Date().toISOString(),
         };
 
+    // Send OTP code to user's email
+    try {
+      await supabase.auth.resend({
+        type: "signup",
+        email: data.email,
+      });
+    } catch (otpError) {
+      console.warn("Failed to send OTP code:", otpError);
+      // Continue anyway - Supabase might have already sent it
+    }
+
     // Return success - auth account is created
     return {
       success: true,
       user: userResult,
       message:
-        "Account created successfully. Please check your email to verify your account.",
+        "Account created successfully. Please check your email for the verification code.",
     };
   } catch (error) {
     console.error("Signup error:", error);
@@ -328,6 +345,115 @@ export async function resetPassword(
     return {
       success: true,
       message: "Password reset email sent. Please check your email.",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
+}
+
+/**
+ * Verify OTP code for email confirmation
+ * Verifies the OTP code sent to user's email
+ */
+export async function verifyOTP(data: VerifyOTPData): Promise<AuthResult> {
+  try {
+    const supabase = createClient();
+
+    // Verify OTP
+    const { data: authData, error: verifyError } = await supabase.auth.verifyOtp({
+      email: data.email,
+      token: data.token,
+      type: data.type || "signup",
+    });
+
+    if (verifyError) {
+      return {
+        success: false,
+        error: verifyError.message,
+      };
+    }
+
+    if (!authData.user) {
+      return {
+        success: false,
+        error: "Failed to verify OTP",
+      };
+    }
+
+    // Fetch user profile after verification
+    const { data: profile, error: profileError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", authData.user.id)
+      .single();
+
+    if (profileError && profileError.code !== "PGRST116") {
+      // PGRST116 is "not found" - profile might not exist yet
+      console.warn("Profile not found after OTP verification:", profileError);
+    }
+
+    const typedProfile = profile as UserProfile | null;
+
+    return {
+      success: true,
+      user: typedProfile
+        ? {
+            id: typedProfile.id,
+            email: typedProfile.email,
+            fullName: typedProfile.full_name || undefined,
+            phone: typedProfile.phone || undefined,
+            company: typedProfile.company || undefined,
+            avatarUrl: typedProfile.avatar_url || undefined,
+            role: typedProfile.role || "customer",
+            createdAt: typedProfile.created_at,
+            updatedAt: typedProfile.updated_at,
+          }
+        : {
+            id: authData.user.id,
+            email: authData.user.email!,
+            role: "customer" as const,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+      message: "Email verified successfully",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
+}
+
+/**
+ * Resend OTP code to user's email
+ * Resends the OTP code for email verification
+ */
+export async function resendOTP(email: string): Promise<AuthResult> {
+  try {
+    const supabase = createClient();
+
+    // Resend OTP for signup
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: email,
+    });
+
+    if (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+
+    return {
+      success: true,
+      message: "OTP code sent. Please check your email.",
     };
   } catch (error) {
     return {

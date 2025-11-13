@@ -23,6 +23,8 @@ import {
   resetPassword,
   updatePassword,
   updateProfile,
+  verifyOTP,
+  resendOTP,
 } from "@/services/auth/auth.service";
 
 interface AuthContextType {
@@ -49,6 +51,12 @@ interface AuthContextType {
     company?: string;
     avatarUrl?: string;
   }) => Promise<AuthResult>;
+  verifyOTP: (
+    email: string,
+    token: string,
+    type?: "signup" | "email" | "recovery"
+  ) => Promise<AuthResult>;
+  resendOTP: (email: string) => Promise<AuthResult>;
   refreshUser: () => Promise<void>;
 }
 
@@ -64,77 +72,80 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [supabase] = useState(() => createClient());
 
   // Load user profile from database
-  const loadUserProfile = useCallback(async (retryCount = 0) => {
-    try {
-      // Get current user from auth
-      const {
-        data: { user: authUser },
-        error: userError,
-      } = await supabase.auth.getUser();
+  const loadUserProfile = useCallback(
+    async (retryCount = 0) => {
+      try {
+        // Get current user from auth
+        const {
+          data: { user: authUser },
+          error: userError,
+        } = await supabase.auth.getUser();
 
-      if (userError || !authUser) {
+        if (userError || !authUser) {
+          if (retryCount < 2) {
+            // Retry once if we get an error (might be a timing issue)
+            setTimeout(() => loadUserProfile(retryCount + 1), 500);
+            return;
+          }
+          console.error("Failed to get auth user:", userError?.message);
+          setUser(null);
+          return;
+        }
+
+        // Fetch user profile
+        const { data: profile, error: profileError } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", authUser.id)
+          .single();
+
+        if (profileError || !profile) {
+          if (retryCount < 2) {
+            // Retry once if we get an error (might be a timing issue)
+            setTimeout(() => loadUserProfile(retryCount + 1), 500);
+            return;
+          }
+          console.error("Failed to fetch user profile:", profileError?.message);
+          setUser(null);
+          return;
+        }
+
+        // Type assertion needed because Supabase types need explicit schema
+        const userProfile = profile as {
+          id: string;
+          email: string;
+          full_name: string | null;
+          phone: string | null;
+          company: string | null;
+          avatar_url: string | null;
+          role: "customer" | "admin";
+          created_at: string;
+          updated_at: string;
+        };
+
+        setUser({
+          id: userProfile.id,
+          email: userProfile.email,
+          fullName: userProfile.full_name || undefined,
+          phone: userProfile.phone || undefined,
+          company: userProfile.company || undefined,
+          avatarUrl: userProfile.avatar_url || undefined,
+          role: userProfile.role || "customer",
+          createdAt: userProfile.created_at,
+          updatedAt: userProfile.updated_at,
+        });
+      } catch (error) {
         if (retryCount < 2) {
           // Retry once if we get an error (might be a timing issue)
           setTimeout(() => loadUserProfile(retryCount + 1), 500);
           return;
         }
-        console.error("Failed to get auth user:", userError?.message);
+        console.error("Error loading user profile:", error);
         setUser(null);
-        return;
       }
-
-      // Fetch user profile
-      const { data: profile, error: profileError } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", authUser.id)
-        .single();
-
-      if (profileError || !profile) {
-        if (retryCount < 2) {
-          // Retry once if we get an error (might be a timing issue)
-          setTimeout(() => loadUserProfile(retryCount + 1), 500);
-          return;
-        }
-        console.error("Failed to fetch user profile:", profileError?.message);
-        setUser(null);
-        return;
-      }
-
-      // Type assertion needed because Supabase types need explicit schema
-      const userProfile = profile as {
-        id: string;
-        email: string;
-        full_name: string | null;
-        phone: string | null;
-        company: string | null;
-        avatar_url: string | null;
-        role: "customer" | "admin";
-        created_at: string;
-        updated_at: string;
-      };
-
-      setUser({
-        id: userProfile.id,
-        email: userProfile.email,
-        fullName: userProfile.full_name || undefined,
-        phone: userProfile.phone || undefined,
-        company: userProfile.company || undefined,
-        avatarUrl: userProfile.avatar_url || undefined,
-        role: userProfile.role || "customer",
-        createdAt: userProfile.created_at,
-        updatedAt: userProfile.updated_at,
-      });
-    } catch (error) {
-      if (retryCount < 2) {
-        // Retry once if we get an error (might be a timing issue)
-        setTimeout(() => loadUserProfile(retryCount + 1), 500);
-        return;
-      }
-      console.error("Error loading user profile:", error);
-      setUser(null);
-    }
-  }, [supabase]);
+    },
+    [supabase]
+  );
 
   // Initialize auth state
   useEffect(() => {
@@ -171,10 +182,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
-      
+
       // Set loading to true when auth state changes
       setLoading(true);
-      
+
       if (session?.user) {
         await loadUserProfile();
       } else {
@@ -237,8 +248,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (result.success) {
         setUser(null);
         // Force redirect to home page after signout
-        if (typeof window !== 'undefined') {
-          window.location.href = '/';
+        if (typeof window !== "undefined") {
+          window.location.href = "/";
         }
       }
       return result;
@@ -295,6 +306,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
     []
   );
 
+  // Verify OTP method
+  const handleVerifyOTP = useCallback(
+    async (
+      email: string,
+      token: string,
+      type?: "signup" | "email" | "recovery"
+    ): Promise<AuthResult> => {
+      setLoading(true);
+      try {
+        const result = await verifyOTP({ email, token, type });
+        if (result.success && result.user) {
+          setUser(result.user);
+        }
+        return result;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  // Resend OTP method
+  const handleResendOTP = useCallback(
+    async (email: string): Promise<AuthResult> => {
+      return await resendOTP(email);
+    },
+    []
+  );
+
   const value = useMemo<AuthContextType>(
     () => ({
       // State
@@ -309,6 +349,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       resetPassword: handleResetPassword,
       updatePassword: handleUpdatePassword,
       updateProfile: handleUpdateProfile,
+      verifyOTP: handleVerifyOTP,
+      resendOTP: handleResendOTP,
       refreshUser,
     }),
     [
@@ -320,6 +362,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       handleResetPassword,
       handleUpdatePassword,
       handleUpdateProfile,
+      handleVerifyOTP,
+      handleResendOTP,
       refreshUser,
     ]
   );
@@ -333,7 +377,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
  */
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
-  
+
   if (context === undefined) {
     // During SSR or before provider mounts, return a safe default
     // This prevents errors but the actual context will be available after hydration
@@ -341,16 +385,21 @@ export function useAuth(): AuthContextType {
       user: null,
       loading: true, // Keep loading true until context is available
       isAuthenticated: false,
-      signIn: async () => ({ success: false, error: 'Not initialized' }),
-      signUp: async () => ({ success: false, error: 'Not initialized' }),
-      signOut: async () => ({ success: false, error: 'Not initialized' }),
-      resetPassword: async () => ({ success: false, error: 'Not initialized' }),
-      updatePassword: async () => ({ success: false, error: 'Not initialized' }),
-      updateProfile: async () => ({ success: false, error: 'Not initialized' }),
+      signIn: async () => ({ success: false, error: "Not initialized" }),
+      signUp: async () => ({ success: false, error: "Not initialized" }),
+      signOut: async () => ({ success: false, error: "Not initialized" }),
+      resetPassword: async () => ({ success: false, error: "Not initialized" }),
+      updatePassword: async () => ({
+        success: false,
+        error: "Not initialized",
+      }),
+      updateProfile: async () => ({ success: false, error: "Not initialized" }),
+      verifyOTP: async () => ({ success: false, error: "Not initialized" }),
+      resendOTP: async () => ({ success: false, error: "Not initialized" }),
       refreshUser: async () => {},
     } as AuthContextType;
   }
-  
+
   return context;
 }
 
