@@ -13,19 +13,29 @@ import type {
 
 /**
  * Create a new B2B request
+ * Uses service role client to bypass RLS for public submissions
  */
 export async function createB2BRequest(
   input: CreateB2BRequestInput
 ): Promise<{ success: boolean; data?: B2BRequest; error?: string }> {
-  const supabase = await createServerSupabaseClient();
+  // Try to get current user if authenticated (for linking the request)
+  let userId: string | null = null;
+  try {
+    const supabase = await createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    userId = user?.id || null;
+  } catch (error) {
+    // If user lookup fails, continue with null (anonymous submission)
+    console.log("No authenticated user, creating anonymous B2B request");
+  }
 
-  // Get current user if authenticated
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Use service role client to bypass RLS for public submissions
+  const supabase = createServiceRoleClient();
 
   const insertData = {
-    user_id: user?.id || null,
+    user_id: userId,
     company_name: input.companyName,
     contact_name: input.contactName,
     email: input.email,

@@ -17,8 +17,20 @@ import { OrderConfirmationEmail } from "@/lib/emails/order-confirmation";
 import { ContactFormEmail } from "@/lib/emails/contact-form";
 import type { Order } from "@/types/cart";
 
+// Get email domain for admin email
+const getEmailDomain = (): string => {
+  if (process.env.RESEND_EMAIL_DOMAIN) {
+    return process.env.RESEND_EMAIL_DOMAIN;
+  }
+  return "bubblewrapshop.co.uk";
+};
+
+const emailDomain = getEmailDomain();
+
 /**
  * Send order confirmation email
+ *
+ * Sends order confirmation to customer and notification to admin
  *
  * @param order - The order object with all details
  * @param customerEmail - The customer's email address
@@ -58,26 +70,116 @@ export async function sendOrderConfirmationEmail(
       throw new Error("Failed to render email template: HTML is not a string");
     }
 
-    // Send email
-    const result = await resend.emails.send({
+    // Determine admin email (always send to admin, even in test mode)
+    const adminEmail = `sales@${emailDomain}`;
+
+    // Send email to customer
+    // In production: send to actual customer email
+    // In test mode: send to test email if configured
+    const customerEmailToSend = customerEmail;
+
+    const customerResult = await resend.emails.send({
       from: EMAIL_CONFIG.from.orders,
-      to: getEmailRecipient(customerEmail),
+      to: customerEmailToSend,
       subject: EMAIL_CONFIG.subjects.orderConfirmation(order.orderNumber),
       html: emailHtml,
+    });
+
+    if (customerResult.error) {
+      console.error(
+        "Failed to send order confirmation email to customer:",
+        customerResult.error
+      );
+      // Continue to send admin email even if customer email fails
+    }
+
+    // Send notification email to admin
+    const adminEmailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #059669;">New Order Received</h1>
+        <p>A new order has been placed and payment has been confirmed.</p>
+        
+        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <h2 style="margin-top: 0;">Order Details</h2>
+          <p><strong>Order Number:</strong> #${order.orderNumber}</p>
+          <p><strong>Customer Email:</strong> ${customerEmail}</p>
+          <p><strong>Order Total:</strong> £${order.total.toFixed(2)}</p>
+          <p><strong>Items:</strong> ${order.items.length} item(s)</p>
+          <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+        </div>
+        
+        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0;">Order Items</h3>
+          ${order.items
+            .map(
+              (item) => `
+            <div style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #e5e7eb;">
+              <p style="margin: 0;"><strong>${item.product?.name || "Product"}</strong></p>
+              ${item.variant ? `<p style="margin: 5px 0 0 0; color: #6b7280;">Variant: ${item.variant.name}</p>` : ""}
+              <p style="margin: 5px 0 0 0;">Quantity: ${item.quantity} × £${item.pricePerUnit.toFixed(2)} = £${(item.pricePerUnit * item.quantity).toFixed(2)}</p>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+        
+        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0;">Shipping Address</h3>
+          <p style="margin: 0;">${order.shippingAddress.fullName}</p>
+          <p style="margin: 5px 0;">${order.shippingAddress.address}</p>
+          <p style="margin: 5px 0;">${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.zipCode}</p>
+          <p style="margin: 5px 0;">${order.shippingAddress.country}</p>
+        </div>
+        
+        <p style="margin-top: 20px;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://volle-lux-catelog.vercel.app"}/admin?tab=orders" 
+             style="background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+            View Order in Admin Dashboard
+          </a>
+        </p>
+        
+        <p style="color: #6b7280; font-size: 12px; margin-top: 30px;">
+          This is an automated notification from Bubble Wrap Shop.
+        </p>
+      </div>
+    `;
+
+    const adminResult = await resend.emails.send({
+      from: EMAIL_CONFIG.from.orders,
+      to: adminEmail, // Always send to admin email directly
+      subject: `New Order #${order.orderNumber} - £${order.total.toFixed(2)}`,
+      html: adminEmailHtml,
       bcc: EMAIL_CONFIG.bcc.orders,
     });
 
-    if (result.error) {
-      console.error("Failed to send order confirmation email:", result.error);
+    if (adminResult.error) {
+      console.error(
+        "Failed to send order notification email to admin:",
+        adminResult.error
+      );
+      // If customer email succeeded but admin failed, still return success
+      if (!customerResult.error) {
+        return {
+          success: true,
+          messageId: customerResult.data?.id,
+        };
+      }
+    }
+
+    // Return success if at least one email was sent successfully
+    if (customerResult.error && adminResult.error) {
       return {
         success: false,
-        error: result.error.message,
+        error:
+          customerResult.error.message ||
+          adminResult.error.message ||
+          "Failed to send emails",
       };
     }
 
     return {
       success: true,
-      messageId: result.data?.id,
+      messageId: customerResult.data?.id || adminResult.data?.id,
     };
   } catch (error) {
     console.error("Error sending order confirmation email:", error);
@@ -202,7 +304,7 @@ export async function sendOrderShippedEmail(
       <p><strong>Tracking Number:</strong> ${trackingNumber}</p>
       <p>You can track your package using the tracking number above.</p>
       <p>Thank you for your order!</p>
-      <p>- Volle Team</p>
+      <p>- Bubble Wrap Shop Team</p>
     `;
 
     const result = await resend.emails.send({
@@ -350,9 +452,9 @@ export async function sendTestEmail(
     const result = await resend.emails.send({
       from: EMAIL_CONFIG.from.noreply,
       to: toEmail,
-      subject: "Volle - Test Email",
+      subject: "Bubble Wrap Shop - Test Email",
       html: `
-        <h1>Test Email from Volle</h1>
+        <h1>Test Email from Bubble Wrap Shop</h1>
         <p>If you're receiving this, your email configuration is working correctly!</p>
         <p>Environment: ${process.env.NODE_ENV}</p>
         <p>Timestamp: ${new Date().toISOString()}</p>

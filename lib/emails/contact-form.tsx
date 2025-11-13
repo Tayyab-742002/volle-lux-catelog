@@ -3,6 +3,7 @@
  *
  * This email is sent when someone submits the contact form.
  * It notifies the support team about the new inquiry.
+ * Styled to match the website's "Immersive Minimalism & Performant Luxury" theme.
  */
 
 import * as React from "react";
@@ -32,28 +33,49 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
     minute: "2-digit",
   });
 
+  // Theme colors matching website
+  const colors = {
+    primary: "#0f172a", // slate-900 (near black)
+    primaryText: "#ffffff",
+    accent: "#059669", // emerald-600
+    accentLight: "#10b981", // emerald-500
+    accentGradient: "linear-gradient(135deg, #059669 0%, #14b8a6 100%)", // emerald-600 to teal-500
+    background: "#ffffff",
+    cardBackground: "#f8fafc", // slate-50
+    text: "#0f172a", // slate-900
+    textMuted: "#64748b", // slate-500
+    textLight: "#94a3b8", // slate-400
+    border: "#e2e8f0", // slate-200
+    success: "#059669", // emerald-600
+  };
+
   return (
     <html>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        `}</style>
       </head>
       <body
         style={{
           fontFamily:
-            '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+            '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
           lineHeight: "1.6",
-          color: "#333333",
-          backgroundColor: "#f4f4f4",
+          color: colors.text,
+          backgroundColor: "#f1f5f9", // slate-100
           margin: 0,
           padding: 0,
+          WebkitFontSmoothing: "antialiased",
+          MozOsxFontSmoothing: "grayscale",
         }}
       >
         <table
           width="100%"
           cellPadding="0"
           cellSpacing="0"
-          style={{ backgroundColor: "#f4f4f4", padding: "20px 0" }}
+          style={{ backgroundColor: "#f1f5f9", padding: "32px 16px" }}
         >
           <tr>
             <td align="center">
@@ -62,60 +84,87 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                 cellPadding="0"
                 cellSpacing="0"
                 style={{
-                  backgroundColor: "#ffffff",
-                  borderRadius: "8px",
+                  backgroundColor: colors.background,
+                  borderRadius: "12px",
                   overflow: "hidden",
-                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                  boxShadow:
+                    "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+                  maxWidth: "600px",
                 }}
               >
-                {/* Header */}
+                {/* Header with Emerald Gradient */}
                 <tr>
                   <td
                     style={{
-                      backgroundColor: "#000000",
-                      padding: "30px",
+                      background: colors.accentGradient,
+                      padding: "40px 32px",
                       textAlign: "center",
                     }}
                   >
                     <h1
                       style={{
                         margin: 0,
-                        color: "#ffffff",
+                        color: colors.primaryText,
                         fontSize: "24px",
-                        fontWeight: "bold",
-                        letterSpacing: "1px",
+                        fontWeight: "700",
+                        letterSpacing: "-0.02em",
+                        fontFamily: '"Inter", sans-serif',
                       }}
                     >
                       New Contact Form Submission
                     </h1>
+                    <div
+                      style={{
+                        marginTop: "8px",
+                        height: "2px",
+                        width: "60px",
+                        backgroundColor: "rgba(255, 255, 255, 0.3)",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                      }}
+                    />
                   </td>
                 </tr>
 
                 {/* Main Content */}
                 <tr>
-                  <td style={{ padding: "40px 30px" }}>
-                    {/* Submission Info */}
+                  <td style={{ padding: "48px 32px" }}>
+                    {/* Submission Info Card */}
                     <table
                       width="100%"
                       cellPadding="0"
                       cellSpacing="0"
                       style={{
-                        backgroundColor: "#f9f9f9",
-                        borderRadius: "6px",
+                        backgroundColor: colors.cardBackground,
+                        borderRadius: "8px",
                         padding: "20px",
-                        marginBottom: "30px",
+                        marginBottom: "32px",
+                        border: `1px solid ${colors.border}`,
                       }}
                     >
                       <tr>
                         <td>
                           <p
                             style={{
-                              margin: "0 0 10px",
+                              margin: 0,
                               fontSize: "14px",
-                              color: "#666666",
+                              color: colors.textMuted,
+                              fontWeight: "500",
                             }}
                           >
-                            Submitted: {formattedDate}
+                            <span
+                              style={{
+                                fontSize: "12px",
+                                fontWeight: "500",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.1em",
+                                display: "block",
+                                marginBottom: "4px",
+                              }}
+                            >
+                              Submitted
+                            </span>
+                            {formattedDate}
                           </p>
                         </td>
                       </tr>
@@ -124,10 +173,12 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                     {/* Contact Details */}
                     <h2
                       style={{
-                        margin: "0 0 20px",
+                        margin: "0 0 24px",
                         fontSize: "20px",
                         fontWeight: "600",
-                        color: "#000000",
+                        color: colors.text,
+                        fontFamily: '"Inter", sans-serif',
+                        letterSpacing: "-0.01em",
                       }}
                     >
                       Contact Information
@@ -137,21 +188,35 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                       width="100%"
                       cellPadding="0"
                       cellSpacing="0"
-                      style={{ marginBottom: "30px" }}
+                      style={{ marginBottom: "32px" }}
                     >
                       <tr>
                         <td
                           style={{
-                            padding: "12px 0",
-                            borderBottom: "1px solid #e0e0e0",
+                            padding: "16px 0",
+                            borderBottom: `1px solid ${colors.border}`,
                           }}
                         >
                           <table width="100%" cellPadding="0" cellSpacing="0">
                             <tr>
-                              <td width="30%" style={{ color: "#666666" }}>
-                                <strong>Name:</strong>
+                              <td
+                                width="30%"
+                                style={{
+                                  color: colors.textMuted,
+                                  fontSize: "14px",
+                                  fontWeight: "500",
+                                }}
+                              >
+                                Name:
                               </td>
-                              <td width="70%" style={{ color: "#000000" }}>
+                              <td
+                                width="70%"
+                                style={{
+                                  color: colors.text,
+                                  fontSize: "15px",
+                                  fontWeight: "500",
+                                }}
+                              >
                                 {name}
                               </td>
                             </tr>
@@ -162,21 +227,30 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                       <tr>
                         <td
                           style={{
-                            padding: "12px 0",
-                            borderBottom: "1px solid #e0e0e0",
+                            padding: "16px 0",
+                            borderBottom: `1px solid ${colors.border}`,
                           }}
                         >
                           <table width="100%" cellPadding="0" cellSpacing="0">
                             <tr>
-                              <td width="30%" style={{ color: "#666666" }}>
-                                <strong>Email:</strong>
+                              <td
+                                width="30%"
+                                style={{
+                                  color: colors.textMuted,
+                                  fontSize: "14px",
+                                  fontWeight: "500",
+                                }}
+                              >
+                                Email:
                               </td>
                               <td width="70%">
                                 <a
                                   href={`mailto:${email}`}
                                   style={{
-                                    color: "#000000",
-                                    textDecoration: "underline",
+                                    color: colors.accent,
+                                    textDecoration: "none",
+                                    fontSize: "15px",
+                                    fontWeight: "500",
                                   }}
                                 >
                                   {email}
@@ -191,16 +265,29 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                         <tr>
                           <td
                             style={{
-                              padding: "12px 0",
-                              borderBottom: "1px solid #e0e0e0",
+                              padding: "16px 0",
+                              borderBottom: `1px solid ${colors.border}`,
                             }}
                           >
                             <table width="100%" cellPadding="0" cellSpacing="0">
                               <tr>
-                                <td width="30%" style={{ color: "#666666" }}>
-                                  <strong>Company:</strong>
+                                <td
+                                  width="30%"
+                                  style={{
+                                    color: colors.textMuted,
+                                    fontSize: "14px",
+                                    fontWeight: "500",
+                                  }}
+                                >
+                                  Company:
                                 </td>
-                                <td width="70%" style={{ color: "#000000" }}>
+                                <td
+                                  width="70%"
+                                  style={{
+                                    color: colors.text,
+                                    fontSize: "15px",
+                                  }}
+                                >
                                   {company}
                                 </td>
                               </tr>
@@ -213,21 +300,29 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                         <tr>
                           <td
                             style={{
-                              padding: "12px 0",
-                              borderBottom: "1px solid #e0e0e0",
+                              padding: "16px 0",
+                              borderBottom: `1px solid ${colors.border}`,
                             }}
                           >
                             <table width="100%" cellPadding="0" cellSpacing="0">
                               <tr>
-                                <td width="30%" style={{ color: "#666666" }}>
-                                  <strong>Phone:</strong>
+                                <td
+                                  width="30%"
+                                  style={{
+                                    color: colors.textMuted,
+                                    fontSize: "14px",
+                                    fontWeight: "500",
+                                  }}
+                                >
+                                  Phone:
                                 </td>
                                 <td width="70%">
                                   <a
                                     href={`tel:${phone}`}
                                     style={{
-                                      color: "#000000",
+                                      color: colors.accent,
                                       textDecoration: "none",
+                                      fontSize: "15px",
                                     }}
                                   >
                                     {phone}
@@ -243,10 +338,12 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                     {/* Message */}
                     <h2
                       style={{
-                        margin: "0 0 15px",
+                        margin: "0 0 20px",
                         fontSize: "20px",
                         fontWeight: "600",
-                        color: "#000000",
+                        color: colors.text,
+                        fontFamily: '"Inter", sans-serif',
+                        letterSpacing: "-0.01em",
                       }}
                     >
                       Message
@@ -257,10 +354,11 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                       cellPadding="0"
                       cellSpacing="0"
                       style={{
-                        backgroundColor: "#f9f9f9",
-                        borderRadius: "6px",
-                        padding: "20px",
-                        marginBottom: "30px",
+                        backgroundColor: colors.cardBackground,
+                        borderRadius: "8px",
+                        padding: "24px",
+                        marginBottom: "32px",
+                        border: `1px solid ${colors.border}`,
                       }}
                     >
                       <tr>
@@ -269,7 +367,7 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                             style={{
                               margin: 0,
                               whiteSpace: "pre-wrap",
-                              color: "#333333",
+                              color: colors.text,
                               fontSize: "15px",
                               lineHeight: "1.8",
                             }}
@@ -280,12 +378,12 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                       </tr>
                     </table>
 
-                    {/* Quick Reply Button */}
+                    {/* Quick Reply Button with Emerald Gradient */}
                     <table
                       width="100%"
                       cellPadding="0"
                       cellSpacing="0"
-                      style={{ marginTop: "30px" }}
+                      style={{ marginTop: "32px" }}
                     >
                       <tr>
                         <td align="center">
@@ -293,13 +391,16 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                             href={`mailto:${email}?subject=Re: Contact Form Inquiry`}
                             style={{
                               display: "inline-block",
-                              backgroundColor: "#000000",
-                              color: "#ffffff",
-                              padding: "14px 30px",
+                              background: colors.accentGradient,
+                              color: colors.primaryText,
+                              padding: "14px 32px",
                               textDecoration: "none",
-                              borderRadius: "6px",
+                              borderRadius: "8px",
                               fontWeight: "600",
                               fontSize: "16px",
+                              fontFamily: '"Inter", sans-serif',
+                              boxShadow:
+                                "0 4px 6px -1px rgba(5, 150, 105, 0.2)",
                             }}
                           >
                             Reply to {name}
@@ -314,21 +415,22 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                 <tr>
                   <td
                     style={{
-                      backgroundColor: "#f9f9f9",
-                      padding: "20px 30px",
+                      backgroundColor: colors.cardBackground,
+                      padding: "32px",
                       textAlign: "center",
-                      borderTop: "1px solid #e0e0e0",
+                      borderTop: `1px solid ${colors.border}`,
                     }}
                   >
                     <p
                       style={{
                         margin: 0,
                         fontSize: "12px",
-                        color: "#999999",
+                        color: colors.textLight,
+                        lineHeight: "1.6",
                       }}
                     >
-                      This is an automated notification from the Bubble Wrap Shop contact
-                      form.
+                      This is an automated notification from the Bubble Wrap
+                      Shop contact form.
                     </p>
                   </td>
                 </tr>

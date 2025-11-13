@@ -165,6 +165,6 @@ export async function GET() {
     message: isConfigured
       ? "Contact form is ready to receive submissions"
       : "Contact form is temporarily unavailable (email service not configured)",
-    supportEmail: "support@volle.com",
+    supportEmail: "info@bubblewrapshop.co.uk",
   });
 }

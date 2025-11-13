@@ -35,33 +35,48 @@ export const getResendClient = (): Resend => {
 };
 
 /**
+ * Get the email domain from environment or use default
+ * This allows easy configuration via environment variables
+ */
+const getEmailDomain = (): string => {
+  // Allow override via environment variable
+  if (process.env.RESEND_EMAIL_DOMAIN) {
+    return process.env.RESEND_EMAIL_DOMAIN;
+  }
+  // Default to verified domain
+  return "bubblewrapshop.co.uk";
+};
+
+const emailDomain = getEmailDomain();
+const isProduction = process.env.NODE_ENV === "production";
+// Use verified domain if explicitly set or in production
+const useVerifiedDomain = isProduction || !!process.env.RESEND_EMAIL_DOMAIN;
+
+/**
  * Email Configuration
  *
  * Central configuration for all email-related settings
+ * Uses verified domain when available (production or RESEND_EMAIL_DOMAIN is set)
  */
 export const EMAIL_CONFIG = {
   // From addresses
   from: {
-    orders:
-      process.env.NODE_ENV !== "production"
-        ? "Bubble Wrap Shop Orders <onboarding@resend.dev>"
-        : "Bubble Wrap Shop Orders <orders@volle.com>",
-    support:
-      process.env.NODE_ENV !== "production"
-        ? "Bubble Wrap Shop Support <onboarding@resend.dev>"
-        : "Bubble Wrap Shop Support <support@volle.com>",
-    noreply:
-      process.env.NODE_ENV !== "production"
-        ? "Bubble Wrap Shop <onboarding@resend.dev>"
-        : "Bubble Wrap Shop <noreply@volle.com>",
+    orders: useVerifiedDomain
+      ? `Bubble Wrap Shop Orders <sales@${emailDomain}>`
+      : "Bubble Wrap Shop Orders <onboarding@resend.dev>",
+    support: useVerifiedDomain
+      ? `Bubble Wrap Shop Support <info@${emailDomain}>`
+      : "Bubble Wrap Shop Support <onboarding@resend.dev>",
+    noreply: useVerifiedDomain
+      ? `Bubble Wrap Shop <noreply@${emailDomain}>`
+      : "Bubble Wrap Shop <onboarding@resend.dev>",
   },
 
   // Reply-to addresses
   replyTo: {
-    support:
-      process.env.NODE_ENV !== "production"
-        ? "testveot@gmail.com"
-        : "support@volle.com",
+    support: useVerifiedDomain
+      ? `info@${emailDomain}`
+      : process.env.RESEND_TEST_EMAIL || "testveot@gmail.com",
   },
 
   // BCC addresses for internal tracking (optional)
