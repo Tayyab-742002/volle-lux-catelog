@@ -62,7 +62,7 @@ export default function RefundPolicyPage() {
                   . Please note that returns will need to be sent to the
                   following address:{" "}
                   <strong className="text-gray-900">
-                    Unit 3, GBL House, Cleaver Street, Blackburn, BB1 5DG
+                    Unit BR16 Blakewater Road, Blackburn, England, BB1 5QF
                   </strong>
                 </p>
                 <p>

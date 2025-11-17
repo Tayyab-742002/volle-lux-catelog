@@ -9,7 +9,7 @@ import { WhatsAppButton } from "@/components/common/whatsapp-button";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { getAllCategories } from "@/sanity/lib";
-import Chatbot from "@/components/common/Chatbot";
+// import Chatbot from "@/components/common/Chatbot";
 // PERFORMANCE: Vercel Speed Insights & Analytics
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
@@ -171,7 +171,7 @@ export default async function RootLayout({
             <Footer />
 
             {/* Enable real-time Sanity content updates */}
-            <Chatbot />
+            {/* <Chatbot /> */}
             <SanityLiveWrapper />
 
             {/* Floating WhatsApp Button */}

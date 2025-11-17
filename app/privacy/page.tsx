@@ -694,8 +694,8 @@ export default function PrivacyPolicyPage() {
                   >
                     sales@bubblewrapshop.co.uk
                   </a>{" "}
-                  or contact us at Bubble Wrap Shop (NW) Ltd, Unit 3, GBL House,
-                  Cleaver Street, Blackburn BB1 5DG, United Kingdom.
+                  or contact us at Bubble Wrap Shop (NW) Ltd, Unit BR16
+                  Blakewater Road, Blackburn, England, BB1 5QF, United Kingdom.
                 </p>
               </div>
             </section>
