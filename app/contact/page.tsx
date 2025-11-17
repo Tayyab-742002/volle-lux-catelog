@@ -285,11 +285,11 @@ export default function ContactPage() {
                     <p className="text-sm text-gray-700 leading-relaxed">
                       Bubble Wrap Shop (NW) Ltd
                       <br />
-                      Unit 3, GBL House
+                      Unit BR16 Blakewater Road
                       <br />
-                      Cleaver Street, Blackburn
+                      Blackburn, England, BB1 5QF
                       <br />
-                      BB1 5DG, United Kingdom
+                      United Kingdom
                     </p>
                   </div>
                 </div>

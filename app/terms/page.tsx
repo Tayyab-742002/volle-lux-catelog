@@ -704,8 +704,8 @@ export default function TermsAndConditions() {
                   </p>
                   <p>
                     <strong className="text-gray-900">Address:</strong> Bubble
-                    Wrap Shop (NW) Ltd, Unit 3, GBL House, Cleaver Street,
-                    Blackburn BB1 5DG, United Kingdom
+                    Wrap Shop (NW) Ltd, Unit BR16 Blakewater Road, Blackburn,
+                    England, BB1 5QF, United Kingdom
                   </p>
                 </div>
               </div>

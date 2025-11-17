@@ -220,11 +220,9 @@ export function Footer() {
                     />
                   </div>
                   <address className="not-italic leading-relaxed mt-1.5">
-                    Unit 3, GBL House
+                    Unit BR16 Blakewater Road
                     <br />
-                    Cleaver Street
-                    <br />
-                    Blackburn BB1 5DG
+                    Blackburn, England, BB1 5QF
                     <br />
                     United Kingdom
                   </address>

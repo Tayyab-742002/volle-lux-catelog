@@ -63,8 +63,11 @@ export default function Home() {
     ],
     address: {
       "@type": "PostalAddress",
+      streetAddress: "Unit BR16 Blakewater Road",
+      addressLocality: "Blackburn",
+      addressRegion: "England",
+      postalCode: "BB1 5QF",
       addressCountry: "GB",
-      addressLocality: "Manchester",
     },
   };
 

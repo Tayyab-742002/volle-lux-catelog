@@ -754,7 +754,7 @@ export function B2BRequestForm() {
             required
             value={formData.deliveryAddress.addressLine1}
             onChange={handleInputChange}
-            placeholder="Unit 3, GBL House"
+            placeholder="Unit BR16 Blakewater Road"
             className={`h-11 ${
               errors.deliveryAddress?.addressLine1
                 ? "border-red-500 focus-visible:ring-red-500"
@@ -788,7 +788,7 @@ export function B2BRequestForm() {
             type="text"
             value={formData.deliveryAddress.addressLine2}
             onChange={handleInputChange}
-            placeholder="Cleaver Street"
+            placeholder="Blackburn, England"
             className="h-11"
           />
         </div>
@@ -880,7 +880,7 @@ export function B2BRequestForm() {
               required
               value={formData.deliveryAddress.postalCode}
               onChange={handleInputChange}
-              placeholder="BB1 5DG"
+              placeholder="BB1 5QF"
               className={`h-11 ${
                 errors.deliveryAddress?.postalCode
                   ? "border-red-500 focus-visible:ring-red-500"
