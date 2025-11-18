@@ -11,7 +11,7 @@ import { MetadataRoute } from "next";
  * - Point to sitemap.xml for better indexing
  */
 export default function robots(): MetadataRoute.Robots {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://volle.com";
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk";
 
   return {
     rules: [
@@ -100,7 +100,10 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: `${siteUrl}/sitemap.xml`,
+    sitemap: [
+      `${siteUrl}/sitemap.xml`,
+      `${siteUrl}/sitemap-images.xml`, // Image sitemap for better image search visibility
+    ],
     // Optional: Add host directive for better SEO
     // host: siteUrl.replace(/^https?:\/\//, ""), // Remove protocol
   };

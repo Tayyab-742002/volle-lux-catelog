@@ -12,40 +12,70 @@ import {
 // Revalidate every 60 seconds to ensure fresh category data
 export const revalidate = 60;
 
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk";
+
 /**
  * Homepage Metadata
- * SEO optimization for the homepage
- * This extends the root layout metadata with homepage-specific details
+ * SEO optimization for the homepage with comprehensive UK-focused keywords
+ * Targeting both B2C and B2B customers
  */
 export const metadata: Metadata = {
-  title: "Premium Packaging Supplies | Eco-Friendly & Bulk Pricing",
+  title:
+    "Packaging Supplies UK | Bubble Wrap, Boxes & Wholesale Packaging | Bubble Wrap Shop",
   description:
-    "Professional packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options. Shop premium bubble wrap, boxes, and protective packaging materials.",
+    "UK's leading supplier of packaging supplies. Buy bubble wrap, cardboard boxes, packing tape, and protective packaging materials online. Wholesale pricing available. Next day delivery across the UK. Serving both businesses and consumers.",
+  keywords: [
+    "packaging supplies UK",
+    "bubble wrap UK",
+    "packaging boxes UK",
+    "wholesale packaging UK",
+    "bulk packaging supplies",
+    "cardboard boxes UK",
+    "packing tape UK",
+    "shipping boxes UK",
+    "protective packaging UK",
+    "next day delivery packaging",
+    "UK packaging supplier",
+    "B2B packaging UK",
+    "corporate packaging supplies",
+    "eco-friendly packaging UK",
+    "packaging materials UK",
+    "bubble wrap online",
+    "cheap packaging supplies",
+    "packaging wholesale",
+    "Blackburn packaging supplier",
+    "Lancashire packaging",
+  ],
   openGraph: {
     title:
-      "Bubble Wrap Shop - Premium Packaging Supplies | Eco-Friendly & Bulk Pricing",
+      "Packaging Supplies UK | Bubble Wrap, Boxes & Wholesale | Bubble Wrap Shop",
     description:
-      "Professional packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options. Shop premium bubble wrap, boxes, and protective packaging materials.",
-    url: process.env.NEXT_PUBLIC_APP_URL || "https://volle.com",
+      "UK's leading supplier of packaging supplies. Buy bubble wrap, cardboard boxes, and protective packaging. Wholesale pricing available. Next day delivery across the UK.",
+    url: siteUrl,
+    siteName: "Bubble Wrap Shop - Premium Packaging Supplies UK",
   },
   twitter: {
+    card: "summary_large_image",
     title:
-      "Bubble Wrap Shop - Premium Packaging Supplies | Eco-Friendly & Bulk Pricing",
+      "Packaging Supplies UK | Bubble Wrap, Boxes & Wholesale | Bubble Wrap Shop",
     description:
-      "Professional packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options.",
+      "UK's leading supplier of packaging supplies. Wholesale pricing. Next day delivery across the UK.",
+  },
+  alternates: {
+    canonical: siteUrl,
   },
 };
 
 export default function Home() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://volle.com";
 
   // Organization Structured Data (JSON-LD) for SEO
   const organizationStructuredData = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Bubble Wrap Shop",
+    legalName: "Bubble Wrap Shop (NW) Ltd",
     url: siteUrl,
-    logo: `${siteUrl}/logo.png`, // Update with actual logo URL
+    logo: `${siteUrl}/logo.jpg`,
     description:
       "Premium packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options.",
     contactPoint: {
@@ -54,12 +84,13 @@ export default function Home() {
       contactType: "Customer Service",
       areaServed: "GB",
       availableLanguage: "English",
+      email: "sales@bubblewrapshop.co.uk",
     },
     sameAs: [
       // Add social media links when available
-      // "https://www.facebook.com/volle",
-      // "https://www.twitter.com/volle",
-      // "https://www.linkedin.com/company/volle",
+      // "https://www.facebook.com/bubblewrapshop",
+      // "https://www.twitter.com/bubblewrapshop",
+      // "https://www.linkedin.com/company/bubblewrapshop",
     ],
     address: {
       "@type": "PostalAddress",
@@ -69,6 +100,51 @@ export default function Home() {
       postalCode: "BB1 5QF",
       addressCountry: "GB",
     },
+  };
+
+  // LocalBusiness Structured Data (JSON-LD) for Local SEO
+  const localBusinessStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": `${siteUrl}#organization`,
+    name: "Bubble Wrap Shop",
+    legalName: "Bubble Wrap Shop (NW) Ltd",
+    image: `${siteUrl}/logo.jpg`,
+    url: siteUrl,
+    telephone: "+44-7882-851632",
+    email: "sales@bubblewrapshop.co.uk",
+    priceRange: "££",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Unit BR16 Blakewater Road",
+      addressLocality: "Blackburn",
+      addressRegion: "England",
+      postalCode: "BB1 5QF",
+      addressCountry: "GB",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: "53.7488",
+      longitude: "-2.4883",
+    },
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+      ],
+      opens: "09:00",
+      closes: "17:00",
+    },
+    areaServed: {
+      "@type": "Country",
+      name: "United Kingdom",
+    },
+    description:
+      "Premium packaging supplies with automatic bulk pricing. Next day delivery across the UK. Eco-friendly options available.",
   };
 
   // Website Structured Data (JSON-LD) for SEO
@@ -94,6 +170,12 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(organizationStructuredData),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(localBusinessStructuredData),
         }}
       />
       <script

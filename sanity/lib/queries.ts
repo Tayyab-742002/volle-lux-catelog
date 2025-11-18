@@ -170,8 +170,13 @@ export const PRODUCT_BY_SLUG_QUERY = `*[_type == "product" && slug.current == $s
   ${PRODUCT_QUERY}
 }`;
 
-// Products by category query
+// Products by category query (by category ID)
 export const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "product" && isActive == true && category._ref == $categoryId] | order(name asc) {
+  ${PRODUCT_LISTING_QUERY}
+}`;
+
+// Products by category slug query (for related products)
+export const PRODUCTS_BY_CATEGORY_SLUG_QUERY = `*[_type == "product" && isActive == true && category->slug.current == $categorySlug] | order(name asc) {
   ${PRODUCT_LISTING_QUERY}
 }`;
 

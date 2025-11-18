@@ -20,7 +20,7 @@ export async function FeaturedProducts() {
               </span>
             </h2>
             <p className="text-base sm:text-lg text-gray-600">
-              Our best-selling eco-friendly packaging solutions
+              Our best-selling packaging supplies including bubble wrap, cardboard boxes, packing tape, and protective packaging materials. Next day delivery packaging supplies UK. Buy packaging supplies online with competitive pricing.
             </p>
           </div>
           <Button asChild variant="ghost" className="w-fit group">

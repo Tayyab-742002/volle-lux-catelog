@@ -21,7 +21,7 @@ export async function CategoryGrid() {
             <span className="block text-white mt-2">Category</span>
           </h2>
           <p className="mt-4 text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto">
-            Browse our complete range of eco-friendly packaging solutions
+            Browse our complete range of packaging supplies including bubble wrap, cardboard boxes, packing tape, shipping boxes, and protective packaging. Next day delivery packaging supplies UK available for all orders.
           </p>
         </div>
 
@@ -49,7 +49,7 @@ export async function CategoryGrid() {
                         {category.image ? (
                           <Image
                             src={category.image}
-                            alt={category.name}
+                            alt={category.imageAlt || category.name}
                             fill
                             className="object-cover p-4 transition-transform duration-300 group-hover:scale-110"
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"

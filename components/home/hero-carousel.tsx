@@ -115,6 +115,7 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
                     quality={95}
                     sizes="100vw"
                     priority={index === 0}
+                    loading={index === 0 ? "eager" : "lazy"} // PERFORMANCE: Lazy load non-first carousel images
                   />
                 )}
 
@@ -200,13 +201,13 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
         {/* Heading */}
         <div className="text-center mb-8 sm:mb-10 md:mb-12">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-3 sm:mb-4 md:mb-5 lg:mb-6 leading-tight">
-            Professional
+            Packaging Supplies UK
             <span className="block bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mt-1 sm:mt-2">
-              Packaging Solutions
+              Bubble Wrap, Boxes & More
             </span>
           </h1>
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto font-light px-2 sm:px-0">
-            Premium eco-friendly quality for businesses that demand excellence
+            Premium eco-friendly packaging supplies including bubble wrap, cardboard boxes, packing tape, shipping boxes, and protective packaging materials. Next day delivery packaging supplies UK. Buy packaging supplies online with automatic bulk pricing.
           </p>
         </div>
 

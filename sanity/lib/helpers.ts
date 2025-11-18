@@ -162,18 +162,57 @@ export interface SanityAnnouncement {
 }
 
 // Transform Sanity product to our Product type
+/**
+ * Generate descriptive alt text for product images
+ * Falls back to product name with context if alt text is not provided
+ */
+function generateImageAlt(
+  alt: string | undefined,
+  productName: string,
+  category?: string,
+  imageIndex?: number
+): string {
+  if (alt && alt.trim()) {
+    return alt;
+  }
+  
+  const categoryContext = category ? ` ${category}` : "";
+  const imageContext = imageIndex !== undefined && imageIndex > 0 
+    ? ` - View ${imageIndex + 1}` 
+    : "";
+  
+  return `${productName}${categoryContext} packaging supplies${imageContext}`;
+}
+
 export function transformSanityProduct(sanityProduct: SanityProduct) {
+  const productName = sanityProduct.name;
+  const category = sanityProduct.category?.name;
+  
+  // Generate alt text for main image
+  const mainImageAlt = generateImageAlt(
+    sanityProduct.mainImage?.alt,
+    productName,
+    category
+  );
+  
+  // Generate alt text for gallery images
+  const galleryImagesAlt = sanityProduct.galleryImages?.map((img, index) =>
+    generateImageAlt(img.alt, productName, category, index + 1)
+  ) || [];
+  
   return {
     id: sanityProduct._id,
     product_code: sanityProduct.productCode,
-    name: sanityProduct.name,
+    name: productName,
     slug: sanityProduct.slug.current,
     description: sanityProduct.description,
     image: sanityProduct.mainImage?.asset?.url || "",
+    imageAlt: mainImageAlt,
     images: sanityProduct.galleryImages?.map((img) => img.asset.url) || [],
+    imagesAlt: galleryImagesAlt,
     basePrice: sanityProduct.basePrice,
     discount: sanityProduct.discount,
-    category: sanityProduct.category?.name,
+    category: category,
     categorySlug: sanityProduct.category?.slug?.current,
     variants:
       sanityProduct.variants?.map((variant) => ({
@@ -206,12 +245,18 @@ export function transformSanityProduct(sanityProduct: SanityProduct) {
 
 // Transform Sanity category to our Category type
 export function transformSanityCategory(sanityCategory: SanityCategory) {
+  // Generate descriptive alt text for category images
+  const categoryImageAlt = sanityCategory.image?.alt 
+    ? sanityCategory.image.alt
+    : `${sanityCategory.name} packaging supplies category`;
+  
   return {
     id: sanityCategory._id,
     name: sanityCategory.name,
     slug: sanityCategory.slug.current,
     description: sanityCategory.description,
     image: sanityCategory.image?.asset?.url || "",
+    imageAlt: categoryImageAlt,
     isActive: sanityCategory.isActive,
     sortOrder: sanityCategory.sortOrder,
   };

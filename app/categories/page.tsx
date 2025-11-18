@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllCategories } from "@/sanity/lib";
@@ -6,6 +7,36 @@ import { Category } from "@/types/category";
 
 // Revalidate every 60 seconds to ensure fresh category data
 export const revalidate = 60;
+
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk";
+
+export const metadata: Metadata = {
+  title:
+    "Packaging Categories UK | Bubble Wrap, Boxes & More | Bubble Wrap Shop",
+  description:
+    "Browse our complete range of packaging categories in the UK. From bubble wrap and shipping boxes to packing tape and protective materials. Find the perfect packaging solution for your business or personal needs. Next day delivery available.",
+  keywords: [
+    "packaging categories UK",
+    "bubble wrap category",
+    "shipping boxes category",
+    "packing tape category",
+    "protective packaging category",
+    "packaging supplies categories",
+    "packaging materials UK",
+    "buy packaging by category",
+    "packaging solutions UK",
+  ],
+  openGraph: {
+    title:
+      "Packaging Categories UK | Bubble Wrap, Boxes & More | Bubble Wrap Shop",
+    description:
+      "Browse our complete range of packaging categories in the UK. From bubble wrap and shipping boxes to packing tape and protective materials.",
+    url: `${siteUrl}/categories`,
+  },
+  alternates: {
+    canonical: `${siteUrl}/categories`,
+  },
+};
 
 export default async function CategoriesPage() {
   const categories = await getAllCategories();
@@ -32,8 +63,8 @@ export default async function CategoriesPage() {
           {/* Section Header */}
           <div className="text-center mb-12 md:mb-16 lg:mb-20">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-4">
-              Shop by
-              <span className="block text-white mt-2">Category</span>
+              Packaging Supplies
+              <span className="block text-white mt-2">Categories UK</span>
             </h1>
             <p className="mt-4 text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto">
               Browse our complete range of eco-friendly packaging solutions
@@ -56,7 +87,7 @@ export default async function CategoriesPage() {
                       {category.image ? (
                         <Image
                           src={category.image}
-                          alt={category.name}
+                          alt={category.imageAlt || category.name}
                           fill
                           className="object-cover p-4 transition-transform duration-300 group-hover:scale-110"
                           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
@@ -146,6 +177,72 @@ export default async function CategoriesPage() {
               </p>
             </div>
           )}
+
+          {/* Related Content Section */}
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+              <h3 className="text-lg font-bold text-white mb-3">
+                Learn More
+              </h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link
+                    href="/blog"
+                    className="text-emerald-200 hover:text-white underline text-sm"
+                  >
+                    Read Packaging Blog Posts
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/guides"
+                    className="text-emerald-200 hover:text-white underline text-sm"
+                  >
+                    Browse Buying Guides
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/sustainability"
+                    className="text-emerald-200 hover:text-white underline text-sm"
+                  >
+                    Learn About Sustainability
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+              <h3 className="text-lg font-bold text-white mb-3">
+                Shop Products
+              </h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link
+                    href="/products"
+                    className="text-emerald-200 hover:text-white underline text-sm"
+                  >
+                    Browse All Products
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/b2b-request"
+                    className="text-emerald-200 hover:text-white underline text-sm"
+                  >
+                    Request Bulk Quote
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/contact"
+                    className="text-emerald-200 hover:text-white underline text-sm"
+                  >
+                    Contact Our Team
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
 
           {/* Bottom CTA */}
           <div className="mt-16 md:mt-20 lg:mt-24 text-center">

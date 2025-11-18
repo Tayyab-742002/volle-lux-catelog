@@ -8,3 +8,4 @@ export { QuantityPriceSelector } from "./quantity-price-selector";
 export { AddToCartButton } from "./add-to-cart-button";
 export { ProductInfoAccordion } from "./product-info-accordion";
 export { ProductPurchaseSection } from "./product-purchase-section";
+export { RelatedProducts } from "./related-products";

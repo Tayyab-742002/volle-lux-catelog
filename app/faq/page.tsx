@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/common";
 import Link from "next/link";
 import { ArrowRight, HelpCircle, ArrowLeft } from "lucide-react";
@@ -8,6 +9,23 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk";
+
+export const metadata: Metadata = {
+  title: "FAQ - Frequently Asked Questions | Bubble Wrap Shop",
+  description:
+    "Find answers to common questions about our packaging supplies, shipping, returns, bulk orders, and more. Get help with your packaging needs at Bubble Wrap Shop.",
+  openGraph: {
+    title: "FAQ - Frequently Asked Questions | Bubble Wrap Shop",
+    description:
+      "Find answers to common questions about our packaging supplies, shipping, returns, bulk orders, and more.",
+    url: `${siteUrl}/faq`,
+  },
+  alternates: {
+    canonical: `${siteUrl}/faq`,
+  },
+};
 
 const faqData = [
   {

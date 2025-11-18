@@ -132,7 +132,7 @@ export async function sendOrderConfirmationEmail(
         </div>
         
         <p style="margin-top: 20px;">
-          <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://volle-lux-catelog.vercel.app"}/admin?tab=orders" 
+          <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk"}/admin?tab=orders" 
              style="background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
             View Order in Admin Dashboard
           </a>
@@ -388,7 +388,7 @@ export async function sendB2BRequestEmail(request: {
         </div>
         
         <p style="margin-top: 20px;">
-          <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://volle.com"}/admin?tab=b2b-requests" 
+          <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk"}/admin?tab=b2b-requests" 
              style="background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
             View in Admin Dashboard
           </a>

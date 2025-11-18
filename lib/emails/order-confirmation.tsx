@@ -501,7 +501,7 @@ export const OrderConfirmationEmail: React.FC<
                       <tr>
                         <td align="center">
                           <a
-                            href={`${process.env.NEXT_PUBLIC_APP_URL || "https://volle-lux-catelog.vercel.app"}/account/orders/${order.id}`}
+                            href={`${process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk"}/account/orders/${order.id}`}
                             style={{
                               display: "inline-block",
                               background: colors.accentGradient,

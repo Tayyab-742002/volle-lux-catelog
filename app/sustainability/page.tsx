@@ -1,7 +1,34 @@
+import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/common";
-import { Leaf, Recycle, Sprout, Earth, ArrowRight, ArrowLeft } from "lucide-react";
+import {
+  Leaf,
+  Recycle,
+  Sprout,
+  Earth,
+  ArrowRight,
+  ArrowLeft,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+
+const siteUrl =
+  process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk";
+
+export const metadata: Metadata = {
+  title: "Sustainability - Eco-Friendly Packaging Solutions | Bubble Wrap Shop",
+  description:
+    "Learn about our commitment to sustainability and eco-friendly packaging solutions. Discover our range of recyclable and biodegradable packaging materials for a greener future.",
+  openGraph: {
+    title:
+      "Sustainability - Eco-Friendly Packaging Solutions | Bubble Wrap Shop",
+    description:
+      "Learn about our commitment to sustainability and eco-friendly packaging solutions. Discover our range of recyclable and biodegradable packaging materials.",
+    url: `${siteUrl}/sustainability`,
+  },
+  alternates: {
+    canonical: `${siteUrl}/sustainability`,
+  },
+};
 
 export default function SustainabilityPage() {
   return (
@@ -46,10 +73,10 @@ export default function SustainabilityPage() {
           {/* Intro */}
           <div className="mb-20 rounded-xl border bg-emerald-600 p-6 shadow-lg">
             <p className="text-base leading-relaxed text-white/90 md:text-lg">
-              At Bubble Wrap Shop, we believe exceptional packaging doesn&apos;t have to
-              come at the expense of the environment. We&apos;re committed to
-              reducing our environmental impact through sustainable materials
-              and responsible manufacturing.
+              At Bubble Wrap Shop, we believe exceptional packaging doesn&apos;t
+              have to come at the expense of the environment. We&apos;re
+              committed to reducing our environmental impact through sustainable
+              materials and responsible manufacturing.
             </p>
           </div>
 

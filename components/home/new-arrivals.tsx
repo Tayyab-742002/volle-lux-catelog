@@ -20,7 +20,7 @@ export async function NewArrivals() {
               </span>
             </h2>
             <p className="text-base sm:text-lg text-gray-600">
-              Discover our latest packaging innovations
+              Discover our latest packaging supplies including new bubble wrap, cardboard boxes, packing tape, and protective packaging materials. Next day delivery packaging supplies UK. Buy packaging supplies online with automatic bulk pricing.
             </p>
           </div>
           <Button asChild variant="ghost" className="w-fit group">
