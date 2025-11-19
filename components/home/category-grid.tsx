@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getAllCategories } from "@/sanity/lib";
+import type { Category } from "@/types/category";
 
 export async function CategoryGrid() {
   const categories = await getAllCategories();
@@ -29,13 +30,7 @@ export async function CategoryGrid() {
         {categories && categories.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8 lg:gap-10">
             {categories.map(
-              (category: {
-                id: string;
-                name: string;
-                slug: string;
-                image?: string;
-                description?: string;
-              }) => {
+              (category: Category) => {
                 return (
                   <Link
                     key={category.id}

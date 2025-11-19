@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/common";
 import Link from "next/link";
-import { ArrowRight, HelpCircle, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -181,7 +181,7 @@ export default function FAQPage() {
                       value={`${categoryIndex}-${faqIndex}`}
                       className="border-b border-gray-200 last:border-0"
                     >
-                      <AccordionTrigger className="py-5 text-left text-base font-semibold text-gray-900 hover:text-emerald-600 transition-colors [&[data-state=open]]:text-emerald-600">
+                      <AccordionTrigger className="py-5 text-left text-base font-semibold text-gray-900 hover:text-emerald-600 transition-colors data-[state=open]:text-emerald-600">
                         <div className="flex items-center gap-3">
                           <div className="w-1 h-1 rounded-full bg-emerald-500 shrink-0"></div>
                           <span>{faq.question}</span>

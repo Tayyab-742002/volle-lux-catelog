@@ -13,10 +13,10 @@ const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk
 export async function GET() {
   try {
     // Fetch all products
-    const products = await getAllProducts();
+    const products = (await getAllProducts()) || [];
     
     // Fetch all categories
-    const categories = await getAllCategories();
+    const categories = (await getAllCategories()) || [];
 
     const imageEntries: Array<{
       url: string;
