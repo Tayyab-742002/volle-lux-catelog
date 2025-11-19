@@ -2,6 +2,7 @@ import { Product } from "@/types/product";
 import {
   getAllProducts,
   getProductsByCategory as getSanityProductsByCategory,
+  getProductsByCategorySlug as getSanityProductsByCategorySlug,
   getFilteredProducts as getSanityFilteredProducts,
   searchProducts as searchSanityProducts,
   getProductBySlug as getSanityProductBySlug,
@@ -33,17 +34,36 @@ export async function getProducts(): Promise<Product[]> {
 
 /**
  * Fetch products by category
- * Returns products filtered by category slug
+ * Returns products filtered by category ID (for internal use)
  */
 export async function getProductsByCategory(
-  categorySlug: string
+  categoryId: string
 ): Promise<Product[]> {
   try {
-    const products = await getSanityProductsByCategory(categorySlug);
+    const products = await getSanityProductsByCategory(categoryId);
     return products || [];
   } catch (error) {
     console.error(
-      `Error fetching products for category ${categorySlug}:`,
+      `Error fetching products for category ${categoryId}:`,
+      error
+    );
+    return [];
+  }
+}
+
+/**
+ * Fetch products by category slug
+ * Returns products filtered by category slug (for public use)
+ */
+export async function getProductsByCategorySlug(
+  categorySlug: string
+): Promise<Product[]> {
+  try {
+    const products = await getSanityProductsByCategorySlug(categorySlug);
+    return products || [];
+  } catch (error) {
+    console.error(
+      `Error fetching products for category slug ${categorySlug}:`,
       error
     );
     return [];

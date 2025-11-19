@@ -20,6 +20,7 @@ export {
   getNewArrivals,
   getProductBySlug,
   getProductsByCategory,
+  getProductsByCategorySlug,
   getProductsByIds,
   searchProducts,
   getFilteredProducts,

@@ -6,6 +6,7 @@ import {
   NEW_ARRIVALS_QUERY,
   PRODUCT_BY_SLUG_QUERY,
   PRODUCTS_BY_CATEGORY_QUERY,
+  PRODUCTS_BY_CATEGORY_SLUG_QUERY,
   ALL_CATEGORIES_QUERY,
   CATEGORIES_WITH_FEATURED_PRODUCTS_QUERY,
   SEARCH_PRODUCTS_QUERY,
@@ -84,6 +85,17 @@ export async function getProductsByCategory(categoryId: string) {
       query: PRODUCTS_BY_CATEGORY_QUERY,
       params: { categoryId },
       tags: [`category:${categoryId}`, "products:list"],
+    });
+    return (products as SanityProduct[]).map(transformSanityProduct);
+  });
+}
+
+export async function getProductsByCategorySlug(categorySlug: string) {
+  return safeQuery(async () => {
+    const { data: products } = await sanityFetch({
+      query: PRODUCTS_BY_CATEGORY_SLUG_QUERY,
+      params: { categorySlug },
+      tags: [`category:${categorySlug}`, "products:list"],
     });
     return (products as SanityProduct[]).map(transformSanityProduct);
   });

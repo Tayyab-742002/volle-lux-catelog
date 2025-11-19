@@ -12,29 +12,38 @@ export const revalidate = 60;
  * Products Page Metadata
  * SEO optimization for the products listing page
  */
+// Note: For category-specific metadata, we'd need generateMetadata function
+// but since categories are query params, we'll use static metadata for now
 export const metadata: Metadata = {
-  title: "All Products - Premium Packaging Supplies | Volle",
+  title: "All Packaging Supplies UK | Buy Online | Bubble Wrap Shop",
   description:
-    "Browse our complete range of premium packaging supplies. Bubble wrap, boxes, protective materials, and more. Automatic bulk pricing. Eco-friendly options available.",
+    "Browse our complete range of packaging supplies in the UK. Buy bubble wrap, cardboard boxes, packing tape, shipping boxes, and protective packaging materials online. Automatic bulk pricing. Next day delivery packaging supplies UK. Cheap bubble wrap online. Buy cardboard boxes UK with wholesale pricing available.",
   keywords: [
-    "packaging products",
-    "bubble wrap",
-    "packaging boxes",
-    "protective packaging",
-    "eco-friendly packaging",
+    "packaging supplies UK",
+    "packaging products UK",
+    "bubble wrap UK",
+    "packaging boxes UK",
+    "cardboard boxes UK",
+    "packing tape UK",
+    "shipping boxes UK",
+    "protective packaging UK",
+    "eco-friendly packaging UK",
     "bulk packaging",
-    "wholesale packaging",
+    "wholesale packaging UK",
+    "buy packaging online",
+    "packaging materials UK",
+    "next day delivery packaging",
   ],
   openGraph: {
     type: "website",
-    title: "All Products - Premium Packaging Supplies | Bubble Wrap Shop",
+    title: "All Packaging Supplies UK | Buy Online | Bubble Wrap Shop",
     description:
-      "Browse our complete range of premium packaging supplies. Automatic bulk pricing. Eco-friendly options available.",
-    url: `${process.env.NEXT_PUBLIC_APP_URL || "https://volle-lux-catelog.vercel.app"}/products`,
+      "Browse our complete range of packaging supplies in the UK. Bubble wrap, cardboard boxes, packing tape, and more. Automatic bulk pricing. Next day delivery available.",
+    url: `${process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk"}/products`,
     siteName: "Bubble Wrap Shop - Premium Packaging Supplies",
   },
   alternates: {
-    canonical: `${process.env.NEXT_PUBLIC_APP_URL || "https://volle-lux-catelog.vercel.app"}/products`,
+    canonical: `${process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk"}/products`,
   },
 };
 

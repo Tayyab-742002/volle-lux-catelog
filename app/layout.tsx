@@ -34,7 +34,7 @@ const inter = Inter({
 
 // Get base URL for metadata
 const baseUrl =
-  process.env.NEXT_PUBLIC_APP_URL || "https://volle-lux-catelog.vercel.app";
+  process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -43,16 +43,52 @@ export const metadata: Metadata = {
     template: "%s | Bubble Wrap Shop",
   },
   description:
-    "Professional packaging supplies with automatic bulk pricing. Next day delivery. Eco-friendly options.",
+    "UK's leading supplier of packaging supplies. Buy bubble wrap, cardboard boxes, packing tape, and protective packaging. Wholesale pricing available. Next day delivery across the UK.",
   keywords: [
+    // Primary keywords
     "packaging supplies",
+    "packaging supplies UK",
     "bubble wrap",
+    "bubble wrap UK",
     "packaging boxes",
-    "eco-friendly packaging",
-    "bulk packaging",
+    "cardboard boxes UK",
+    "packing tape",
+    "packing tape UK",
+    "shipping boxes",
+    "shipping boxes UK",
+    // B2B/Wholesale keywords
     "wholesale packaging",
+    "wholesale packaging UK",
+    "bulk packaging supplies",
+    "B2B packaging",
+    "corporate packaging",
+    "business packaging supplies",
+    "packaging wholesale",
+    "bulk bubble wrap",
+    "wholesale cardboard boxes",
+    // Delivery & Service keywords
     "next day delivery",
+    "next day delivery UK",
+    "UK packaging supplier",
+    "packaging supplier UK",
+    "Blackburn packaging",
+    "Lancashire packaging supplier",
+    // Product-specific keywords
     "protective packaging",
+    "protective packaging UK",
+    "eco-friendly packaging",
+    "eco-friendly packaging UK",
+    "packaging materials",
+    "packaging materials UK",
+    "bubble wrap online",
+    "cheap packaging supplies",
+    "packaging boxes online",
+    // Long-tail keywords
+    "next day delivery packaging supplies UK",
+    "cheap bubble wrap online",
+    "wholesale packaging supplies UK",
+    "bulk packaging UK",
+    "packaging supplies next day delivery",
   ],
   authors: [{ name: "Bubble Wrap Shop" }],
   creator: "Bubble Wrap Shop",

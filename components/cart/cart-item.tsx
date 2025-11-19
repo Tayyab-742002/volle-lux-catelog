@@ -61,7 +61,7 @@ export function CartItem({ item }: CartItemProps) {
         <div className="relative h-20 w-20 overflow-hidden rounded-lg bg-muted">
           <Image
             src={item.product.image}
-            alt={item.product.name}
+            alt={item.product.imageAlt || item.product.name}
             fill
             className="object-cover"
             sizes="80px"

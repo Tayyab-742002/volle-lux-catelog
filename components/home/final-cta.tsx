@@ -15,9 +15,21 @@ export function FinalCTA() {
 
           {/* Description */}
           <p className="mb-10 text-base md:text-lg lg:text-xl text-white/80 max-w-2xl leading-relaxed lg:mb-12">
-            Discover our full range of premium packaging solutions, from
-            eco-friendly materials to custom packaging options. Bulk pricing
-            available on all products.
+            Discover our full range of packaging supplies including bubble wrap, cardboard boxes, packing tape, shipping boxes, and protective packaging materials. From eco-friendly materials to custom packaging options. Bulk pricing available on all products. Next day delivery packaging supplies UK. Buy packaging supplies online with wholesale pricing available.{" "}
+            <Link
+              href="/blog"
+              className="underline hover:text-white font-medium"
+            >
+              Read our packaging guides
+            </Link>{" "}
+            or{" "}
+            <Link
+              href="/guides"
+              className="underline hover:text-white font-medium"
+            >
+              browse buying guides
+            </Link>{" "}
+            to find the perfect solution.
           </p>
 
           {/* CTA Button */}

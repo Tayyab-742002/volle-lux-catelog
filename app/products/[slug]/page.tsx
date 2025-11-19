@@ -4,9 +4,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 import { ProductGallerySkeleton } from "@/components/products/product-gallery-loader";
-import { ProductHeader } from "@/components/products";
+import { ProductHeader, RelatedProducts } from "@/components/products";
 import ProductPageContent from "@/components/products/product-page-content";
-import { getProductBySlug } from "@/services/products/product.service";
+import {
+  getProductBySlug,
+  getProductsByCategorySlug,
+} from "@/services/products/product.service";
 import { getProductSlugs } from "@/sanity/lib/api";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -44,7 +47,7 @@ export async function generateMetadata({
     };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://volle.com";
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk";
   const productUrl = `${siteUrl}/products/${slug}`;
   const productImage = product.images?.[0] || product.image;
   const productPrice = product.basePrice.toFixed(2);
@@ -55,20 +58,32 @@ export async function generateMetadata({
   // Use custom SEO fields if available, otherwise generate from product data
   const seoTitle =
     product.seoTitle ||
-    `${product.name} - Premium Packaging Supplies | Bubble Wrap Shop`;
-  const seoDescription = product.seoDescription || productDescription;
+    `${product.name} UK | Buy Online | Packaging Supplies | Bubble Wrap Shop`;
+  const seoDescription =
+    product.seoDescription ||
+    `Buy ${product.name} online in the UK. Professional packaging supplies with bulk pricing. Starting from £${productPrice}. Next day delivery available. ${product.category ? `Part of our ${product.category} range.` : ""}`;
+
+  // Generate comprehensive keywords based on product
+  const productKeywords = [
+    product.name,
+    `${product.name} UK`,
+    "packaging supplies",
+    "packaging supplies UK",
+    product.category || "packaging",
+    `${product.category || "packaging"} UK`,
+    "bulk packaging",
+    "wholesale packaging",
+    "wholesale packaging UK",
+    "next day delivery",
+    "UK packaging supplier",
+    "buy packaging online",
+    "packaging materials UK",
+  ];
 
   return {
     title: seoTitle,
     description: seoDescription,
-    keywords: [
-      product.name,
-      "packaging supplies",
-      "eco-friendly packaging",
-      product.category || "packaging",
-      "bulk packaging",
-      "wholesale packaging",
-    ],
+    keywords: productKeywords,
     openGraph: {
       type: "website",
       title: seoTitle,
@@ -110,7 +125,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://volle.com";
+  // Fetch related products from the same category
+  const relatedProducts = product.categorySlug
+    ? await getProductsByCategorySlug(product.categorySlug)
+    : [];
+
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk";
   const productUrl = `${siteUrl}/products/${slug}`;
   const productPrice = product.basePrice.toFixed(2);
 
@@ -178,6 +198,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           productName={product.name}
           productCode={product.product_code}
           category={product.category}
+          categorySlug={product.categorySlug}
         />
 
         {/* Main Content: 2-Column Layout */}
@@ -187,6 +208,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <ProductGallery
               images={product.images || [product.image]}
               productName={product.name}
+              imagesAlt={product.imagesAlt}
+              mainImageAlt={product.imageAlt}
             />
           </div>
 
@@ -198,6 +221,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
             delivery={product.delivery}
           />
         </div>
+
+        {/* Related Products Section */}
+        {relatedProducts.length > 0 && (
+          <RelatedProducts
+            products={relatedProducts}
+            categoryName={product.category}
+            categorySlug={product.categorySlug}
+            currentProductId={product.id}
+          />
+        )}
       </div>
     </div>
   );

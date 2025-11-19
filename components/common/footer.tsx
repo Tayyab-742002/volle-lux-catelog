@@ -24,8 +24,7 @@ export function Footer() {
                 className="h-12 w-auto mb-4"
               />
               <p className="text-sm text-emerald-200 max-w-md">
-                Your trusted partner for eco-friendly packaging solutions.
-                Quality products with next-day delivery.
+                Your trusted UK partner for packaging supplies including bubble wrap, cardboard boxes, packing tape, shipping boxes, and protective packaging. Quality packaging materials with next-day delivery across the UK. Buy packaging supplies online with wholesale pricing available.
               </p>
             </div>
             <div className="flex items-center gap-3 px-6 py-3 bg-linear-to-r from-emerald-500/20 to-teal-500/20 rounded-xl border border-emerald-500/30">

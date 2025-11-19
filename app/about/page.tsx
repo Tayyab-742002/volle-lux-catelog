@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/common";
@@ -12,6 +13,23 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk";
+
+export const metadata: Metadata = {
+  title: "About Us - Premium Packaging Supplies | Bubble Wrap Shop",
+  description:
+    "Learn about Bubble Wrap Shop, your trusted UK supplier of premium packaging supplies. We offer eco-friendly solutions, bulk pricing, and next-day delivery across the UK.",
+  openGraph: {
+    title: "About Us - Premium Packaging Supplies | Bubble Wrap Shop",
+    description:
+      "Learn about Bubble Wrap Shop, your trusted UK supplier of premium packaging supplies. We offer eco-friendly solutions, bulk pricing, and next-day delivery.",
+    url: `${siteUrl}/about`,
+  },
+  alternates: {
+    canonical: `${siteUrl}/about`,
+  },
+};
 
 export default function AboutPage() {
   return (

@@ -2,18 +2,47 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/common";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Briefcase, Package, TrendingUp, CheckCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Briefcase,
+  Package,
+  TrendingUp,
+  CheckCircle,
+  ArrowRight,
+} from "lucide-react";
 import { B2BRequestForm } from "@/components/b2b/b2b-request-form";
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk";
+
 export const metadata: Metadata = {
-  title: "B2B Custom Request - Bulk Order Quote | Bubble Wrap Shop",
+  title:
+    "Wholesale Packaging UK | B2B Bulk Order Quote | Corporate Packaging Supplies",
   description:
-    "Request a custom quote for bulk packaging supplies. Wholesale pricing available for businesses. Get competitive rates on large orders.",
+    "Request a custom quote for wholesale packaging supplies in the UK. Bulk pricing for businesses. Competitive rates on large orders of bubble wrap, boxes, and packaging materials. Next day delivery available.",
+  keywords: [
+    "wholesale packaging UK",
+    "B2B packaging",
+    "bulk packaging supplies",
+    "corporate packaging",
+    "business packaging supplies",
+    "wholesale bubble wrap",
+    "bulk cardboard boxes",
+    "packaging wholesale UK",
+    "B2B packaging supplier",
+    "corporate packaging UK",
+    "bulk order packaging",
+    "wholesale packaging prices",
+    "business packaging solutions",
+  ],
   openGraph: {
-    title: "B2B Custom Request - Bulk Order Quote | Bubble Wrap Shop",
+    title: "Wholesale Packaging UK | B2B Bulk Order Quote | Bubble Wrap Shop",
     description:
-      "Request a custom quote for bulk packaging supplies. Wholesale pricing available for businesses.",
-    url: `${process.env.NEXT_PUBLIC_APP_URL || "https://volle.com"}/b2b-request`,
+      "Request a custom quote for wholesale packaging supplies in the UK. Bulk pricing for businesses. Competitive rates on large orders.",
+    url: `${siteUrl}/b2b-request`,
+  },
+  alternates: {
+    canonical: `${siteUrl}/b2b-request`,
   },
 };
 
@@ -63,6 +92,20 @@ export default function B2BRequestPage() {
               for your business. Fill out the form below and our team will
               provide a custom quote within 1-2 business days.
             </p>
+          </div>
+
+          {/* Link to Wholesale Page */}
+          <div className="mb-8 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+            <p className="text-sm text-gray-700 mb-2">
+              <strong>New to wholesale?</strong> Learn more about our bulk
+              pricing, benefits, and how it works.
+            </p>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/wholesale">
+                Visit Wholesale Information Page
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
           </div>
 
           {/* Benefits Section */}
@@ -139,4 +182,3 @@ export default function B2BRequestPage() {
     </div>
   );
 }
-

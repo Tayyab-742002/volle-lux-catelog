@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getAllCategories } from "@/sanity/lib";
+import type { Category } from "@/types/category";
 
 export async function CategoryGrid() {
   const categories = await getAllCategories();
@@ -21,7 +22,7 @@ export async function CategoryGrid() {
             <span className="block text-white mt-2">Category</span>
           </h2>
           <p className="mt-4 text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto">
-            Browse our complete range of eco-friendly packaging solutions
+            Browse our complete range of packaging supplies including bubble wrap, cardboard boxes, packing tape, shipping boxes, and protective packaging. Next day delivery packaging supplies UK available for all orders.
           </p>
         </div>
 
@@ -29,13 +30,7 @@ export async function CategoryGrid() {
         {categories && categories.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8 lg:gap-10">
             {categories.map(
-              (category: {
-                id: string;
-                name: string;
-                slug: string;
-                image?: string;
-                description?: string;
-              }) => {
+              (category: Category) => {
                 return (
                   <Link
                     key={category.id}
@@ -49,7 +44,7 @@ export async function CategoryGrid() {
                         {category.image ? (
                           <Image
                             src={category.image}
-                            alt={category.name}
+                            alt={category.imageAlt || category.name}
                             fill
                             className="object-cover p-4 transition-transform duration-300 group-hover:scale-110"
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"

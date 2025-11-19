@@ -35,7 +35,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {/* Primary Image */}
             <Image
               src={primaryImage}
-              alt={product.name}
+              alt={product.imageAlt || product.name}
               fill
               className={`object-cover transition-all duration-500 ease-in-out ${
                 isHovered ? "opacity-0 scale-110" : "opacity-100 scale-100"
@@ -48,7 +48,11 @@ export function ProductCard({ product }: ProductCardProps) {
             {/* Secondary Image (shows on hover) */}
             <Image
               src={secondaryImage}
-              alt={`${product.name} alternate view`}
+              alt={
+                product.imagesAlt?.[2] ||
+                product.imagesAlt?.[0] ||
+                `${product.imageAlt || product.name} - Alternate view`
+              }
               fill
               className={`object-cover transition-all duration-500 ease-in-out ${
                 isHovered ? "opacity-100 scale-100" : "opacity-0 scale-110"

@@ -20,7 +20,9 @@ export interface Product {
   slug: string;
   description?: string;
   image: string;
+  imageAlt?: string; // Alt text for main image (SEO)
   images?: string[]; // Multiple images for gallery
+  imagesAlt?: string[]; // Alt text for gallery images (SEO)
   basePrice: number;
   discount?: number;
   variants?: ProductVariant[];
