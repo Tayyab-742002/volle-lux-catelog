@@ -14,6 +14,9 @@ export function ProductCard({ product }: ProductCardProps) {
   const primaryImage = product.image;
   const secondaryImage = product.images?.[2] || product.image;
   const hasVariants = product.variants && product.variants.length > 1;
+  // Check if we should show price or "Open to view prices"
+  const shouldShowPrice = product.basePrice !== 0;
+  const displayPrice = product.basePrice;
 
   return (
     <div className="group flex flex-col h-full">
@@ -91,14 +94,22 @@ export function ProductCard({ product }: ProductCardProps) {
 
             {/* Price & Variants Section */}
             <div className="mt-auto space-y-2">
-              {/* Price */}
+              {/* Price or "Open to view prices" */}
               <div className="flex items-baseline gap-2">
-                <span className="text-base font-bold text-gray-900">
-                  £{product.basePrice.toFixed(2)}
-                </span>
-                {hasVariants && (
-                  <span className="text-xs font-medium text-emerald-600 group-hover:text-white">
-                    +
+                {shouldShowPrice ? (
+                  <>
+                    <span className="text-base font-bold text-gray-900">
+                      £{displayPrice.toFixed(2)}
+                    </span>
+                    {hasVariants && (
+                      <span className="text-xs font-medium text-emerald-600 group-hover:text-white">
+                        +
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-sm font-medium text-emerald-600 group-hover:text-white italic">
+                    Open to view prices
                   </span>
                 )}
               </div>

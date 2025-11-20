@@ -2,10 +2,8 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Header, Footer } from "@/components/common";
-import { AnnouncementBannerWrapper } from "@/components/common/announcement-banner-wrapper";
+import { WebsiteLayoutWrapper } from "@/components/common/website-layout-wrapper";
 import { SanityLiveWrapper } from "@/components/common/sanity-live-wrapper";
-import { WhatsAppButton } from "@/components/common/whatsapp-button";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { getAllCategories } from "@/sanity/lib";
@@ -200,22 +198,15 @@ export default async function RootLayout({
         </Script>
         <AuthProvider>
           <CartProvider>
-            {/* Announcement Banner - Above Header */}
-            <AnnouncementBannerWrapper />
-            <Header categories={categories || []} />
-            <main className="flex-1">{children}</main>
-            <Footer />
+            {/* WebsiteLayoutWrapper conditionally renders header/footer based on route */}
+            {/* For /studio routes, it only renders children (no header/footer) */}
+            <WebsiteLayoutWrapper categories={categories || []}>
+              {children}
+            </WebsiteLayoutWrapper>
 
-            {/* Enable real-time Sanity content updates */}
-            {/* <Chatbot /> */}
+            {/* Enable real-time Sanity content updates - Server Component only */}
+            {/* Safe to render everywhere - SanityLive only activates on pages that use sanityFetch */}
             <SanityLiveWrapper />
-
-            {/* Floating WhatsApp Button */}
-            <WhatsAppButton
-              phoneNumber="+447882851632"
-              message="Hi! I'm interested in your packaging products."
-              position="left"
-            />
           </CartProvider>
         </AuthProvider>
         {/* PERFORMANCE: Real-time performance monitoring */}

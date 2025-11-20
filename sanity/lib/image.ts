@@ -50,6 +50,3 @@ export const getResponsiveImageUrls = (source: SanityImageSource) => {
     ].join(", "),
   };
 };
-
-// Backwards-compatible alias used by older imports
-export const urlForImage = (source: SanityImageSource) => urlFor(source);

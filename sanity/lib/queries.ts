@@ -58,7 +58,14 @@ export const PRODUCT_QUERY = `
     sku,
     priceAdjustment,
     isActive,
-    stockQuantity
+    stockQuantity,
+    quantityOptions[] {
+      label,
+      quantity,
+      unit,
+      pricePerUnit,
+      isActive
+    }
   },
   pricingTiers[] {
     minQuantity,

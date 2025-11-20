@@ -75,19 +75,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const loadUserProfile = useCallback(
     async (retryCount = 0) => {
       try {
-        // Get current user from auth
+        // First check if there's a session before trying to get user
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        // If no session or session error, user is not logged in
+        if (sessionError || !session) {
+          setUser(null);
+          return;
+        }
+
+        // Get current user from auth (now we know there's a session)
         const {
           data: { user: authUser },
           error: userError,
         } = await supabase.auth.getUser();
 
         if (userError || !authUser) {
-          if (retryCount < 2) {
-            // Retry once if we get an error (might be a timing issue)
-            setTimeout(() => loadUserProfile(retryCount + 1), 500);
-            return;
+          // "Auth session missing!" is expected when user is not logged in
+          // Only log actual errors, not missing session errors
+          if (userError?.message !== "Auth session missing!") {
+            if (retryCount < 2) {
+              // Retry once if we get an error (might be a timing issue)
+              setTimeout(() => loadUserProfile(retryCount + 1), 500);
+              return;
+            }
+            console.error("Failed to get auth user:", userError?.message);
           }
-          console.error("Failed to get auth user:", userError?.message);
           setUser(null);
           return;
         }

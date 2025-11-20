@@ -71,6 +71,13 @@ export interface SanityProduct {
     priceAdjustment: number;
     isActive: boolean;
     stockQuantity?: number;
+    quantityOptions?: Array<{
+      label: string;
+      quantity: number;
+      unit: string;
+      pricePerUnit?: number;
+      isActive: boolean;
+    }>;
   }>;
   pricingTiers?: Array<{
     minQuantity: number;
@@ -215,12 +222,23 @@ export function transformSanityProduct(sanityProduct: SanityProduct) {
     category: category,
     categorySlug: sanityProduct.category?.slug?.current,
     variants:
-      sanityProduct.variants?.map((variant) => ({
-        id: `${sanityProduct._id}-${variant.sku}`,
-        name: variant.name,
-        sku: variant.sku,
-        price_adjustment: variant.priceAdjustment,
-      })) || [],
+      sanityProduct.variants
+        ?.filter((variant) => variant.isActive)
+        .map((variant) => ({
+          id: `${sanityProduct._id}-${variant.sku}`,
+          name: variant.name,
+          sku: variant.sku,
+          price_adjustment: variant.priceAdjustment,
+          quantityOptions: variant.quantityOptions
+            ?.filter((qty) => qty.isActive)
+            .map((qty) => ({
+              label: qty.label,
+              quantity: qty.quantity,
+              unit: qty.unit,
+              pricePerUnit: qty.pricePerUnit,
+              isActive: qty.isActive,
+            })),
+        })) || [],
     pricingTiers:
       sanityProduct.pricingTiers?.map((tier) => ({
         minQuantity: tier.minQuantity,
