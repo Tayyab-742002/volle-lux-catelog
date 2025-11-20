@@ -96,14 +96,16 @@ export function calculateDiscountPercentage(
 /**
  * Calculate VAT amount
  * VAT is calculated on (subtotal + shipping cost)
+ * Returns exact value - no rounding (round only for display)
  */
 export function calculateVAT(subtotal: number, shippingCost: number, vatRate: number = VAT_RATE): number {
   const taxableAmount = subtotal + shippingCost
-  return Number((taxableAmount * vatRate).toFixed(2))
+  return taxableAmount * vatRate
 }
 
 /**
  * Calculate order total with shipping and VAT
+ * Returns exact values - no rounding (round only for display)
  */
 export function calculateOrderTotal(
   subtotal: number,
@@ -114,10 +116,10 @@ export function calculateOrderTotal(
   const total = subtotal + shippingCost + vatAmount
 
   return {
-    subtotal: Number(subtotal.toFixed(2)),
-    shippingCost: Number(shippingCost.toFixed(2)),
-    vatAmount: Number(vatAmount.toFixed(2)),
-    total: Number(total.toFixed(2)),
+    subtotal, // Keep exact value
+    shippingCost, // Keep exact value
+    vatAmount, // Keep exact value
+    total, // Keep exact value
     shippingMethod: '' // Will be set by caller
   }
 }
@@ -132,6 +134,7 @@ export function formatPrice(amount: number): string {
 /**
  * Calculate VAT-exclusive amount (reverse VAT calculation)
  * Used when you have a VAT-inclusive price and need to extract the VAT
+ * Returns exact values - no rounding (round only for display)
  */
 export function calculateVATExclusive(vatInclusiveAmount: number, vatRate: number = VAT_RATE): {
   exclusive: number
@@ -141,7 +144,7 @@ export function calculateVATExclusive(vatInclusiveAmount: number, vatRate: numbe
   const vat = vatInclusiveAmount - exclusive
 
   return {
-    exclusive: Number(exclusive.toFixed(2)),
-    vat: Number(vat.toFixed(2))
+    exclusive, // Keep exact value
+    vat // Keep exact value
   }
 }

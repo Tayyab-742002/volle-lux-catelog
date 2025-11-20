@@ -9,6 +9,7 @@ export interface CartItem {
   quantity: number;
   pricePerUnit: number;
   totalPrice: number;
+  quantityOptionPrice?: number; // Store quantity option price if item was added with one
 }
 
 export interface Cart {

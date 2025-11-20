@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getAnnouncement } from "@/services/announcements/announcement.service";
 import { AnnouncementBanner } from "./announcement-banner";
 
+// Server Component - can be async
 async function AnnouncementContent() {
   const announcement = await getAnnouncement();
 
@@ -12,6 +13,7 @@ async function AnnouncementContent() {
   return <AnnouncementBanner announcement={announcement} />;
 }
 
+// Server Component wrapper
 export function AnnouncementBannerWrapper() {
   return (
     <Suspense fallback={null}>
@@ -19,4 +21,6 @@ export function AnnouncementBannerWrapper() {
     </Suspense>
   );
 }
+
+
 

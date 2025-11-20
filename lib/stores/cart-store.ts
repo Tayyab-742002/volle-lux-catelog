@@ -23,7 +23,8 @@ interface CartStore {
     product: Product,
     variant?: ProductVariant,
     quantity?: number,
-    userId?: string
+    userId?: string,
+    quantityOptionPrice?: number // Price from selected quantity option
   ) => Promise<void>;
   removeItem: (itemId: string, userId?: string) => Promise<void>;
   updateQuantity: (
@@ -83,8 +84,14 @@ function calculatePricePerUnit(
   quantity: number,
   basePrice: number,
   variantAdjustment: number,
-  pricingTiers?: PricingTier[]
+  pricingTiers?: PricingTier[],
+  quantityOptionPrice?: number // Price from selected quantity option (takes priority)
 ): number {
+  // If quantity option has a specific price, use that (highest priority)
+  if (quantityOptionPrice !== undefined) {
+    return quantityOptionPrice;
+  }
+
   const adjustedBasePrice = basePrice + variantAdjustment;
 
   if (!pricingTiers || pricingTiers.length === 0) {
@@ -171,7 +178,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
     }
   },
 
-  addItem: async (product, variant, quantity = 1, userId) => {
+  addItem: async (product, variant, quantity = 1, userId, quantityOptionPrice) => {
     // PERFORMANCE: Remove console.logs in production
     if (process.env.NODE_ENV === 'development') {
       console.log("Adding item to cart:", {
@@ -179,6 +186,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
         variantId: variant?.id,
         quantity,
         userId,
+        quantityOptionPrice,
       });
     }
 
@@ -190,9 +198,14 @@ export const useCartStore = create<CartStore>()((set, get) => ({
       const variantPriceAdjustment = variant?.price_adjustment || 0;
 
       // Check if item already exists in cart
+      // For quantity options, we need to match on variant + quantity option price
       const existingItemIndex = state.items.findIndex(
         (item) =>
-          item.product.id === product.id && item.variant?.id === variant?.id
+          item.product.id === product.id &&
+          item.variant?.id === variant?.id &&
+          // If quantity option price exists, match on that too
+          (quantityOptionPrice === undefined ||
+            item.pricePerUnit === quantityOptionPrice)
       );
 
       if (existingItemIndex >= 0) {
@@ -202,11 +215,13 @@ export const useCartStore = create<CartStore>()((set, get) => ({
         const newQuantity = existingItem.quantity + quantity;
 
         // Calculate price based on new quantity and pricing tiers
+        // If quantityOptionPrice is provided, use it (it's already per unit)
         const pricePerUnit = calculatePricePerUnit(
           newQuantity,
           product.basePrice,
           variantPriceAdjustment,
-          product.pricingTiers
+          product.pricingTiers,
+          quantityOptionPrice
         );
 
         items[existingItemIndex] = {
@@ -214,6 +229,8 @@ export const useCartStore = create<CartStore>()((set, get) => ({
           quantity: newQuantity,
           pricePerUnit,
           totalPrice: pricePerUnit * newQuantity,
+          // Preserve quantityOptionPrice if it exists
+          quantityOptionPrice: existingItem.quantityOptionPrice,
         };
         updatedItems = items;
         return { items: updatedItems, isLoading: false };
@@ -223,7 +240,8 @@ export const useCartStore = create<CartStore>()((set, get) => ({
           quantity,
           product.basePrice,
           variantPriceAdjustment,
-          product.pricingTiers
+          product.pricingTiers,
+          quantityOptionPrice
         );
 
         const newItem: CartItem = {
@@ -233,6 +251,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
           quantity,
           pricePerUnit,
           totalPrice: pricePerUnit * quantity,
+          quantityOptionPrice: quantityOptionPrice, // Store quantity option price for future updates
         };
         updatedItems = [...state.items, newItem];
         return { items: updatedItems, isLoading: false };
@@ -289,12 +308,33 @@ export const useCartStore = create<CartStore>()((set, get) => ({
         if (item.id === itemId) {
           const variantAdjustment = item.variant?.price_adjustment || 0;
 
-          // Recalculate price per unit based on new quantity and pricing tiers
+          // Check if variant has quantity options and if new quantity matches one
+          let quantityOptionPrice: number | undefined = item.quantityOptionPrice;
+          
+          if (item.variant?.quantityOptions && item.variant.quantityOptions.length > 0) {
+            // Find matching quantity option for the new quantity
+            const matchingOption = item.variant.quantityOptions.find(
+              (opt) => opt.quantity === quantity && opt.isActive
+            );
+            
+            if (matchingOption && matchingOption.pricePerUnit !== undefined) {
+              // Use the price from the matching quantity option
+              quantityOptionPrice = matchingOption.pricePerUnit;
+            } else if (matchingOption) {
+              // Option exists but no specific price, use base + variant adjustment
+              quantityOptionPrice = undefined;
+            }
+            // If no matching option, keep the original quantityOptionPrice (if it exists)
+            // This allows custom quantities to maintain their original pricing
+          }
+
+          // Calculate price per unit
           const pricePerUnit = calculatePricePerUnit(
             quantity,
             item.product.basePrice,
             variantAdjustment,
-            item.product.pricingTiers
+            item.product.pricingTiers,
+            quantityOptionPrice
           );
 
           if (process.env.NODE_ENV === 'development') {
@@ -311,6 +351,8 @@ export const useCartStore = create<CartStore>()((set, get) => ({
             quantity,
             pricePerUnit,
             totalPrice: pricePerUnit * quantity,
+            // Update quantityOptionPrice if we found a matching option
+            quantityOptionPrice: quantityOptionPrice,
           };
         }
         return item;

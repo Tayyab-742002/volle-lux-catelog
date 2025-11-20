@@ -8,34 +8,90 @@ import { stripe, STRIPE_CONFIG } from "@/lib/stripe/config";
 import { BillingAddress, CartItem, ShippingAddress } from "@/types/cart";
 
 /**
+ * Convert single amount to Stripe's integer format (pence/cents)
+ * Used for shipping, VAT, etc. where we have a single total amount
+ *
+ * @param amount - Exact decimal amount (e.g., 40.50, 0.00)
+ * @returns Integer amount in pence (e.g., 4050, 0)
+ */
+function convertToStripeAmount(amount: number): number {
+  // For single amounts, round to nearest pence
+  return Math.round(amount * 100);
+}
+
+/**
  * Convert cart items to Stripe line items
+ * Preserves exact decimal precision by calculating total first, then rounding
+ *
+ * IMPORTANT: We calculate the exact total first (unit * quantity) using exact decimals,
+ * then round only the final total. This preserves precision from Sanity.
+ *
+ * Example:
+ * - Exact unit price: 0.2666333
+ * - Quantity: 750
+ * - Exact total: 0.2666333 * 750 = 199.974975
+ * - Rounded total: 199.974975 * 100 = 19997.4975 -> 19997 pence
+ * - Unit for Stripe: 19997 / 750 = 26.662666... -> 27 pence (rounded)
+ * - Stripe calculates: 27 * 750 = 20250 pence (slight rounding difference)
+ *
+ * To minimize error, we use the exact total and calculate unit_amount that minimizes rounding error.
  */
 function convertCartItemsToLineItems(
   items: CartItem[]
 ): Stripe.Checkout.SessionCreateParams.LineItem[] {
-  return items.map((item) => ({
-    price_data: {
-      currency: STRIPE_CONFIG.currency,
-      product_data: {
-        // Make product name unique per variant to prevent Stripe from merging line items
-        name: item.variant
-          ? `${item.product.name} - ${item.variant.name} (${item.variant.sku})`
-          : item.product.name,
-        description: item.variant
-          ? `${item.product.name} - ${item.variant.name}`
-          : item.product.name,
-        images: item.product.image ? [item.product.image] : undefined,
-        metadata: {
-          product_id: item.product.id,
-          product_code: item.product.product_code,
-          variant_id: item.variant?.id || "",
-          variant_sku: item.variant?.sku || "",
+  return items.map((item) => {
+    // IMPORTANT: Do NOT round the unit price - use exact value from Sanity
+    // Example: 0.2666333 (exact, no rounding)
+
+    // Calculate exact total using exact unit price (no rounding of unit price)
+    // Example: 0.2666333 * 750 = 199.974975 (exact)
+    const exactTotal = item.pricePerUnit * item.quantity;
+
+    // Calculate the exact total in pence (preserve all precision)
+    // Example: 199.974975 * 100 = 19997.4975 pence (exact)
+    const exactTotalInPence = exactTotal * 100;
+
+    // Round ONLY the final total to nearest pence
+    // This is the exact amount we want to charge
+    // Example: 19997.4975 → 19997 pence (rounded total)
+    const roundedTotalInPence = Math.round(exactTotalInPence);
+
+    // Use the rounded total as a single line item with quantity = 1
+    // This ensures Stripe charges the exact rounded total amount
+    // Example: unit_amount = 19997, quantity = 1 → Stripe charges exactly 19997 pence
+    const unitAmountInPence = roundedTotalInPence;
+
+    // Store the exact unit price and quantity in metadata for reference
+    const metadata: Record<string, string> = {
+      product_id: item.product.id,
+      product_code: item.product.product_code,
+      variant_id: item.variant?.id || "",
+      variant_sku: item.variant?.sku || "",
+      exact_unit_price: item.pricePerUnit.toFixed(10), // Store exact unit price
+      exact_quantity: item.quantity.toString(), // Store exact quantity
+      exact_total: exactTotal.toFixed(10), // Store exact total
+      rounded_total_pence: roundedTotalInPence.toString(), // Exact amount charged
+    };
+
+    return {
+      price_data: {
+        currency: STRIPE_CONFIG.currency,
+        product_data: {
+          // Include quantity in name/description so it's clear on Stripe checkout
+          name: item.variant
+            ? `${item.product.name} - ${item.variant.name} (${item.variant.sku}) - Qty: ${item.quantity}`
+            : `${item.product.name} - Qty: ${item.quantity}`,
+          description: item.variant
+            ? `${item.product.name} - ${item.variant.name} (Quantity: ${item.quantity})`
+            : `${item.product.name} (Quantity: ${item.quantity})`,
+          images: item.product.image ? [item.product.image] : undefined,
+          metadata,
         },
+        unit_amount: unitAmountInPence, // Exact rounded total as unit_amount
       },
-      unit_amount: Math.round(item.pricePerUnit * 100), // Convert dollars to cents
-    },
-    quantity: item.quantity,
-  }));
+      quantity: 1, // Always 1, since unit_amount is the total for this line item
+    };
+  });
 }
 
 /**
@@ -91,12 +147,16 @@ export async function createCheckoutSession(params: {
         price_data: {
           currency: "gbp",
           product_data: {
-            name: shippingAmount > 0 ? `Shipping - ${shippingMethodId}` : `Free Shipping - ${shippingMethodId}`,
-            description: shippingAmount > 0 
-              ? `Delivery: ${shippingMethodId}` 
-              : `Free delivery: ${shippingMethodId}`,
+            name:
+              shippingAmount > 0
+                ? `Shipping - ${shippingMethodId}`
+                : `Free Shipping - ${shippingMethodId}`,
+            description:
+              shippingAmount > 0
+                ? `Delivery: ${shippingMethodId}`
+                : `Free delivery: ${shippingMethodId}`,
           },
-          unit_amount: Math.round(shippingAmount * 100), // Convert to pence (0 for free)
+          unit_amount: convertToStripeAmount(shippingAmount), // Convert to pence with precise rounding
         },
         quantity: 1,
       });
@@ -111,7 +171,7 @@ export async function createCheckoutSession(params: {
             name: "VAT (20%)",
             description: "Value Added Tax",
           },
-          unit_amount: Math.round(vatAmount * 100), // Convert to pence
+          unit_amount: convertToStripeAmount(vatAmount), // Convert to pence with precise rounding
         },
         quantity: 1,
       });

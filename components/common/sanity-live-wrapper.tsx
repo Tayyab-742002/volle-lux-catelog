@@ -1,5 +1,7 @@
 // This file must be a Server Component (no "use client")
-import { SanityLive } from "@/sanity/lib";
+// Import SanityLive directly from live.ts to avoid importing the main index
+// which might be evaluated in client component contexts
+import { SanityLive } from "@/sanity/lib/live";
 
 /**
  * Server Component wrapper for SanityLive
@@ -14,4 +16,6 @@ export function SanityLiveWrapper() {
   // defineLive (used internally) will throw an error if called outside Server Component context
   return <SanityLive />;
 }
+
+
 

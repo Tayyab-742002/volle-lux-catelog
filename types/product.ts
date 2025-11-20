@@ -1,8 +1,17 @@
+export interface QuantityOption {
+  label: string; // e.g., "50 Pouches", "100 Pouches"
+  quantity: number; // e.g., 50, 100, 500
+  unit: string; // e.g., "Pouches", "Packets"
+  pricePerUnit?: number; // Optional: specific price for this quantity option
+  isActive: boolean;
+}
+
 export interface ProductVariant {
   id: string;
   name: string;
   sku: string;
   price_adjustment: number;
+  quantityOptions?: QuantityOption[]; // Optional: only for products sold in packets/pouches
 }
 
 export interface PricingTier {

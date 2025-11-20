@@ -2,6 +2,10 @@
 // Before using it, import and render "<SanityLive />" in your layout, see
 // https://github.com/sanity-io/next-sanity#live-content-api for more information.
 
+// CRITICAL: Mark this module as server-only to prevent client component imports
+// This will throw an error at build time if imported in client components
+import "server-only";
+
 import { defineLive } from "next-sanity/live";
 import { client } from "./client";
 import { token, browserToken } from "../env";

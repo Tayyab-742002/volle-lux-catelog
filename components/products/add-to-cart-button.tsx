@@ -11,6 +11,7 @@ interface AddToCartButtonProps {
   product: Product;
   variant?: ProductVariant;
   quantity: number;
+  quantityOptionPrice?: number; // Price from selected quantity option
   disabled?: boolean;
 }
 
@@ -18,6 +19,7 @@ export function AddToCartButton({
   product,
   variant,
   quantity,
+  quantityOptionPrice,
   disabled = false,
 }: AddToCartButtonProps) {
   const [isAdded, setIsAdded] = useState(false);
@@ -25,7 +27,13 @@ export function AddToCartButton({
   const { user } = useAuth();
 
   const handleClick = async () => {
-    await addItem(product, variant, quantity, user?.id);
+    await addItem(
+      product,
+      variant,
+      quantity,
+      user?.id,
+      quantityOptionPrice
+    );
     setIsAdded(true);
 
     setTimeout(() => setIsAdded(false), 2000);

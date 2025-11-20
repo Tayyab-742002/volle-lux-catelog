@@ -10,7 +10,12 @@
 import { NextStudio } from "next-sanity/studio";
 import config from "../../../sanity.config";
 
-export const dynamic = "force-static";
+// Prevent Next.js from statically generating this page
+// This helps prevent unwanted refreshes during development
+export const dynamic = "force-dynamic";
+
+// Disable Next.js fast refresh for the studio to prevent auto-reloads
+export const revalidate = false;
 
 export { metadata, viewport } from "next-sanity/studio";
 
