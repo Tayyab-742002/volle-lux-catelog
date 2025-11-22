@@ -7,8 +7,9 @@ import { AccountDashboardClient } from "@/components/account/account-dashboard-c
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-// Cache for 30 seconds, revalidate in background
-export const revalidate = 30;
+// Dynamic page - always fetch fresh data for user account
+// No revalidation needed as this is user-specific data
+export const dynamic = 'force-dynamic';
 
 export default async function AccountDashboard() {
   // Get current user

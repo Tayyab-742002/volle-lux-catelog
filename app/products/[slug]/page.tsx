@@ -236,8 +236,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
   );
 }
 
-// Revalidate every 5 minutes, or use on-demand revalidation via webhook
-export const revalidate = 300;
+// Static generation with on-demand revalidation via Sanity webhooks
+// Pages will only revalidate when content changes in Sanity CMS
+export const revalidate = false;
 
 export async function generateStaticParams() {
   const slugs = (await getProductSlugs()) || [];

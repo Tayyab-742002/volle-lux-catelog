@@ -5,8 +5,9 @@ import { getAllCategories } from "@/sanity/lib";
 import { Breadcrumbs } from "@/components/common/breadcrumbs";
 import { Category } from "@/types/category";
 
-// Revalidate every 60 seconds to ensure fresh category data
-export const revalidate = 60;
+// Static generation with on-demand revalidation via Sanity webhooks
+// Pages will only revalidate when content changes in Sanity CMS
+export const revalidate = false;
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://bubblewrapshop.co.uk";
 
