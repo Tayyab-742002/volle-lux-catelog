@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { client } from "./client";
 // NOTE: We use client.fetch() directly instead of sanityFetch to avoid importing live.ts
 // This makes api.ts safe to import in any context (client or server)
@@ -42,56 +43,128 @@ import {
 // Products
 export async function getAllProducts() {
   return safeQuery(async () => {
-    const data = await client.fetch<SanityProduct[]>(ALL_PRODUCTS_QUERY);
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityProduct[]>(ALL_PRODUCTS_QUERY);
+      },
+      ['products-all'],
+      {
+        tags: ['products:all', 'products:list'],
+      }
+    );
+    const data = await fetchData();
     return data.map(transformSanityProduct);
   });
 }
 
 export async function getFeaturedProducts() {
   return safeQuery(async () => {
-    const data = await client.fetch<SanityProduct[]>(FEATURED_PRODUCTS_QUERY);
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityProduct[]>(FEATURED_PRODUCTS_QUERY);
+      },
+      ['products-featured'],
+      {
+        tags: ['products:featured', 'products:list'],
+      }
+    );
+    const data = await fetchData();
     return data.map(transformSanityProduct);
   });
 }
 
 export async function getNewArrivals() {
   return safeQuery(async () => {
-    const data = await client.fetch<SanityProduct[]>(NEW_ARRIVALS_QUERY);
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityProduct[]>(NEW_ARRIVALS_QUERY);
+      },
+      ['products-new'],
+      {
+        tags: ['products:new', 'products:list'],
+      }
+    );
+    const data = await fetchData();
     return data.map(transformSanityProduct);
   });
 }
 
 export async function getProductBySlug(slug: string) {
   return safeQuery(async () => {
-    const product = await client.fetch<SanityProduct | null>(PRODUCT_BY_SLUG_QUERY, { slug });
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityProduct | null>(PRODUCT_BY_SLUG_QUERY, { slug });
+      },
+      [`product-${slug}`],
+      {
+        tags: [`product:${slug}`, 'products:all'],
+      }
+    );
+    const product = await fetchData();
     return product ? transformSanityProduct(product) : null;
   });
 }
 
 export async function getProductsByCategory(categoryId: string) {
   return safeQuery(async () => {
-    const products = await client.fetch<SanityProduct[]>(PRODUCTS_BY_CATEGORY_QUERY, { categoryId });
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityProduct[]>(PRODUCTS_BY_CATEGORY_QUERY, { categoryId });
+      },
+      [`products-category-${categoryId}`],
+      {
+        tags: ['products:filtered', 'products:list'],
+      }
+    );
+    const products = await fetchData();
     return products.map(transformSanityProduct);
   });
 }
 
 export async function getProductsByCategorySlug(categorySlug: string) {
   return safeQuery(async () => {
-    const products = await client.fetch<SanityProduct[]>(PRODUCTS_BY_CATEGORY_SLUG_QUERY, { categorySlug });
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityProduct[]>(PRODUCTS_BY_CATEGORY_SLUG_QUERY, { categorySlug });
+      },
+      [`products-category-slug-${categorySlug}`],
+      {
+        tags: [`category:${categorySlug}`, 'products:filtered', 'products:list'],
+      }
+    );
+    const products = await fetchData();
     return products.map(transformSanityProduct);
   });
 }
 
 export async function getProductsByIds(ids: string[]) {
   return safeQuery(async () => {
-    const products = await client.fetch<SanityProduct[]>(PRODUCTS_BY_IDS_QUERY, { ids });
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityProduct[]>(PRODUCTS_BY_IDS_QUERY, { ids });
+      },
+      [`products-ids-${ids.sort().join('-')}`],
+      {
+        tags: ['products:all'],
+      }
+    );
+    const products = await fetchData();
     return products.map(transformSanityProduct);
   });
 }
 
 export async function searchProducts(searchTerm: string) {
   return safeQuery(async () => {
-    const products = await client.fetch<SanityProduct[]>(SEARCH_PRODUCTS_QUERY, { searchTerm });
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityProduct[]>(SEARCH_PRODUCTS_QUERY, { searchTerm });
+      },
+      [`products-search-${searchTerm}`],
+      {
+        tags: ['products:search', 'products:list'],
+      }
+    );
+    const products = await fetchData();
     return products.map(transformSanityProduct);
   });
 }
@@ -116,7 +189,17 @@ export async function getFilteredProducts(
       filterString
     ).replace("$orderBy", orderString);
 
-    const products = await client.fetch<SanityProduct[]>(query);
+    const cacheKey = `products-filtered-${JSON.stringify(filters)}-${sortBy}`;
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityProduct[]>(query);
+      },
+      [cacheKey],
+      {
+        tags: ['products:filtered', 'products:list'],
+      }
+    );
+    const products = await fetchData();
     return (products as SanityProduct[]).map(transformSanityProduct);
   });
 }
@@ -124,16 +207,34 @@ export async function getFilteredProducts(
 // Categories
 export async function getAllCategories() {
   return safeQuery(async () => {
-    const data = await client.fetch<SanityCategory[]>(ALL_CATEGORIES_QUERY);
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityCategory[]>(ALL_CATEGORIES_QUERY);
+      },
+      ['categories-all'],
+      {
+        tags: ['categories:all', 'homepage'],
+      }
+    );
+    const data = await fetchData();
     return data.map(transformSanityCategory);
   });
 }
 
 export async function getCategoriesWithFeaturedProducts() {
   return safeQuery(async () => {
-    const data = await client.fetch<Array<SanityCategory & { featuredProducts?: SanityProduct[] }>>(
-      CATEGORIES_WITH_FEATURED_PRODUCTS_QUERY
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<Array<SanityCategory & { featuredProducts?: SanityProduct[] }>>(
+          CATEGORIES_WITH_FEATURED_PRODUCTS_QUERY
+        );
+      },
+      ['categories-featured'],
+      {
+        tags: ['categories:all', 'homepage'],
+      }
     );
+    const data = await fetchData();
     if (!data) return null;
 
     return data.map((item) => ({
@@ -153,7 +254,16 @@ export async function getCategoriesWithFeaturedProducts() {
 
 export async function getCategoryBySlug(slug: string) {
   return safeQuery(async () => {
-    const category = await client.fetch<SanityCategory | null>(CATEGORY_BY_SLUG_QUERY, { slug });
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityCategory | null>(CATEGORY_BY_SLUG_QUERY, { slug });
+      },
+      [`category-${slug}`],
+      {
+        tags: [`category:${slug}`, 'categories:all'],
+      }
+    );
+    const category = await fetchData();
     return category ? transformSanityCategory(category) : null;
   });
 }
@@ -169,7 +279,16 @@ export async function getProductCountByCategory(categoryId: string) {
 // Banners
 export async function getAllBanners() {
   return safeQuery(async () => {
-    const data = await client.fetch<SanityBanner[]>(ALL_BANNERS_QUERY);
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityBanner[]>(ALL_BANNERS_QUERY);
+      },
+      ['banners-all'],
+      {
+        tags: ['banners', 'homepage'],
+      }
+    );
+    const data = await fetchData();
     return data.map(transformSanityBanner);
   });
 }
@@ -177,7 +296,16 @@ export async function getAllBanners() {
 // Announcements
 export async function getActiveAnnouncement() {
   return safeQuery(async () => {
-    const data = await client.fetch<SanityAnnouncement | null>(ACTIVE_ANNOUNCEMENT_QUERY);
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<SanityAnnouncement | null>(ACTIVE_ANNOUNCEMENT_QUERY);
+      },
+      ['announcement-active'],
+      {
+        tags: ['announcements', 'homepage'],
+      }
+    );
+    const data = await fetchData();
     return data ? transformSanityAnnouncement(data) : null;
   });
 }
@@ -185,11 +313,20 @@ export async function getActiveAnnouncement() {
 // Homepage data
 export async function getHomepageData() {
   return safeQuery(async () => {
-    const data = await client.fetch<{
-      categories: SanityCategory[];
-      featuredProducts: SanityProduct[];
-      newArrivals: SanityProduct[];
-    }>(HOMEPAGE_DATA_QUERY);
+    const fetchData = unstable_cache(
+      async () => {
+        return await client.fetch<{
+          categories: SanityCategory[];
+          featuredProducts: SanityProduct[];
+          newArrivals: SanityProduct[];
+        }>(HOMEPAGE_DATA_QUERY);
+      },
+      ['homepage-data'],
+      {
+        tags: ['homepage', 'categories:all', 'products:featured', 'products:new'],
+      }
+    );
+    const data = await fetchData();
 
     const typed = data as {
       categories: SanityCategory[];

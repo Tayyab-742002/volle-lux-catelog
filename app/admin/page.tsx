@@ -10,8 +10,9 @@ import {
 } from "@/services/admin/admin-server.service";
 import { AdminDashboardClient } from "@/components/admin/admin-dashboard-client";
 
-// Cache for 30 seconds
-export const revalidate = 30;
+// Dynamic page - always fetch fresh data for admin dashboard
+// No revalidation needed as this is user-specific data
+export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
   // Check authentication and admin role

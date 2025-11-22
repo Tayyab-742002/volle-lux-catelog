@@ -5,8 +5,9 @@ import { Breadcrumbs } from "@/components/common/breadcrumbs";
 import { ProductGridWrapper } from "@/components/products/product-grid-wrapper";
 import { getAllCategories } from "@/sanity/lib";
 
-// Revalidate every 60 seconds, or use on-demand revalidation via webhook
-export const revalidate = 60;
+// Static generation with on-demand revalidation via Sanity webhooks
+// Pages will only revalidate when content changes in Sanity CMS
+export const revalidate = false;
 
 /**
  * Products Page Metadata
