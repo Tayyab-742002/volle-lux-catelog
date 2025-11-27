@@ -17,8 +17,7 @@ export interface ProductVariant {
 export interface PricingTier {
   minQuantity: number;
   maxQuantity?: number;
-  pricePerUnit: number;
-  discount?: number;
+  discount: number; // Required: Discount percentage (0-100)
   label?: string; // e.g., "Wholesale", "10% Off"
 }
 

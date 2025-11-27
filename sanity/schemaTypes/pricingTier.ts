@@ -18,17 +18,11 @@ export const pricingTier = defineType({
       description: "Leave empty for unlimited quantity",
     }),
     defineField({
-      name: "pricePerUnit",
-      title: "Price Per Unit",
-      type: "number",
-      validation: (Rule) => Rule.required().min(0),
-    }),
-    defineField({
       name: "discount",
       title: "Discount Percentage",
       type: "number",
-      validation: (Rule) => Rule.min(0).max(100),
-      description: "Discount percentage (0-100)",
+      validation: (Rule) => Rule.required().min(0).max(100),
+      description: "Discount percentage applied to the product base price (0-100)",
     }),
     defineField({
       name: "label",
@@ -41,14 +35,15 @@ export const pricingTier = defineType({
     select: {
       minQty: "minQuantity",
       maxQty: "maxQuantity",
-      price: "pricePerUnit",
+      discount: "discount",
       label: "label",
     },
-    prepare({ minQty, maxQty, price, label }) {
+    prepare({ minQty, maxQty, discount, label }) {
       const quantityRange = maxQty ? `${minQty}-${maxQty}` : `${minQty}+`;
+      const discountText = discount ? `${discount}% off` : "";
       const displayLabel = label ? ` (${label})` : "";
       return {
-        title: `${quantityRange} units: $${price}${displayLabel}`,
+        title: `${quantityRange} units: ${discountText}${displayLabel}`,
       };
     },
   },

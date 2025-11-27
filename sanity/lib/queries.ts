@@ -70,7 +70,6 @@ export const PRODUCT_QUERY = `
   pricingTiers[] {
     minQuantity,
     maxQuantity,
-    pricePerUnit,
     discount,
     label
   },
