@@ -38,7 +38,7 @@ export function QuantityPriceSelector({
   const [quantity, setQuantity] = useState(displayQuantity);
   const [quantityInput, setQuantityInput] = useState<string>(displayQuantity.toString());
 
-  // Update quantity when initialQuantity or baseQuantity changes
+  // Update quantity when initialQuantity, baseQuantity, or minQuantity changes
   useEffect(() => {
     const newDisplayQuantity = Math.max(
       minQuantity,

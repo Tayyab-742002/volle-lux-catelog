@@ -238,16 +238,18 @@ export function ProductPurchaseSection({
         selectedVariant.quantityOptions.length > 0 ? (
           // Quantity selector for products with quantity options
           // Auto-selects quantity option based on input
+          // Key prop ensures component remounts when variant changes, resetting quantity
           (() => {
             const minQuantity = getMinimumQuantity(
               selectedVariant.quantityOptions
             );
             return (
               <QuantityPriceSelector
+                key={`quantity-selector-${selectedVariant?.id || "no-variant"}-${selectedQuantityOption?.quantity || "no-option"}`}
                 pricingTiers={product.pricingTiers || []}
                 basePrice={product.basePrice}
                 variantPriceAdjustment={selectedVariant?.price_adjustment || 0}
-                initialQuantity={selectedQuantityOption ? quantity : 1}
+                initialQuantity={1}
                 baseQuantity={selectedQuantityOption?.quantity || 0}
                 quantityOptionPrice={selectedQuantityOption?.pricePerUnit}
                 minQuantity={minQuantity}
@@ -284,10 +286,13 @@ export function ProductPurchaseSection({
           })()
         ) : (
           // Standard quantity selector for products without quantity options
+          // Key prop ensures component remounts when variant changes, resetting quantity
           <QuantityPriceSelector
+            key={`quantity-selector-${selectedVariant?.id || "no-variant"}`}
             pricingTiers={product.pricingTiers || []}
             basePrice={product.basePrice}
             variantPriceAdjustment={selectedVariant?.price_adjustment || 0}
+            initialQuantity={1}
             onQuantityChange={setQuantity}
           />
         )}
