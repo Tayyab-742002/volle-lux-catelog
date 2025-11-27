@@ -13,6 +13,7 @@ interface ProductPurchaseSectionProps {
 }
 
 // Helper function to get the first/lowest quantity option
+// Skips quantity = 1 options (they're hidden from display but used for discount calculations)
 function getFirstQuantityOption(
   quantityOptions?: ProductVariant["quantityOptions"]
 ): { quantity: number; pricePerUnit?: number } | null {
@@ -21,7 +22,7 @@ function getFirstQuantityOption(
   }
 
   const activeOptions = quantityOptions
-    .filter((opt) => opt.isActive)
+    .filter((opt) => opt.isActive && opt.quantity !== 1) // Skip quantity = 1
     .sort((a, b) => a.quantity - b.quantity);
 
   if (activeOptions.length > 0) {
@@ -33,6 +34,26 @@ function getFirstQuantityOption(
   }
 
   return null;
+}
+
+// Helper function to get the minimum quantity from visible options
+// Returns the smallest quantity option (excluding quantity = 1) or 1 if no options
+function getMinimumQuantity(
+  quantityOptions?: ProductVariant["quantityOptions"]
+): number {
+  if (!quantityOptions || quantityOptions.length === 0) {
+    return 1; // Default minimum
+  }
+
+  const visibleOptions = quantityOptions
+    .filter((opt) => opt.isActive && opt.quantity !== 1) // Skip quantity = 1
+    .sort((a, b) => a.quantity - b.quantity);
+
+  if (visibleOptions.length > 0) {
+    return visibleOptions[0].quantity;
+  }
+
+  return 1; // Default minimum if no visible options
 }
 
 export function ProductPurchaseSection({
@@ -79,6 +100,7 @@ export function ProductPurchaseSection({
 
   // Helper function to find the best matching quantity option
   // Returns the largest quantity option that is <= the input quantity
+  // Skips quantity = 1 options (they're hidden from display but used for discount calculations)
   const findMatchingQuantityOption = (
     inputQuantity: number,
     quantityOptions?: ProductVariant["quantityOptions"]
@@ -87,9 +109,9 @@ export function ProductPurchaseSection({
       return null;
     }
 
-    // Filter active options and sort by quantity descending
+    // Filter active options (excluding quantity = 1) and sort by quantity descending
     const activeOptions = quantityOptions
-      .filter((opt) => opt.isActive)
+      .filter((opt) => opt.isActive && opt.quantity !== 1) // Skip quantity = 1
       .sort((a, b) => b.quantity - a.quantity);
 
     // Find the largest option that is <= input quantity
@@ -216,42 +238,61 @@ export function ProductPurchaseSection({
         selectedVariant.quantityOptions.length > 0 ? (
           // Quantity selector for products with quantity options
           // Auto-selects quantity option based on input
-          <QuantityPriceSelector
-            pricingTiers={product.pricingTiers || []}
-            basePrice={product.basePrice}
-            variantPriceAdjustment={selectedVariant?.price_adjustment || 0}
-            initialQuantity={selectedQuantityOption ? quantity : 1}
-            baseQuantity={selectedQuantityOption?.quantity || 0}
-            quantityOptionPrice={selectedQuantityOption?.pricePerUnit}
-            onQuantityChange={(newTotalQuantity) => {
-              // Auto-select the best matching quantity option
-              const matchingOption = findMatchingQuantityOption(
-                newTotalQuantity,
-                selectedVariant.quantityOptions
-              );
+          // Key prop ensures component remounts when variant changes, resetting quantity
+          (() => {
+            const minQuantity = getMinimumQuantity(
+              selectedVariant.quantityOptions
+            );
+            return (
+              <QuantityPriceSelector
+                key={`quantity-selector-${selectedVariant?.id || "no-variant"}-${selectedQuantityOption?.quantity || "no-option"}`}
+                pricingTiers={product.pricingTiers || []}
+                basePrice={product.basePrice}
+                variantPriceAdjustment={selectedVariant?.price_adjustment || 0}
+                initialQuantity={1}
+                baseQuantity={selectedQuantityOption?.quantity || 0}
+                quantityOptionPrice={selectedQuantityOption?.pricePerUnit}
+                minQuantity={minQuantity}
+                onQuantityChange={(newTotalQuantity) => {
+                  // Enforce minimum quantity
+                  const enforcedQuantity = Math.max(
+                    minQuantity,
+                    newTotalQuantity
+                  );
 
-              if (matchingOption) {
-                // If a matching option is found, select it
-                setSelectedQuantityOption(matchingOption);
-                // Calculate additional quantity beyond the base option
-                const additionalQuantity =
-                  newTotalQuantity - matchingOption.quantity;
-                setQuantity(Math.max(1, additionalQuantity + 1));
-              } else {
-                // No matching option found, use direct quantity
-                // This happens when input is less than the smallest option
-                setSelectedQuantityOption(null);
-                setQuantity(newTotalQuantity);
-              }
-            }}
-            showQuantityInput={true}
-          />
+                  // Auto-select the best matching quantity option
+                  const matchingOption = findMatchingQuantityOption(
+                    enforcedQuantity,
+                    selectedVariant.quantityOptions
+                  );
+
+                  if (matchingOption) {
+                    // If a matching option is found, select it
+                    setSelectedQuantityOption(matchingOption);
+                    // Calculate additional quantity beyond the base option
+                    const additionalQuantity =
+                      enforcedQuantity - matchingOption.quantity;
+                    setQuantity(Math.max(1, additionalQuantity + 1));
+                  } else {
+                    // No matching option found, use direct quantity
+                    // This happens when input is less than the smallest option
+                    setSelectedQuantityOption(null);
+                    setQuantity(enforcedQuantity);
+                  }
+                }}
+                showQuantityInput={true}
+              />
+            );
+          })()
         ) : (
           // Standard quantity selector for products without quantity options
+          // Key prop ensures component remounts when variant changes, resetting quantity
           <QuantityPriceSelector
+            key={`quantity-selector-${selectedVariant?.id || "no-variant"}`}
             pricingTiers={product.pricingTiers || []}
             basePrice={product.basePrice}
             variantPriceAdjustment={selectedVariant?.price_adjustment || 0}
+            initialQuantity={1}
             onQuantityChange={setQuantity}
           />
         )}

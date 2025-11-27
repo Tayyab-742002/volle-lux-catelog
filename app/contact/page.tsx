@@ -283,7 +283,7 @@ export default function ContactPage() {
                       Office
                     </h3>
                     <p className="text-sm text-gray-700 leading-relaxed">
-                      Bubble Wrap Shop (NW) Ltd
+                      Bubble wrap shop (Blackburn) Limited
                       <br />
                       Unit BR16 Blakewater Road
                       <br />

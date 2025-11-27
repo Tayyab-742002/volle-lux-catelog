@@ -235,7 +235,7 @@ export function Footer() {
         <div className="mt-16 border-t border-emerald-800/50 pt-8">
           <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
             <p className="text-sm text-gray-400">
-              © {new Date().getFullYear()} Bubble Wrap Shop (NW) Ltd. All
+              © {new Date().getFullYear()} Bubble wrap shop (Blackburn) Limited. All
               rights reserved.
             </p>
             <div className="flex gap-6 text-sm">

@@ -14,6 +14,7 @@ interface QuantityPriceSelectorProps {
   baseQuantity?: number; // Base quantity from quantity option (for calculating total)
   quantityOptionPrice?: number; // Price per unit from selected quantity option (takes priority)
   showQuantityInput?: boolean; // Whether to show the quantity input field
+  minQuantity?: number; // Minimum allowed quantity (defaults to 1)
 }
 
 export function QuantityPriceSelector({
@@ -25,19 +26,27 @@ export function QuantityPriceSelector({
   baseQuantity = 0, // If set, this is the base from quantity option
   quantityOptionPrice, // Price per unit from selected quantity option
   showQuantityInput = true,
+  minQuantity = 1, // Minimum allowed quantity
 }: QuantityPriceSelectorProps) {
   // Calculate the actual quantity to display (base + additional)
-  const displayQuantity = baseQuantity > 0 ? baseQuantity + (initialQuantity - 1) : initialQuantity;
+  // Ensure it's at least the minimum quantity
+  const displayQuantity = Math.max(
+    minQuantity,
+    baseQuantity > 0 ? baseQuantity + (initialQuantity - 1) : initialQuantity
+  );
   
   const [quantity, setQuantity] = useState(displayQuantity);
   const [quantityInput, setQuantityInput] = useState<string>(displayQuantity.toString());
 
-  // Update quantity when initialQuantity or baseQuantity changes
+  // Update quantity when initialQuantity, baseQuantity, or minQuantity changes
   useEffect(() => {
-    const newDisplayQuantity = baseQuantity > 0 ? baseQuantity + (initialQuantity - 1) : initialQuantity;
+    const newDisplayQuantity = Math.max(
+      minQuantity,
+      baseQuantity > 0 ? baseQuantity + (initialQuantity - 1) : initialQuantity
+    );
     setQuantity(newDisplayQuantity);
     setQuantityInput(newDisplayQuantity.toString());
-  }, [initialQuantity, baseQuantity]);
+  }, [initialQuantity, baseQuantity, minQuantity]);
 
   // Calculate the active tier and price based on quantity
   // Priority: quantity option price > pricing tiers > base price
@@ -118,19 +127,20 @@ export function QuantityPriceSelector({
     }
     
     const numValue = parseInt(value, 10);
-    if (!isNaN(numValue) && numValue > 0) {
+    if (!isNaN(numValue) && numValue >= minQuantity) {
       setQuantity(numValue);
       onQuantityChange?.(numValue);
     }
   };
 
   const handleQuantityBlur = () => {
-    // When user leaves the field, ensure it has a valid value
+    // When user leaves the field, ensure it has a valid value (at least minQuantity)
     const numValue = parseInt(quantityInput, 10);
-    if (isNaN(numValue) || numValue < 1) {
-      setQuantityInput("1");
-      setQuantity(1);
-      onQuantityChange?.(1);
+    if (isNaN(numValue) || numValue < minQuantity) {
+      const enforcedQuantity = minQuantity;
+      setQuantityInput(enforcedQuantity.toString());
+      setQuantity(enforcedQuantity);
+      onQuantityChange?.(enforcedQuantity);
     } else {
       setQuantityInput(numValue.toString());
     }
@@ -148,7 +158,7 @@ export function QuantityPriceSelector({
             id="quantity"
             type="text"
             inputMode="numeric"
-            min="1"
+            min={minQuantity.toString()}
             value={quantityInput}
             onChange={(e) => {
               const value = e.target.value;
@@ -159,6 +169,7 @@ export function QuantityPriceSelector({
             }}
             onBlur={handleQuantityBlur}
             className="w-32 border border-gray-400 focus-visible:ring-emerald-600/50! focus-visible:ring-2!"
+            aria-label={`Quantity (minimum ${minQuantity})`}
           />
         </div>
       )}

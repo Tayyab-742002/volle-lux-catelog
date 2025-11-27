@@ -560,7 +560,7 @@ export const OrderConfirmationEmail: React.FC<
                         color: colors.textLight,
                       }}
                     >
-                      © {new Date().getFullYear()} Bubble Wrap Shop. All rights reserved.
+                      © {new Date().getFullYear()} Bubble wrap shop (Blackburn) Limited. All rights reserved.
                     </p>
                   </td>
                 </tr>
