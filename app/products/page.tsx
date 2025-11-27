@@ -5,10 +5,10 @@ import { Breadcrumbs } from "@/components/common/breadcrumbs";
 import { ProductGridWrapper } from "@/components/products/product-grid-wrapper";
 import { getAllCategories } from "@/sanity/lib";
 
-// Revalidation strategy:
-// - Development: Immediate revalidation (0 seconds) for instant updates
-// - Production: On-demand revalidation via Sanity webhooks only
-export const revalidate = process.env.NODE_ENV === 'development' ? 0 : false;
+// Revalidation strategy: On-demand revalidation via Sanity webhooks
+// Pages will only revalidate when content changes in Sanity CMS
+// For development, use `npm run dev` which has hot reloading
+export const revalidate = false;
 
 /**
  * Products Page Metadata
