@@ -236,8 +236,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
   );
 }
 
-// Static generation with on-demand revalidation via Sanity webhooks
+// Revalidation strategy: On-demand revalidation via Sanity webhooks
 // Pages will only revalidate when content changes in Sanity CMS
+// For development, use `npm run dev` which has hot reloading
 export const revalidate = false;
 
 export async function generateStaticParams() {

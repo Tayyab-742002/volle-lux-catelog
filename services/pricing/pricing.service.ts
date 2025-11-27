@@ -31,7 +31,7 @@ export function getActivePricingTier(
 
 /**
  * Calculate price per unit based on quantity and tiers
- * TODO: Use Sanity CMS pricing tiers
+ * Applies discount percentage from the active tier to the base price
  */
 export function calculatePricePerUnit(
   quantity: number,
@@ -46,7 +46,18 @@ export function calculatePricePerUnit(
   }
 
   const activeTier = getActivePricingTier(quantity, tiers);
-  return activeTier?.pricePerUnit || adjustedBasePrice;
+  
+  if (!activeTier) {
+    return adjustedBasePrice;
+  }
+
+  // Apply discount percentage to base price
+  if (activeTier.discount > 0) {
+    return adjustedBasePrice * (1 - activeTier.discount / 100);
+  }
+
+  // No discount, return base price
+  return adjustedBasePrice;
 }
 
 /**
@@ -81,16 +92,14 @@ export async function getPricingTiers(
 }
 
 /**
- * Calculate discount percentage for a tier
+ * Get discount percentage for a tier
+ * Since discount is now stored directly in the tier, just return it
  */
 export function calculateDiscountPercentage(
   tier: PricingTier,
   basePrice: number
 ): number {
-  if (!tier.pricePerUnit || tier.pricePerUnit >= basePrice) {
-    return 0;
-  }
-  return Math.round(((basePrice - tier.pricePerUnit) / basePrice) * 100);
+  return tier.discount || 0;
 }
 
 /**

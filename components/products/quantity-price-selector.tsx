@@ -10,6 +10,10 @@ interface QuantityPriceSelectorProps {
   basePrice: number;
   variantPriceAdjustment?: number;
   onQuantityChange?: (quantity: number) => void;
+  initialQuantity?: number; // For products with quantity options (base quantity)
+  baseQuantity?: number; // Base quantity from quantity option (for calculating total)
+  quantityOptionPrice?: number; // Price per unit from selected quantity option (takes priority)
+  showQuantityInput?: boolean; // Whether to show the quantity input field
 }
 
 export function QuantityPriceSelector({
@@ -17,13 +21,42 @@ export function QuantityPriceSelector({
   basePrice,
   variantPriceAdjustment = 0,
   onQuantityChange,
+  initialQuantity = 1,
+  baseQuantity = 0, // If set, this is the base from quantity option
+  quantityOptionPrice, // Price per unit from selected quantity option
+  showQuantityInput = true,
 }: QuantityPriceSelectorProps) {
-  const [quantity, setQuantity] = useState(1);
-  const [quantityInput, setQuantityInput] = useState<string>("1");
+  // Calculate the actual quantity to display (base + additional)
+  const displayQuantity = baseQuantity > 0 ? baseQuantity + (initialQuantity - 1) : initialQuantity;
+  
+  const [quantity, setQuantity] = useState(displayQuantity);
+  const [quantityInput, setQuantityInput] = useState<string>(displayQuantity.toString());
+
+  // Update quantity when initialQuantity or baseQuantity changes
+  useEffect(() => {
+    const newDisplayQuantity = baseQuantity > 0 ? baseQuantity + (initialQuantity - 1) : initialQuantity;
+    setQuantity(newDisplayQuantity);
+    setQuantityInput(newDisplayQuantity.toString());
+  }, [initialQuantity, baseQuantity]);
 
   // Calculate the active tier and price based on quantity
-  const { activeTier, pricePerUnit, totalPrice } = useMemo(() => {
+  // Priority: quantity option price > pricing tiers > base price
+  const { activeTier, pricePerUnit, totalPrice, savings } = useMemo(() => {
     const adjustedBasePrice = basePrice + variantPriceAdjustment;
+
+    // If quantity option has a specific price, use it (highest priority)
+    if (quantityOptionPrice !== undefined && quantityOptionPrice > 0) {
+      const total = quantityOptionPrice * quantity;
+      const baseTotal = adjustedBasePrice * quantity;
+      const savingsAmount = Math.max(0, baseTotal - total);
+      
+      return {
+        activeTier: null, // No tier when using quantity option price
+        pricePerUnit: quantityOptionPrice,
+        totalPrice: total,
+        savings: savingsAmount,
+      };
+    }
 
     // If no tiers, use base price
     if (!pricingTiers || pricingTiers.length === 0) {
@@ -31,25 +64,44 @@ export function QuantityPriceSelector({
         activeTier: null,
         pricePerUnit: adjustedBasePrice,
         totalPrice: adjustedBasePrice * quantity,
+        savings: 0,
       };
     }
 
     // Find the appropriate tier based on quantity
-    const tier = pricingTiers.find((t) => {
+    // Sort tiers by minQuantity descending to find the highest applicable tier
+    const sortedTiers = [...pricingTiers].sort((a, b) => b.minQuantity - a.minQuantity);
+    const tier = sortedTiers.find((t) => {
       const minMatch = quantity >= t.minQuantity;
       const maxMatch = t.maxQuantity ? quantity <= t.maxQuantity : true;
       return minMatch && maxMatch;
     });
 
-    // Use the tier price if found, otherwise use base price
-    const unitPrice = tier?.pricePerUnit || adjustedBasePrice;
+    if (!tier) {
+      return {
+        activeTier: null,
+        pricePerUnit: adjustedBasePrice,
+        totalPrice: adjustedBasePrice * quantity,
+        savings: 0,
+      };
+    }
+
+    // Calculate price per unit using discount percentage
+    const unitPrice = tier.discount > 0
+      ? adjustedBasePrice * (1 - tier.discount / 100)
+      : adjustedBasePrice;
+
+    const total = unitPrice * quantity;
+    const baseTotal = adjustedBasePrice * quantity;
+    const savingsAmount = Math.max(0, baseTotal - total);
 
     return {
-      activeTier: tier || null,
+      activeTier: tier,
       pricePerUnit: unitPrice,
-      totalPrice: unitPrice * quantity,
+      totalPrice: total,
+      savings: savingsAmount,
     };
-  }, [quantity, pricingTiers, basePrice, variantPriceAdjustment]);
+  }, [quantity, pricingTiers, basePrice, variantPriceAdjustment, quantityOptionPrice]);
 
   // Sync input when quantity changes externally
   useEffect(() => {
@@ -87,27 +139,29 @@ export function QuantityPriceSelector({
   return (
     <div className="space-y-6">
       {/* Quantity Input */}
-      <div className="space-y-2">
-        <Label htmlFor="quantity" className="label-luxury">
-          Quantity
-        </Label>
-        <Input
-          id="quantity"
-          type="text"
-          inputMode="numeric"
-          min="1"
-          value={quantityInput}
-          onChange={(e) => {
-            const value = e.target.value;
-            // Only allow numbers and empty string
-            if (value === "" || /^\d+$/.test(value)) {
-              handleQuantityChange(value);
-            }
-          }}
-          onBlur={handleQuantityBlur}
-          className="w-32 border border-gray-400 focus-visible:ring-emerald-600/50! focus-visible:ring-2!"
-        />
-      </div>
+      {showQuantityInput && (
+        <div className="space-y-2">
+          <Label htmlFor="quantity" className="label-luxury">
+            Quantity
+          </Label>
+          <Input
+            id="quantity"
+            type="text"
+            inputMode="numeric"
+            min="1"
+            value={quantityInput}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Only allow numbers and empty string
+              if (value === "" || /^\d+$/.test(value)) {
+                handleQuantityChange(value);
+              }
+            }}
+            onBlur={handleQuantityBlur}
+            className="w-32 border border-gray-400 focus-visible:ring-emerald-600/50! focus-visible:ring-2!"
+          />
+        </div>
+      )}
 
       {/* Dynamic Price Display */}
       <div className="space-y-2 rounded-lg border border-gray-300 bg-white p-6">
@@ -125,9 +179,18 @@ export function QuantityPriceSelector({
             </span>
           </div>
         )}
-        {activeTier?.label && (
-          <div className="mt-2 inline-block rounded-full bg-linear-to-r from-emerald-600 to-teal-600 px-3 py-1 text-xs font-semibold text-white shadow-md">
-            {activeTier.label}
+        {activeTier && (
+          <div className="mt-2 flex items-center gap-2 flex-wrap">
+            {activeTier.label && (
+              <div className="inline-block rounded-full bg-linear-to-r from-emerald-600 to-teal-600 px-3 py-1 text-xs font-semibold text-white shadow-md">
+                {activeTier.label}
+              </div>
+            )}
+            {savings > 0 && (
+              <div className="text-sm text-emerald-600 font-medium">
+                Save £{savings.toFixed(2)}
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
@@ -17,22 +17,44 @@ interface CartItemProps {
 export function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeItem } = useCartStore();
   const { user } = useAuth();
-  const [quantityInput, setQuantityInput] = useState<string>(item.quantity.toString());
+  const [quantityInput, setQuantityInput] = useState<string>(
+    item.quantity.toString()
+  );
+
+  // Calculate pricing details (matching product purchase page logic)
+  const pricingDetails = useMemo(() => {
+    const adjustedBasePrice =
+      item.product.basePrice + (item.variant?.price_adjustment || 0);
+    const baseTotal = adjustedBasePrice * item.quantity;
+    const savings = Math.max(0, baseTotal - item.totalPrice);
+    const hasDiscount = savings > 0;
+
+    return {
+      adjustedBasePrice,
+      baseTotal,
+      savings,
+      hasDiscount,
+    };
+  }, [
+    item.product.basePrice,
+    item.variant?.price_adjustment,
+    item.quantity,
+    item.totalPrice,
+  ]);
 
   // Sync input when item quantity changes externally
-  useEffect(() => {
-    setQuantityInput(item.quantity.toString());
-  }, [item.quantity]);
+  // Use key prop on Input to reset when quantity changes externally
+  // This avoids the useEffect setState warning
 
   const handleQuantityChange = (value: string) => {
     // Allow empty string for easier editing
     setQuantityInput(value);
-    
+
     // Only update if it's a valid number
     if (value === "") {
       return; // Allow empty temporarily
     }
-    
+
     const numValue = parseInt(value, 10);
     if (!isNaN(numValue) && numValue > 0) {
       updateQuantity(item.id, numValue, user?.id);
@@ -87,6 +109,7 @@ export function CartItem({ item }: CartItemProps) {
           {/* Quantity Selector */}
           <div className="flex items-center gap-2">
             <Input
+              key={`quantity-${item.id}-${item.quantity}`}
               type="text"
               inputMode="numeric"
               min="1"
@@ -104,16 +127,32 @@ export function CartItem({ item }: CartItemProps) {
           </div>
 
           {/* Price & Remove */}
-          <div className="flex items-center gap-4">
-            <span className="font-semibold">£{item.totalPrice.toFixed(2)}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleRemove}
-              className="h-8 w-8 text-destructive hover:text-destructive"
-            >
-              <Trash2 className="h-4 w-4" strokeWidth={1.5} />
-            </Button>
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col items-end">
+                <span className="font-semibold text-lg">
+                  £{item.totalPrice.toFixed(2)}
+                </span>
+                {pricingDetails.hasDiscount && (
+                  <span className="text-xs text-emerald-600 font-medium">
+                    Save £{pricingDetails.savings.toFixed(2)}
+                  </span>
+                )}
+                {item.quantity > 1 && (
+                  <span className="text-xs text-gray-500">
+                    £{item.pricePerUnit.toFixed(2)} per unit
+                  </span>
+                )}
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleRemove}
+                className="h-8 w-8 text-destructive hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" strokeWidth={1.5} />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

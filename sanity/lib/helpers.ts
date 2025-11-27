@@ -82,8 +82,7 @@ export interface SanityProduct {
   pricingTiers?: Array<{
     minQuantity: number;
     maxQuantity?: number;
-    pricePerUnit: number;
-    discount?: number;
+    discount: number; // Required: Discount percentage (0-100)
     label?: string;
   }>;
   specifications?: Array<{
@@ -243,8 +242,7 @@ export function transformSanityProduct(sanityProduct: SanityProduct) {
       sanityProduct.pricingTiers?.map((tier) => ({
         minQuantity: tier.minQuantity,
         maxQuantity: tier.maxQuantity,
-        pricePerUnit: tier.pricePerUnit,
-        discount: tier.discount,
+        discount: tier.discount || 0, // Required field, default to 0 if missing
         label: tier.label,
       })) || [],
     specifications:

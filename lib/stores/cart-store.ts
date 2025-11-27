@@ -10,9 +10,12 @@ import {
 import {
   DEFAULT_SHIPPING_OPTION,
   getShippingPrice,
-  type ShippingCalculation
+  type ShippingCalculation,
 } from "@/types/shipping";
-import { calculateOrderTotal } from "@/services/pricing/pricing.service";
+import {
+  calculateOrderTotal,
+  calculatePricePerUnit,
+} from "@/services/pricing/pricing.service";
 
 interface CartStore {
   items: CartItem[];
@@ -35,7 +38,10 @@ interface CartStore {
   clearCart: (userId?: string) => Promise<void>;
   setShippingMethod: (shippingId: string) => void;
   getCartSummary: () => Cart;
-  getCartSummaryWithShipping: () => ShippingCalculation & { items: CartItem[]; discount: number };
+  getCartSummaryWithShipping: () => ShippingCalculation & {
+    items: CartItem[];
+    discount: number;
+  };
   getItemCount: () => number;
   initializeCart: (userId?: string) => Promise<void>;
   syncCart: (userId?: string) => Promise<void>;
@@ -80,32 +86,35 @@ function clearGuestCartFromLocalStorage(): void {
 }
 
 // Helper function to calculate price per unit based on pricing tiers
-function calculatePricePerUnit(
+// Uses the pricing service for consistency
+// Priority: quantity option price > pricing tiers > base price
+// Matches the logic from product-purchase-section.tsx
+function calculateItemPricePerUnit(
   quantity: number,
   basePrice: number,
   variantAdjustment: number,
   pricingTiers?: PricingTier[],
   quantityOptionPrice?: number // Price from selected quantity option (takes priority)
 ): number {
-  // If quantity option has a specific price, use that (highest priority)
-  if (quantityOptionPrice !== undefined) {
+  const adjustedBasePrice = basePrice + variantAdjustment;
+
+  // If quantity option has a specific pricePerUnit, use it (highest priority)
+  if (quantityOptionPrice !== undefined && quantityOptionPrice > 0) {
     return quantityOptionPrice;
   }
 
-  const adjustedBasePrice = basePrice + variantAdjustment;
-
-  if (!pricingTiers || pricingTiers.length === 0) {
-    return adjustedBasePrice;
+  // If pricing tiers exist, apply them based on quantity
+  if (pricingTiers && pricingTiers.length > 0) {
+    return calculatePricePerUnit(
+      quantity,
+      basePrice,
+      pricingTiers,
+      variantAdjustment
+    );
   }
 
-  // Find the appropriate tier based on quantity
-  const tier = pricingTiers.find((t) => {
-    const minMatch = quantity >= t.minQuantity;
-    const maxMatch = t.maxQuantity ? quantity <= t.maxQuantity : true;
-    return minMatch && maxMatch;
-  });
-
-  return tier?.pricePerUnit || adjustedBasePrice;
+  // Fallback to base + variant adjustment
+  return adjustedBasePrice;
 }
 
 export const useCartStore = create<CartStore>()((set, get) => ({
@@ -146,7 +155,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
   syncCart: async (userId?: string) => {
     const { items, isLoading } = get();
     if (isLoading) {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.log("Cart sync skipped: cart is loading");
       }
       return;
@@ -155,7 +164,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
     try {
       if (userId) {
         // Sync authenticated user cart to Supabase
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("Syncing cart to Supabase:", {
             itemCount: items.length,
             userId,
@@ -163,13 +172,13 @@ export const useCartStore = create<CartStore>()((set, get) => ({
         }
 
         await saveCartToSupabase(items, userId);
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("Cart synced successfully to Supabase");
         }
       } else {
         // Sync guest cart to localStorage
         saveGuestCartToLocalStorage(items);
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("Guest cart synced to localStorage");
         }
       }
@@ -178,9 +187,15 @@ export const useCartStore = create<CartStore>()((set, get) => ({
     }
   },
 
-  addItem: async (product, variant, quantity = 1, userId, quantityOptionPrice) => {
+  addItem: async (
+    product,
+    variant,
+    quantity = 1,
+    userId,
+    quantityOptionPrice
+  ) => {
     // PERFORMANCE: Remove console.logs in production
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log("Adding item to cart:", {
         productId: product.id,
         variantId: variant?.id,
@@ -198,15 +213,22 @@ export const useCartStore = create<CartStore>()((set, get) => ({
       const variantPriceAdjustment = variant?.price_adjustment || 0;
 
       // Check if item already exists in cart
-      // For quantity options, we need to match on variant + quantity option price
-      const existingItemIndex = state.items.findIndex(
-        (item) =>
+      // Match on product ID and variant (using SKU if available, otherwise ID)
+      // This ensures different variants of the same product are treated as separate items
+      const variantId = variant?.id || "no-variant";
+      const variantSku = variant?.sku || "";
+      const variantIdentifier = variantSku || variantId;
+
+      const existingItemIndex = state.items.findIndex((item) => {
+        const itemVariantId = item.variant?.id || "no-variant";
+        const itemVariantSku = item.variant?.sku || "";
+        const itemVariantIdentifier = itemVariantSku || itemVariantId;
+
+        return (
           item.product.id === product.id &&
-          item.variant?.id === variant?.id &&
-          // If quantity option price exists, match on that too
-          (quantityOptionPrice === undefined ||
-            item.pricePerUnit === quantityOptionPrice)
-      );
+          itemVariantIdentifier === variantIdentifier
+        );
+      });
 
       if (existingItemIndex >= 0) {
         // Update existing item quantity
@@ -216,7 +238,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
 
         // Calculate price based on new quantity and pricing tiers
         // If quantityOptionPrice is provided, use it (it's already per unit)
-        const pricePerUnit = calculatePricePerUnit(
+        const pricePerUnit = calculateItemPricePerUnit(
           newQuantity,
           product.basePrice,
           variantPriceAdjustment,
@@ -236,7 +258,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
         return { items: updatedItems, isLoading: false };
       } else {
         // Add new item
-        const pricePerUnit = calculatePricePerUnit(
+        const pricePerUnit = calculateItemPricePerUnit(
           quantity,
           product.basePrice,
           variantPriceAdjustment,
@@ -244,8 +266,18 @@ export const useCartStore = create<CartStore>()((set, get) => ({
           quantityOptionPrice
         );
 
+        // Generate unique cart item ID
+        // Include product ID and variant ID (if exists)
+        // Use variant SKU if available for better uniqueness, otherwise use variant ID
+        // This ensures different variants of the same product get unique cart item IDs
+        const variantId = variant?.id || "no-variant";
+        const variantSku = variant?.sku || "";
+        // Use SKU if available (more unique), otherwise use ID
+        const variantIdentifier = variantSku || variantId;
+        const uniqueId = `${product.id}-${variantIdentifier}`;
+
         const newItem: CartItem = {
-          id: `${product.id}-${variant?.id || "default"}`,
+          id: uniqueId,
           product,
           variant,
           quantity,
@@ -258,7 +290,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
       }
     });
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log("Cart items updated. New item count:", updatedItems.length);
     }
 
@@ -267,7 +299,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
   },
 
   removeItem: async (itemId, userId) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log("Removing item from cart:", { itemId, userId });
     }
 
@@ -275,7 +307,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
 
     set((state) => {
       const filteredItems = state.items.filter((item) => item.id !== itemId);
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.log("Item removed. New cart item count:", filteredItems.length);
       }
       return {
@@ -289,12 +321,12 @@ export const useCartStore = create<CartStore>()((set, get) => ({
   },
 
   updateQuantity: async (itemId, quantity, userId) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log("Updating item quantity:", { itemId, quantity, userId });
     }
 
     if (quantity <= 0) {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.log("Quantity is 0 or less, removing item instead");
       }
       await get().removeItem(itemId, userId);
@@ -308,28 +340,62 @@ export const useCartStore = create<CartStore>()((set, get) => ({
         if (item.id === itemId) {
           const variantAdjustment = item.variant?.price_adjustment || 0;
 
-          // Check if variant has quantity options and if new quantity matches one
-          let quantityOptionPrice: number | undefined = item.quantityOptionPrice;
-          
-          if (item.variant?.quantityOptions && item.variant.quantityOptions.length > 0) {
-            // Find matching quantity option for the new quantity
-            const matchingOption = item.variant.quantityOptions.find(
-              (opt) => opt.quantity === quantity && opt.isActive
+          // Helper to find the best matching quantity option (largest <= quantity)
+          // Matches the logic from product-purchase-section.tsx
+          const findMatchingQuantityOption = (
+            inputQuantity: number,
+            quantityOptions?: ProductVariant["quantityOptions"]
+          ): { quantity: number; pricePerUnit?: number } | null => {
+            if (!quantityOptions || quantityOptions.length === 0) {
+              return null;
+            }
+
+            // Filter active options and sort by quantity descending
+            const activeOptions = quantityOptions
+              .filter((opt) => opt.isActive)
+              .sort((a, b) => b.quantity - a.quantity);
+
+            // Find the largest option that is <= input quantity
+            const matchingOption = activeOptions.find(
+              (opt) => opt.quantity <= inputQuantity
             );
-            
-            if (matchingOption && matchingOption.pricePerUnit !== undefined) {
+
+            if (matchingOption) {
+              return {
+                quantity: matchingOption.quantity,
+                pricePerUnit: matchingOption.pricePerUnit,
+              };
+            }
+
+            return null;
+          };
+
+          // Find matching quantity option for the new quantity (if variant has options)
+          // Always recalculate based on new quantity, don't keep old quantityOptionPrice
+          let quantityOptionPrice: number | undefined = undefined;
+
+          if (
+            item.variant?.quantityOptions &&
+            item.variant.quantityOptions.length > 0
+          ) {
+            const matchingOption = findMatchingQuantityOption(
+              quantity,
+              item.variant.quantityOptions
+            );
+
+            if (matchingOption?.pricePerUnit !== undefined) {
               // Use the price from the matching quantity option
               quantityOptionPrice = matchingOption.pricePerUnit;
-            } else if (matchingOption) {
-              // Option exists but no specific price, use base + variant adjustment
-              quantityOptionPrice = undefined;
             }
-            // If no matching option, keep the original quantityOptionPrice (if it exists)
-            // This allows custom quantities to maintain their original pricing
+            // If no matching option or no price, quantityOptionPrice remains undefined
+            // Pricing tiers will then be applied based on the new quantity
           }
 
-          // Calculate price per unit
-          const pricePerUnit = calculatePricePerUnit(
+          // Calculate price per unit using pricing service
+          // Priority: quantity option price > pricing tiers > base price
+          // Matches the logic from product-purchase-section.tsx
+          // Pricing tiers are ALWAYS recalculated based on the new quantity
+          const pricePerUnit = calculateItemPricePerUnit(
             quantity,
             item.product.basePrice,
             variantAdjustment,
@@ -337,7 +403,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
             quantityOptionPrice
           );
 
-          if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === "development") {
             console.log("Updated item:", {
               itemId,
               oldQuantity: item.quantity,
@@ -369,26 +435,30 @@ export const useCartStore = create<CartStore>()((set, get) => ({
   },
 
   clearCart: async (userId) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log("Clearing cart for userId:", userId);
     }
     set({ isLoading: true });
 
     try {
       // Clear local state and reset shipping to default
-      set({ items: [], selectedShippingId: DEFAULT_SHIPPING_OPTION.id, isLoading: false });
+      set({
+        items: [],
+        selectedShippingId: DEFAULT_SHIPPING_OPTION.id,
+        isLoading: false,
+      });
 
       // Delete cart from storage
       if (userId) {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("Deleting cart from Supabase for user:", userId);
         }
         await saveCartToSupabase([], userId);
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("Cart cleared from Supabase successfully");
         }
       } else {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("Guest cart cleared from localStorage");
         }
         clearGuestCartFromLocalStorage();
@@ -400,7 +470,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
   },
 
   setShippingMethod: (shippingId) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log("Setting shipping method:", shippingId);
     }
     set({ selectedShippingId: shippingId });
@@ -408,17 +478,21 @@ export const useCartStore = create<CartStore>()((set, get) => ({
 
   getCartSummary: () => {
     const items = get().items;
+    // Subtotal is the sum of all item total prices (already includes pricing tiers/quantity options)
     const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
 
-    // Calculate discount based on pricing tiers
+    // Discount should only be for actual promotional discounts, not pricing tiers/quantity options
+    // Pricing tiers and quantity options are part of the normal pricing structure
+    // Only show discount if product has an explicit discount field
     const discount = items.reduce((sum, item) => {
-      const variantAdjustment = item.variant?.price_adjustment || 0;
-      const basePrice = item.product.basePrice + variantAdjustment;
-      const tierPrice = item.pricePerUnit;
-
-      // Only count positive discounts (where tier price is less than base price)
-      const discountPerItem = Math.max(0, basePrice - tierPrice);
-      return sum + discountPerItem * item.quantity;
+      // Only count discount if product has an explicit discount percentage
+      if (item.product.discount && item.product.discount > 0) {
+        const variantAdjustment = item.variant?.price_adjustment || 0;
+        const basePrice = item.product.basePrice + variantAdjustment;
+        const discountAmount = basePrice * (item.product.discount / 100);
+        return sum + discountAmount * item.quantity;
+      }
+      return sum;
     }, 0);
 
     // Use selected shipping cost
@@ -438,17 +512,21 @@ export const useCartStore = create<CartStore>()((set, get) => ({
 
   getCartSummaryWithShipping: () => {
     const items = get().items;
+    // Subtotal is the sum of all item total prices (already includes pricing tiers/quantity options)
     const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
 
-    // Calculate discount based on pricing tiers
+    // Discount should only be for actual promotional discounts, not pricing tiers/quantity options
+    // Pricing tiers and quantity options are part of the normal pricing structure
+    // Only show discount if product has an explicit discount field
     const discount = items.reduce((sum, item) => {
-      const variantAdjustment = item.variant?.price_adjustment || 0;
-      const basePrice = item.product.basePrice + variantAdjustment;
-      const tierPrice = item.pricePerUnit;
-
-      // Only count positive discounts (where tier price is less than base price)
-      const discountPerItem = Math.max(0, basePrice - tierPrice);
-      return sum + discountPerItem * item.quantity;
+      // Only count discount if product has an explicit discount percentage
+      if (item.product.discount && item.product.discount > 0) {
+        const variantAdjustment = item.variant?.price_adjustment || 0;
+        const basePrice = item.product.basePrice + variantAdjustment;
+        const discountAmount = basePrice * (item.product.discount / 100);
+        return sum + discountAmount * item.quantity;
+      }
+      return sum;
     }, 0);
 
     // Get selected shipping cost
@@ -462,7 +540,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
     return {
       ...calculation,
       items,
-      discount
+      discount,
     };
   },
 
