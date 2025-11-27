@@ -139,7 +139,7 @@ export async function sendOrderConfirmationEmail(
         </p>
         
         <p style="color: #6b7280; font-size: 12px; margin-top: 30px;">
-          This is an automated notification from Bubble Wrap Shop.
+          This is an automated notification from Bubble wrap shop (Blackburn) Limited.
         </p>
       </div>
     `;
@@ -304,7 +304,7 @@ export async function sendOrderShippedEmail(
       <p><strong>Tracking Number:</strong> ${trackingNumber}</p>
       <p>You can track your package using the tracking number above.</p>
       <p>Thank you for your order!</p>
-      <p>- Bubble Wrap Shop Team</p>
+      <p>- Bubble wrap shop (Blackburn) Limited Team</p>
     `;
 
     const result = await resend.emails.send({
@@ -395,7 +395,7 @@ export async function sendB2BRequestEmail(request: {
         </p>
         
         <p style="color: #6b7280; font-size: 12px; margin-top: 30px;">
-          This is an automated notification from Bubble Wrap Shop.
+          This is an automated notification from Bubble wrap shop (Blackburn) Limited.
         </p>
       </div>
     `;

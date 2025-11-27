@@ -75,7 +75,7 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Bubble Wrap Shop",
-    legalName: "Bubble Wrap Shop (NW) Ltd",
+    legalName: "Bubble wrap shop (Blackburn) Limited",
     url: siteUrl,
     logo: `${siteUrl}/logo.jpg`,
     description:
@@ -110,7 +110,7 @@ export default function Home() {
     "@type": "LocalBusiness",
     "@id": `${siteUrl}#organization`,
     name: "Bubble Wrap Shop",
-    legalName: "Bubble Wrap Shop (NW) Ltd",
+    legalName: "Bubble wrap shop (Blackburn) Limited",
     image: `${siteUrl}/logo.jpg`,
     url: siteUrl,
     telephone: "+44-7882-851632",

@@ -27,14 +27,14 @@ export function PricingTable({ tiers, basePrice, variantPriceAdjustment = 0 }: P
   };
 
   return (
-    <div className="w-full overflow-hidden rounded-lg border border-emerald-200">
+    <div className="w-full overflow-hidden rounded-xl border-2 border-emerald-200 shadow-lg bg-white">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-emerald-200 bg-linear-to-r from-emerald-50 to-teal-50">
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-emerald-700">
+          <tr className="border-b-2 border-emerald-300 bg-linear-to-r from-emerald-100 to-teal-100">
+            <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-emerald-800">
               Quantity
             </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-emerald-700">
+            <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-emerald-800">
               Price per Unit
             </th>
           </tr>
@@ -42,17 +42,17 @@ export function PricingTable({ tiers, basePrice, variantPriceAdjustment = 0 }: P
         <tbody>
           {displayTiers.length === 0 ? (
             <tr>
-              <td colSpan={2} className="px-4 py-3 text-center text-gray-500">
+              <td colSpan={2} className="px-6 py-4 text-center text-gray-500">
                 No pricing tiers configured
               </td>
             </tr>
           ) : (
             <>
               {/* Show base price row first */}
-              <tr className="border-b border-emerald-100 bg-gray-50">
-                <td className="px-4 py-3 font-medium text-gray-900">1+ units</td>
-                <td className="px-4 py-3">
-                  <span className="font-bold text-gray-700">
+              <tr className="border-b border-emerald-100 bg-gray-50/50 hover:bg-gray-100/50 transition-colors">
+                <td className="px-6 py-4 font-semibold text-gray-900">1+ units</td>
+                <td className="px-6 py-4">
+                  <span className="text-lg font-bold text-gray-900">
                     £{adjustedBasePrice.toFixed(2)}
                   </span>
                 </td>
@@ -68,21 +68,21 @@ export function PricingTable({ tiers, basePrice, variantPriceAdjustment = 0 }: P
                 return (
                   <tr
                     key={index}
-                    className="border-b border-emerald-100 transition-colors hover:bg-emerald-50/50 last:border-0"
+                    className="border-b border-emerald-100 transition-all hover:bg-emerald-50/70 hover:shadow-sm last:border-0"
                   >
-                    <td className="px-4 py-3 font-medium text-gray-900">{quantityRange}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-emerald-700">
+                    <td className="px-6 py-4 font-semibold text-gray-900">{quantityRange}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <span className="text-lg font-bold text-emerald-700">
                           £{tierPrice.toFixed(2)}
                         </span>
                         {tier.discount > 0 && (
-                          <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                          <span className="inline-flex items-center justify-center bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
                             {tier.discount}% Off
                           </span>
                         )}
                         {tier.label && (
-                          <span className="text-xs font-medium text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">
+                          <span className="inline-flex items-center justify-center bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-300">
                             {tier.label}
                           </span>
                         )}

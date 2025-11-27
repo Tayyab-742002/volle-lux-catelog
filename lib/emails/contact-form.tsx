@@ -429,8 +429,7 @@ export const ContactFormEmail: React.FC<Readonly<ContactFormEmailProps>> = ({
                         lineHeight: "1.6",
                       }}
                     >
-                      This is an automated notification from the Bubble Wrap
-                      Shop contact form.
+                      This is an automated notification from the Bubble wrap shop (Blackburn) Limited contact form.
                     </p>
                   </td>
                 </tr>

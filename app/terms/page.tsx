@@ -682,7 +682,7 @@ export default function TermsAndConditions() {
                 <div className="mt-4 space-y-2">
                   <p>
                     <strong className="text-gray-900">Company Name:</strong>{" "}
-                    Bubble Wrap Shop (NW) Ltd
+                    Bubble wrap shop (Blackburn) Limited
                   </p>
                   <p>
                     <strong className="text-gray-900">Email:</strong>{" "}
