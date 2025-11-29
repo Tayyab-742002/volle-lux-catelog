@@ -49,12 +49,12 @@ export function CartItem({ item }: CartItemProps) {
   const handleQuantityChange = (value: string) => {
     // Allow empty string for easier editing
     setQuantityInput(value);
-
+    
     // Only update if it's a valid number
     if (value === "") {
       return; // Allow empty temporarily
     }
-
+    
     const numValue = parseInt(value, 10);
     if (!isNaN(numValue) && numValue > 0) {
       updateQuantity(item.id, numValue, user?.id);
@@ -128,7 +128,7 @@ export function CartItem({ item }: CartItemProps) {
 
           {/* Price & Remove */}
           <div className="flex flex-col items-end gap-2">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
               <div className="flex flex-col items-end">
                 <span className="font-semibold text-lg">
                   £{item.totalPrice.toFixed(2)}
@@ -144,14 +144,14 @@ export function CartItem({ item }: CartItemProps) {
                   </span>
                 )}
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleRemove}
-                className="h-8 w-8 text-destructive hover:text-destructive"
-              >
-                <Trash2 className="h-4 w-4" strokeWidth={1.5} />
-              </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleRemove}
+              className="h-8 w-8 text-destructive hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" strokeWidth={1.5} />
+            </Button>
             </div>
           </div>
         </div>

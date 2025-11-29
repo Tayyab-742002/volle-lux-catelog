@@ -60,13 +60,7 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
   const [mounted, setMounted] = useState(false);
 
   const { getItemCount } = useCartStore();
-  const {
-    user,
-    isAuthenticated,
-    signOut,
-    loading: authLoading,
-    refreshUser,
-  } = useAuth();
+  const { user, isAuthenticated, signOut, loading: authLoading } = useAuth();
   const cartItemCount = getItemCount();
   const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -80,21 +74,9 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
     };
   }, []);
 
-  // Refresh user data on mount and when route changes
-  useEffect(() => {
-    // Small delay to ensure auth provider is ready
-    const timer = setTimeout(() => {
-      if (!authLoading && !user) {
-        // Try to refresh user data if we're not loading but have no user
-        // This handles cases where auth state might be stale
-        refreshUser().catch((err) => {
-          console.error("Failed to refresh user:", err);
-        });
-      }
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [authLoading, user, refreshUser]);
+  // Removed automatic refresh - the auth provider handles all state management
+  // This prevents issues when switching tabs or when components remount
+  // The auth provider's onAuthStateChange and getInitialSession handle everything
 
   const handleSignOut = useCallback(async () => {
     const result = await signOut();
@@ -206,7 +188,9 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
               </form>
 
               {/* Account */}
-              {authLoading ? (
+              {/* Only show loading spinner if we don't have a user yet */}
+              {/* If user exists, show profile even if loading (prevents flicker on tab switch) */}
+              {authLoading && !user ? (
                 <div className="hidden lg:block">
                   <div className="p-2 text-white/50 rounded-lg">
                     <User className="h-5 w-5" strokeWidth={2} />
@@ -428,7 +412,8 @@ export function Header({ categories = MOCK_CATEGORIES }: HeaderProps) {
                 </div>
               </form>
 
-              {authLoading ? (
+              {/* Only show loading if we don't have a user yet */}
+              {authLoading && !user ? (
                 <div className="mb-6 flex h-10 items-center justify-center rounded-lg bg-gray-100 animate-pulse">
                   <div className="h-4 w-24 bg-gray-300 rounded"></div>
                 </div>
