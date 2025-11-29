@@ -1,6 +1,7 @@
 /**
  * Authentication Context Provider
- * Provides authentication state and methods throughout the application
+ * Simplified, production-ready implementation following Supabase best practices
+ * Reference: https://supabase.com/docs/guides/auth/auth-helpers/nextjs
  */
 
 "use client";
@@ -72,149 +73,156 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [supabase] = useState(() => createClient());
 
   // Load user profile from database
-  const loadUserProfile = useCallback(
-    async (retryCount = 0) => {
-      try {
-        // First check if there's a session before trying to get user
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession();
+  const loadUserProfile = useCallback(async (): Promise<void> => {
+    try {
+      // Get current user from Supabase Auth
+      const {
+        data: { user: authUser },
+        error: userError,
+      } = await supabase.auth.getUser();
 
-        // If no session or session error, user is not logged in
-        if (sessionError || !session) {
-          setUser(null);
-          return;
-        }
-
-        // Get current user from auth (now we know there's a session)
-        const {
-          data: { user: authUser },
-          error: userError,
-        } = await supabase.auth.getUser();
-
-        if (userError || !authUser) {
-          // "Auth session missing!" is expected when user is not logged in
-          // Only log actual errors, not missing session errors
-          if (userError?.message !== "Auth session missing!") {
-            if (retryCount < 2) {
-              // Retry once if we get an error (might be a timing issue)
-              setTimeout(() => loadUserProfile(retryCount + 1), 500);
-              return;
-            }
-            console.error("Failed to get auth user:", userError?.message);
-          }
-          setUser(null);
-          return;
-        }
-
-        // Fetch user profile
-        const { data: profile, error: profileError } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", authUser.id)
-          .single();
-
-        if (profileError || !profile) {
-          if (retryCount < 2) {
-            // Retry once if we get an error (might be a timing issue)
-            setTimeout(() => loadUserProfile(retryCount + 1), 500);
-            return;
-          }
-          console.error("Failed to fetch user profile:", profileError?.message);
-          setUser(null);
-          return;
-        }
-
-        // Type assertion needed because Supabase types need explicit schema
-        const userProfile = profile as {
-          id: string;
-          email: string;
-          full_name: string | null;
-          phone: string | null;
-          company: string | null;
-          avatar_url: string | null;
-          role: "customer" | "admin";
-          created_at: string;
-          updated_at: string;
-        };
-
-        setUser({
-          id: userProfile.id,
-          email: userProfile.email,
-          fullName: userProfile.full_name || undefined,
-          phone: userProfile.phone || undefined,
-          company: userProfile.company || undefined,
-          avatarUrl: userProfile.avatar_url || undefined,
-          role: userProfile.role || "customer",
-          createdAt: userProfile.created_at,
-          updatedAt: userProfile.updated_at,
-        });
-      } catch (error) {
-        if (retryCount < 2) {
-          // Retry once if we get an error (might be a timing issue)
-          setTimeout(() => loadUserProfile(retryCount + 1), 500);
-          return;
-        }
-        console.error("Error loading user profile:", error);
+      if (userError || !authUser) {
         setUser(null);
+        return;
       }
-    },
-    [supabase]
-  );
+
+      // Fetch user profile from database
+      const { data: profile, error: profileError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", authUser.id)
+        .single();
+
+      if (profileError || !profile) {
+        setUser(null);
+        return;
+      }
+
+      // Transform profile data
+      const userProfile = profile as {
+        id: string;
+        email: string;
+        full_name: string | null;
+        phone: string | null;
+        company: string | null;
+        avatar_url: string | null;
+        role: "customer" | "admin";
+        created_at: string;
+        updated_at: string;
+      };
+
+      setUser({
+        id: userProfile.id,
+        email: userProfile.email,
+        fullName: userProfile.full_name || undefined,
+        phone: userProfile.phone || undefined,
+        company: userProfile.company || undefined,
+        avatarUrl: userProfile.avatar_url || undefined,
+        role: userProfile.role || "customer",
+        createdAt: userProfile.created_at,
+        updatedAt: userProfile.updated_at,
+      });
+    } catch (error) {
+      console.error("Error loading user profile:", error);
+      setUser(null);
+    }
+  }, [supabase]);
 
   // Initialize auth state
   useEffect(() => {
     let mounted = true;
 
     // Get initial session
-    const getInitialSession = async () => {
+    const initializeAuth = async () => {
       try {
         const {
           data: { session },
         } = await supabase.auth.getSession();
 
-        if (mounted) {
-          if (session?.user) {
-            await loadUserProfile();
-          } else {
-            setUser(null);
-          }
-          setLoading(false);
+        if (!mounted) return;
+
+        if (session?.user) {
+          await loadUserProfile();
+        } else {
+          setUser(null);
         }
       } catch (error) {
-        console.error("Error getting initial session:", error);
+        console.error("Error initializing auth:", error);
         if (mounted) {
           setUser(null);
+        }
+      } finally {
+        if (mounted) {
           setLoading(false);
         }
       }
     };
 
-    getInitialSession();
+    initializeAuth();
 
-    // Listen for auth changes
+    // Listen for auth state changes
+    // This is the recommended pattern from Supabase docs
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
 
-      // Set loading to true when auth state changes
-      setLoading(true);
-
-      if (session?.user) {
-        await loadUserProfile();
-      } else {
+      // Handle sign out
+      if (event === "SIGNED_OUT" || !session?.user) {
         setUser(null);
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      // For TOKEN_REFRESHED events, don't reload if user is already loaded
+      // This prevents the profile icon from disappearing when switching tabs
+      // TOKEN_REFRESHED fires when tab regains focus - we don't need to reload
+      if (event === "TOKEN_REFRESHED") {
+        if (user && user.id === session.user.id) {
+          // User is already loaded and token refreshed - no action needed
+          // This keeps the UI stable when switching tabs
+          return;
+        }
+        // If user is not loaded but token refreshed, load profile silently (no loading state)
+        if (session?.user) {
+          try {
+            await loadUserProfile();
+          } catch (error) {
+            console.error(
+              "Error loading user profile on token refresh:",
+              error
+            );
+            // Don't clear user on error during token refresh - might be temporary
+          }
+        }
+        return;
+      }
+
+      // For SIGNED_IN, USER_UPDATED events - these require a full reload
+      if (session?.user) {
+        // Only set loading if user is not already loaded
+        // This prevents UI flicker when user is already authenticated
+        if (!user) {
+          setLoading(true);
+        }
+        try {
+          await loadUserProfile();
+        } catch (error) {
+          console.error("Error loading user profile on auth change:", error);
+          setUser(null);
+        } finally {
+          if (mounted) {
+            setLoading(false);
+          }
+        }
+      }
     });
 
     return () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [supabase, loadUserProfile]);
+  }, [supabase, loadUserProfile, user]);
 
   // Sign in method
   const handleSignIn = useCallback(
@@ -297,7 +305,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     async (newPassword: string): Promise<AuthResult> => {
       const result = await updatePassword(newPassword);
       if (result.success) {
-        // Refresh user data
         await refreshUser();
       }
       return result;
@@ -396,10 +403,9 @@ export function useAuth(): AuthContextType {
 
   if (context === undefined) {
     // During SSR or before provider mounts, return a safe default
-    // This prevents errors but the actual context will be available after hydration
     return {
       user: null,
-      loading: true, // Keep loading true until context is available
+      loading: true,
       isAuthenticated: false,
       signIn: async () => ({ success: false, error: "Not initialized" }),
       signUp: async () => ({ success: false, error: "Not initialized" }),
